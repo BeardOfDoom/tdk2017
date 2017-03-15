@@ -12,7 +12,7 @@ state_start: STATE_START_DELIMITER parameter_description_line* state_start_line+
 
 state_start_line: ((attr_reference SYMBOL_ASSIGN init_statement) | (matrix_reference SYMBOL_ASSIGN expression));
 
-state_goal: STATE_GOAL_DELIMITER parameter_description_line* boolean_expression?;
+state_goal: STATE_GOAL_DELIMITER parameter_description_line* expression?;
 
 /*-----------------------------------------------------------------------------------------------*/
 
@@ -21,30 +21,31 @@ operation_expr: operation_description operator_precondition operator_effect;
 operation_description: OPERATOR_DESCRIPTION_DELIMITER operator_cost? parameter_description_line*;
 operator_cost: KEYWORD_COST number;
 
-operator_precondition: OPERATOR_PRECONDITION_DELIMITER boolean_expression?;
+operator_precondition: OPERATOR_PRECONDITION_DELIMITER expression?;
 
-operator_effect: OPERATOR_EFFECT_DELIMITER var_defining_expression* assigning_expression+;
+operator_effect: OPERATOR_EFFECT_DELIMITER var_defining_expression* expression+;
 
 /*-----------------------------------------------------------------------------------------------*/
 
-attr_struct: (KEYWORD_SET | (KEYWORD_MATRIX dimension));
-attr_type: (KEYWORD_WORD | KEYWORD_NUMBER);
-comparator: (SYMBOL_EQUAL | SYMBOL_NOT_EQUAL | SYMBOL_GREATER | SYMBOL_LESSER | SYMBOL_GREATER_OR_EQUAL | SYMBOL_LESSER_OR_EQUAL);
+attr_struct: KEYWORD_SET | (KEYWORD_MATRIX dimension);
+attr_type: KEYWORD_WORD | KEYWORD_NUMBER;
+comperator: SYMBOL_EQUAL | SYMBOL_NOT_EQUAL | SYMBOL_GREATER | SYMBOL_LESSER | SYMBOL_GREATER_OR_EQUAL | SYMBOL_LESSER_OR_EQUAL;
+binary_operator: SYMBOL_ADDITION | SYMBOL_SUBSTRACT | SYMBOL_MULTIPLICATION | SYMBOL_DIVISION;
+unary_operator: KEYWORD_MAXIMUM | KEYWORD_MINIMUM | KEYWORD_AVERAGE | KEYWORD_CARDINALITY;
+boolean_operator: KEYWORD_AND | KEYWORD_OR | KEYWORD_NOT;
 
-binary_operator: (SYMBOL_ADDITION | SYMBOL_SUBSTRACT | SYMBOL_MULTIPLICATION | SYMBOL_DIVISION);
-unary_operator: (KEYWORD_MAXIMUM | KEYWORD_MINIMUM | KEYWORD_AVERAGE | KEYWORD_CARDINALITY);
-boolean_operator: (KEYWORD_AND | KEYWORD_OR | KEYWORD_NOT);
-
-expression_unit: (unary_expression | reference | name | number | word);
-unary_expression: unary_operator SYMBOL_LPAREN (expression (SYMBOL_COMMA expression)?) SYMBOL_RPAREN;
-binary_expression: (expression_unit (binary_operator (expression_unit | binary_expression))+) | (SYMBOL_LPAREN binary_expression SYMBOL_RPAREN);
-
-assigning_expression: reference SYMBOL_ASSIGN expression;
-comparing_expression: expression comparator expression;
-boolean_expression: KEYWORD_NOT? (comparing_expression (boolean_operator (comparing_expression | boolean_expression))*) | (KEYWORD_NOT? SYMBOL_LPAREN boolean_expression SYMBOL_RPAREN);
 var_defining_expression: KEYWORD_VAR attr_type name SYMBOL_ASSIGN expression;
 
-expression: (expression_unit | unary_expression | binary_expression);
+expression
+  : SYMBOL_LPAREN expression SYMBOL_RPAREN
+  | left=expression op1=comperator right=expression
+  | left=expression op2=boolean_operator right=expression
+  | left=expression op3=binary_operator right=expression
+  | reference
+  | name
+  | number
+  | word
+  ;
 
 init_statement: SYMBOL_LBRACE (expression (SYMBOL_COMMA expression)*) SYMBOL_RBRACE;
 

@@ -1,4 +1,4 @@
-// Generated from D:/Laci/egyetem/szakdolgozat/tdk2017/generator/src/main/java/antlr\SML.g4 by ANTLR 4.6
+// Generated from D:/Laci/egyetem/szakdolgozat/SML/src/main/java/antlr\SML.g4 by ANTLR 4.6
 package antlr;
 
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -184,13 +184,13 @@ public class SMLBaseListener implements SMLListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterComparator(SMLParser.ComparatorContext ctx) { }
+	@Override public void enterComperator(SMLParser.ComperatorContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitComparator(SMLParser.ComparatorContext ctx) { }
+	@Override public void exitComperator(SMLParser.ComperatorContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -227,78 +227,6 @@ public class SMLBaseListener implements SMLListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitBoolean_operator(SMLParser.Boolean_operatorContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterExpression_unit(SMLParser.Expression_unitContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitExpression_unit(SMLParser.Expression_unitContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterUnary_expression(SMLParser.Unary_expressionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitUnary_expression(SMLParser.Unary_expressionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterBinary_expression(SMLParser.Binary_expressionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitBinary_expression(SMLParser.Binary_expressionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterAssigning_expression(SMLParser.Assigning_expressionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitAssigning_expression(SMLParser.Assigning_expressionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterComparing_expression(SMLParser.Comparing_expressionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitComparing_expression(SMLParser.Comparing_expressionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterBoolean_expression(SMLParser.Boolean_expressionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitBoolean_expression(SMLParser.Boolean_expressionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

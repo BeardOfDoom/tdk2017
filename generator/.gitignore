@@ -15,10 +15,7 @@ hs_err_pid*
 *.iml
 out/
 src/main/resources/
-target/classes/generator/
-target/classes/interfaces/
-target/classes/misc/
-target/classes/representations/
-target/classes/utils/
-target/generated-sources/
-*/target/
+target/
+generated/
+old/
+

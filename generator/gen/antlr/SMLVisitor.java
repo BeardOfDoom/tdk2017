@@ -1,4 +1,4 @@
-// Generated from D:/Laci/egyetem/szakdolgozat/tdk2017/generator/src/main/java/antlr\SML.g4 by ANTLR 4.6
+// Generated from D:/Laci/egyetem/szakdolgozat/SML/src/main/java/antlr\SML.g4 by ANTLR 4.6
 package antlr;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
@@ -95,11 +95,11 @@ public interface SMLVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitAttr_type(SMLParser.Attr_typeContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link SMLParser#comparator}.
+	 * Visit a parse tree produced by {@link SMLParser#comperator}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitComparator(SMLParser.ComparatorContext ctx);
+	T visitComperator(SMLParser.ComperatorContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link SMLParser#binary_operator}.
 	 * @param ctx the parse tree
@@ -118,42 +118,6 @@ public interface SMLVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitBoolean_operator(SMLParser.Boolean_operatorContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link SMLParser#expression_unit}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitExpression_unit(SMLParser.Expression_unitContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link SMLParser#unary_expression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitUnary_expression(SMLParser.Unary_expressionContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link SMLParser#binary_expression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitBinary_expression(SMLParser.Binary_expressionContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link SMLParser#assigning_expression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitAssigning_expression(SMLParser.Assigning_expressionContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link SMLParser#comparing_expression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitComparing_expression(SMLParser.Comparing_expressionContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link SMLParser#boolean_expression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitBoolean_expression(SMLParser.Boolean_expressionContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link SMLParser#var_defining_expression}.
 	 * @param ctx the parse tree
