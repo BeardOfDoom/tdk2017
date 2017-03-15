@@ -13,9 +13,5 @@ hs_err_pid*
 
 .idea/
 *.iml
-out/
-src/main/resources/
-target/
-generated/
-old/
+
 
