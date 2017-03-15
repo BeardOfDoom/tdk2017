@@ -1,0 +1,25 @@
+.futureNode{
+	stroke: lightgray;
+	fill: white;
+	r: 5;
+}
+
+.futureConnection{
+	fill: none;
+	stroke: lightgray;
+	stroke-width: 1px;
+}
+
+#futureMarker{
+	fill: lightgray;
+}
+
+#normalMarker{
+	fill: black;
+}
+
+.activeNode{
+	fill: orange;
+	stroke: black;
+	r: 7;
+}
