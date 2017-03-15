@@ -1,0 +1,45 @@
+grammar GraphLanguage;
+
+expr: statement+ EOF;
+
+statement: (graph_constructor | method_call)+;
+graph_constructor: KEYWORD_GRAPH var_name;
+method_call: (graph_method_call | universal_method_call | print_method_call | for_init_statement);
+
+universal_method_call: KEYWORD_UTILS method;
+print_method_call: KEYWORD_PRINT'('(graph_method_call | universal_method_call | for_method_call)')';
+graph_method_call: var_name method;
+for_init_statement: KEYWORD_FOR'('for_param')'block_open for_block block_close;
+
+method: METHOD_NAME'('param_list')';
+
+for_param: var_name';'for_type';'for_var;
+param_list: (single_param (','single_param)*)?;
+single_param: (NUMBER | STRING | var_name | for_var);
+
+for_block: (graph_method_call | universal_method_call | print_method_call | for_method_call)+;
+for_method_call:for_var method;
+for_var:'$'var_name;
+for_type: (KEYWORD_FOR_TYPE_NODES | KEYWORD_FOR_TYPE_EDGES | for_type_adjacent);
+for_type_adjacent: 'adjacent('STRING')';
+
+block_open: '{';
+block_close: '}';
+var_name: VAR;
+
+KEYWORD_GRAPH: 'Graph';
+KEYWORD_UTILS: 'Utils';
+KEYWORD_PRINT: 'print';
+KEYWORD_FOR: 'for';
+KEYWORD_FOR_TYPE_NODES: 'nodes';
+KEYWORD_FOR_TYPE_EDGES: 'edges';
+
+SYMBOL_OPEN_BRACE: '{';
+SYMBOL_CLOSE_BRACE: '}';
+
+VAR: ((('a'..'z')|('A'..'Z'))+('0'..'9')*)+;
+NUMBER: ('0'..'9') | ('1'..'9')('0'..'9')+;
+STRING: '"'(('0'..'9')*(('a'..'z')|('A'..'Z'))+('0'..'9')*)+'"';
+METHOD_NAME:'.'(('a'..'z')|('A'..'Z'))+;
+
+WS : [ \t\r\n]+ -> skip ;
