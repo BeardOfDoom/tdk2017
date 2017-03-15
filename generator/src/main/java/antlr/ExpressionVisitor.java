@@ -1,10 +1,11 @@
 package antlr;
 
-import antlr.SMLParser.Boolean_expressionContext;
-import antlr.SMLParser.Comparing_expressionContext;
-import antlr.SMLParser.ExpressionContext;
-import antlr.SMLParser.Expression_unitContext;
-import antlr.SMLParser.NameContext;
+import antlr.generated.SMLParser.Boolean_expressionContext;
+import antlr.generated.SMLParser.Comparing_expressionContext;
+import antlr.generated.SMLParser.ExpressionContext;
+import antlr.generated.SMLParser.Expression_unitContext;
+import antlr.generated.SMLParser.NameContext;
+import antlr.generated.SMLBaseVisitor;
 
 public class ExpressionVisitor extends SMLBaseVisitor<String> {
 

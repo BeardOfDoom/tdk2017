@@ -1,7 +1,7 @@
 package utils;
 
 import antlr.ErrorListener;
-import antlr.SMLLexer;
+import antlr.generated.SMLLexer;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;

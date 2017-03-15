@@ -1,4 +1,4 @@
-import antlr.SMLParser;
+import antlr.generated.SMLParser;
 import antlr.Visitor;
 import generator.OperatorGenerator;
 import generator.StateGenerator;
@@ -10,7 +10,7 @@ import utils.Utils;
 
 public class Main {
 
-  private static final String INPUT_FILE_NAME = "input.txt";
+  private static final String INPUT_FILE_NAME = "generator/input.txt";
 
   //TODO: Error listener on lexer
 
