@@ -1,4 +1,4 @@
-// Generated from D:/Laci/egyetem/szakdolgozat/SML/src/main/java/antlr\SML.g4 by ANTLR 4.6
+// Generated from D:/Laci/egyetem/szakdolgozat/tdk2017/generator/src/main/java/antlr\SML.g4 by ANTLR 4.6
 package antlr;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
@@ -148,15 +148,15 @@ public interface SMLListener extends ParseTreeListener {
 	 */
 	void exitAttr_type(SMLParser.Attr_typeContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link SMLParser#comperator}.
+	 * Enter a parse tree produced by {@link SMLParser#comparator}.
 	 * @param ctx the parse tree
 	 */
-	void enterComperator(SMLParser.ComperatorContext ctx);
+	void enterComparator(SMLParser.ComparatorContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link SMLParser#comperator}.
+	 * Exit a parse tree produced by {@link SMLParser#comparator}.
 	 * @param ctx the parse tree
 	 */
-	void exitComperator(SMLParser.ComperatorContext ctx);
+	void exitComparator(SMLParser.ComparatorContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link SMLParser#binary_operator}.
 	 * @param ctx the parse tree
@@ -187,6 +187,66 @@ public interface SMLListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitBoolean_operator(SMLParser.Boolean_operatorContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link SMLParser#expression_unit}.
+	 * @param ctx the parse tree
+	 */
+	void enterExpression_unit(SMLParser.Expression_unitContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SMLParser#expression_unit}.
+	 * @param ctx the parse tree
+	 */
+	void exitExpression_unit(SMLParser.Expression_unitContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link SMLParser#unary_expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterUnary_expression(SMLParser.Unary_expressionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SMLParser#unary_expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitUnary_expression(SMLParser.Unary_expressionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link SMLParser#binary_expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterBinary_expression(SMLParser.Binary_expressionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SMLParser#binary_expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitBinary_expression(SMLParser.Binary_expressionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link SMLParser#assigning_expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterAssigning_expression(SMLParser.Assigning_expressionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SMLParser#assigning_expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitAssigning_expression(SMLParser.Assigning_expressionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link SMLParser#comparing_expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterComparing_expression(SMLParser.Comparing_expressionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SMLParser#comparing_expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitComparing_expression(SMLParser.Comparing_expressionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link SMLParser#boolean_expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterBoolean_expression(SMLParser.Boolean_expressionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SMLParser#boolean_expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitBoolean_expression(SMLParser.Boolean_expressionContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link SMLParser#var_defining_expression}.
 	 * @param ctx the parse tree
