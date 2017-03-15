@@ -10,7 +10,7 @@ import utils.Utils;
 
 public class Main {
 
-  private static final String INPUT_FILE_NAME = "input.txt";
+  private static final String INPUT_FILE_NAME = "D:\\Laci\\egyetem\\szakdolgozat\\tdk2017\\generator\\input.txt";
 
   //TODO: Error listener on lexer
 
