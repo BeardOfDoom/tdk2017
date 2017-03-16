@@ -26,8 +26,15 @@ public class GeneratedUtils {
     return matrix.stream().map(Collections::min).min(Double::compareTo).get();
   }
 
-  public static <T extends Number> boolean compare(T numberA, T numberB, CompareType type) {
-    return true;
+  public static Double min(Double numberA, Double numberB) {
+    return Math.min(numberA, numberB);
   }
 
+  public static Double card(Set<Double> set) {
+    return Double.valueOf(set.size());
+  }
+
+  public static Double card(List<List<Double>> list) {
+    return Double.valueOf(list.stream().mapToInt(List::size).sum());
+  }
 }

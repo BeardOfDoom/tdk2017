@@ -1,6 +1,6 @@
 package utils;
 
-import representations.ErrorRepresentation;
+import representation.ErrorRepresentation;
 import java.util.ArrayList;
 import java.util.List;
 

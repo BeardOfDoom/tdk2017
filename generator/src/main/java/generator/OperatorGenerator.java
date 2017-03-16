@@ -6,22 +6,24 @@ import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeSpec;
+import generator.classes.GeneratedUtils;
 import interfaces.OperatorInterface;
 import interfaces.StateInterface;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 import javax.lang.model.element.Modifier;
-import representations.ParameterRepresentation;
-import representations.operator.OperatorRepresentation;
+import representation.ClassRepresentation;
+import representation.ParameterRepresentation;
+import representation.operator.OperatorRepresentation;
+import representation.operator.VariableRepresentation;
 
 public class OperatorGenerator {
 
   private OperatorRepresentation operator;
+  private ClassRepresentation stateClass;
   private String directoryName;
   private String packageName;
   private String fileName;
@@ -70,52 +72,12 @@ public class OperatorGenerator {
     this.keepTogetherGettersAndSetters = keepTogetherGettersAndSetters;
   }
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-
-    OperatorGenerator that = (OperatorGenerator) o;
-
-    if (keepTogetherGettersAndSetters != that.keepTogetherGettersAndSetters) {
-      return false;
-    }
-    if (operator != null ? !operator.equals(that.operator) : that.operator != null) {
-      return false;
-    }
-    if (directoryName != null ? !directoryName.equals(that.directoryName)
-        : that.directoryName != null) {
-      return false;
-    }
-    if (packageName != null ? !packageName.equals(that.packageName) : that.packageName != null) {
-      return false;
-    }
-    return fileName != null ? fileName.equals(that.fileName) : that.fileName == null;
+  public ClassRepresentation getStateClass() {
+    return stateClass;
   }
 
-  @Override
-  public int hashCode() {
-    int result = operator != null ? operator.hashCode() : 0;
-    result = 31 * result + (directoryName != null ? directoryName.hashCode() : 0);
-    result = 31 * result + (packageName != null ? packageName.hashCode() : 0);
-    result = 31 * result + (fileName != null ? fileName.hashCode() : 0);
-    result = 31 * result + (keepTogetherGettersAndSetters ? 1 : 0);
-    return result;
-  }
-
-  @Override
-  public String toString() {
-    return "OperatorGenerator{" +
-        "operator=" + operator +
-        ", directoryName='" + directoryName + '\'' +
-        ", packageName='" + packageName + '\'' +
-        ", fileName='" + fileName + '\'' +
-        ", keepTogetherGettersAndSetters=" + keepTogetherGettersAndSetters +
-        '}';
+  public void setStateClass(ClassRepresentation stateClass) {
+    this.stateClass = stateClass;
   }
 
   public boolean isReady() {
@@ -123,7 +85,7 @@ public class OperatorGenerator {
         && fileName != null;
   }
 
-  public void generateOperator() throws IOException {
+  public ClassRepresentation generateOperator() throws IOException {
     if (isReady()) {
       ClassName className = ClassName.get(packageName, fileName);
       List<ParameterRepresentation> parameters = operator.getParameters();
@@ -133,8 +95,8 @@ public class OperatorGenerator {
           .addModifiers(Modifier.PUBLIC)
           .addSuperinterface(OperatorInterface.class)
           .addFields(fields)
-          .addField(generateListField(className))
-          .addStaticBlock(generateStaticInitializer(parameters, className))
+          .addField(generateCostField())
+          .addMethod(generateInitOperatorsMethod(parameters, className))
           .addMethod(GeneratorUtils.generateEmptyConstructor())
           .addMethod(GeneratorUtils.generateConstructor(fields))
           .addMethods(
@@ -144,36 +106,31 @@ public class OperatorGenerator {
           .addMethod(GeneratorUtils.generateToStringMethod(fields, className))
           .addMethod(generateIsApplicableMethod())
           .addMethod(generateApplyMethod())
+          .addMethod(generateGetCostMethod())
           .build();
 
       JavaFile javaFile = JavaFile.builder(packageName, operator)
           .skipJavaLangImports(true)
+          .addStaticImport(GeneratedUtils.class, "GeneratedUtils")
           .build();
 
       Path path = Paths.get(directoryName);
 
       javaFile.writeTo(path);
 
+      return new ClassRepresentation(className, fields);
     } else {
       //TODO: Handle error
     }
+    return null;
   }
 
-  private FieldSpec generateListField(ClassName className) {
-    ParameterizedTypeName type = ParameterizedTypeName.get(ClassName.get(List.class), className);
-
-    FieldSpec.Builder builder = FieldSpec.builder(type, "OPERATORS")
-        .addModifiers(Modifier.PUBLIC)
-        .addModifiers(Modifier.STATIC)
-        .addModifiers(Modifier.FINAL)
-        .initializer("new $T<>()", ArrayList.class);
-
-    return builder.build();
-  }
-
-  private CodeBlock generateStaticInitializer(List<ParameterRepresentation> parameters,
+  private MethodSpec generateInitOperatorsMethod(List<ParameterRepresentation> parameters,
       ClassName className) {
-    CodeBlock.Builder builder = CodeBlock.builder();
+    MethodSpec.Builder builder = MethodSpec.methodBuilder("initOperators")
+        .addModifiers(Modifier.PUBLIC)
+        .addAnnotation(Override.class)
+        .returns(void.class);
 
     String lowerCaseClassName = className.simpleName().toLowerCase();
     String parameterNames = GeneratorUtils.getParameterNamesAsString(parameters);
@@ -198,26 +155,66 @@ public class OperatorGenerator {
     }
 
     return builder.build();
+
   }
 
   private MethodSpec generateIsApplicableMethod() {
+    String parameterName = "stateObject";
     MethodSpec.Builder builder = MethodSpec.methodBuilder("isApplicable")
         .addModifiers(Modifier.PUBLIC)
         .addAnnotation(Override.class)
         .returns(boolean.class)
-        .addParameter(StateInterface.class, "state")
+        .addParameter(StateInterface.class, parameterName)
+        .addStatement("$1T $2L = (($1T) $3L)", stateClass.getClassName(), "original", parameterName)
         .addStatement("return $L", operator.getOperatorPrecondition());
 
     return builder.build();
   }
 
   private MethodSpec generateApplyMethod() {
+    String parameterName = "stateObject";
     MethodSpec.Builder builder = MethodSpec.methodBuilder("apply")
         .addModifiers(Modifier.PUBLIC)
         .addAnnotation(Override.class)
         .returns(StateInterface.class)
-        .addParameter(StateInterface.class, "state")
-        .addStatement("return null");
+        .addParameter(StateInterface.class, parameterName);
+
+    builder
+        .addStatement("$1T $2L = (($1T) $3L)", stateClass.getClassName(), "original", parameterName)
+        .addStatement("$1T $2L = original.copy()", stateClass.getClassName(), "state");
+
+    builder.addCode("\n");
+
+    for (VariableRepresentation variable : operator.getVariables()) {
+      builder.addStatement("$1T $2L = $3L", variable.getClassName(), variable.getName(),
+          variable.getValue());
+    }
+
+    builder.addCode("\n");
+
+    CodeBlock assigns = GeneratorUtils.getAssignStatements(operator.getAssigns());
+    builder.addCode(assigns);
+
+    builder.addStatement("return state");
+
+    return builder.build();
+  }
+
+  private FieldSpec generateCostField() {
+    FieldSpec.Builder builder = FieldSpec.builder(Double.class, "cost")
+        .addModifiers(Modifier.PRIVATE)
+        .initializer("$L", operator.getCost());
+
+    return builder.build();
+  }
+
+  private MethodSpec generateGetCostMethod() {
+    MethodSpec.Builder builder = MethodSpec.methodBuilder("getCost")
+        .addModifiers(Modifier.PUBLIC)
+        .addAnnotation(Override.class)
+        .returns(double.class);
+
+    builder.addStatement("return cost");
 
     return builder.build();
   }

@@ -2,17 +2,13 @@ package generator.classes;
 
 import interfaces.StateInterface;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class State implements StateInterface {
 
   private List<List<Double>> attr1;
 
   private List<List<Double>> attr2;
-
-  private Set<Double> attr3;
 
   public State() {
     List<List<Double>> initAttr1 = new ArrayList<>();
@@ -33,7 +29,6 @@ public class State implements StateInterface {
       initAttr2.add(tmpList);
     }
     this.setAttr2(initAttr2);
-    this.setAttr3(new HashSet<>());
   }
 
   public List<List<Double>> getAttr1() {
@@ -52,29 +47,21 @@ public class State implements StateInterface {
     this.attr2 = attr2;
   }
 
-  public Set<Double> getAttr3() {
-    return attr3;
-  }
-
-  public void setAttr3(Set<Double> attr3) {
-    this.attr3 = attr3;
-  }
-
   @Override
   public State getStart() {
     State state = new State();
-    state.getAttr1().get(0).set(0, Double.valueOf(5));
-    state.getAttr1().get(0).set(1, Double.valueOf(0));
-    state.getAttr1().get(0).set(2, Double.valueOf(0));
-    state.getAttr2().get(0).set(0, Double.valueOf(5));
-    state.getAttr2().get(0).set(1, Double.valueOf(3));
-    state.getAttr2().get(0).set(2, Double.valueOf(2));
+    state.getAttr1().get(0).set(0, 5d);
+    state.getAttr1().get(0).set(1, 0d);
+    state.getAttr1().get(0).set(2, 0d);
+    state.getAttr2().get(0).set(0, 5d);
+    state.getAttr2().get(0).set(1, 3d);
+    state.getAttr2().get(0).set(2, 2d);
     return state;
   }
 
   @Override
   public boolean isGoal() {
-    return (attr1.get(0).get(0) == 4);
+    return (attr1.get(0).get(0) == 0d && attr2.get(1).get(1) == 1d);
   }
 
   @Override
@@ -91,17 +78,13 @@ public class State implements StateInterface {
     if (attr1 != null ? !attr1.equals(state.attr1) : state.attr1 != null) {
       return false;
     }
-    if (attr2 != null ? !attr2.equals(state.attr2) : state.attr2 != null) {
-      return false;
-    }
-    return attr3 != null ? attr3.equals(state.attr3) : state.attr3 == null;
+    return attr2 != null ? attr2.equals(state.attr2) : state.attr2 == null;
   }
 
   @Override
   public int hashCode() {
     int result = attr1 != null ? attr1.hashCode() : 0;
     result = 31 * result + (attr2 != null ? attr2.hashCode() : 0);
-    result = 31 * result + (attr3 != null ? attr3.hashCode() : 0);
     return result;
   }
 
@@ -110,7 +93,27 @@ public class State implements StateInterface {
     return "State{" +
         "attr1=" + attr1 +
         ", attr2=" + attr2 +
-        ", attr3=" + attr3 +
         "}";
+  }
+
+  public State copy() {
+    State result = new State();
+    for (List<Double> list : attr1) {
+      List<Double> tmpList = new ArrayList<>();
+      for (Double element : list) {
+        tmpList.add(element);
+      }
+      Integer index = attr1.indexOf(list);
+      result.getAttr1().set(index, tmpList);
+    }
+    for (List<Double> list : attr2) {
+      List<Double> tmpList = new ArrayList<>();
+      for (Double element : list) {
+        tmpList.add(element);
+      }
+      Integer index = attr2.indexOf(list);
+      result.getAttr2().set(index, tmpList);
+    }
+    return result;
   }
 }

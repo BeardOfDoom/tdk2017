@@ -7,7 +7,13 @@ public interface OperatorInterface {
 
   public static final List<OperatorInterface> OPERATORS = new ArrayList<>();
 
-  public boolean isApplicable(StateInterface state);
+  public void initOperators();
 
-  public StateInterface apply(StateInterface state);
+  public boolean isApplicable(StateInterface stateObject);
+
+  public StateInterface apply(StateInterface stateObject);
+
+  public default double getCost() {
+    return 1;
+  }
 }

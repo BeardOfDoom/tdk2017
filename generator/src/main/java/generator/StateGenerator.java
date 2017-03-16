@@ -7,6 +7,7 @@ import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeSpec;
+import generator.classes.GeneratedUtils;
 import interfaces.StateInterface;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -17,11 +18,10 @@ import java.util.List;
 import javax.lang.model.element.Modifier;
 import misc.VarStruct;
 import misc.VarType;
-import representations.MatrixAssignRepresentation;
-import representations.ParameterRepresentation;
-import representations.SetAssignRepresentation;
-import representations.state.AttributeRepresentation;
-import representations.state.StateRepresentation;
+import representation.ClassRepresentation;
+import representation.ParameterRepresentation;
+import representation.state.AttributeRepresentation;
+import representation.state.StateRepresentation;
 
 public class StateGenerator {
 
@@ -138,7 +138,7 @@ public class StateGenerator {
   }
 
   //TODO: handle error!
-  public void generateState() throws IOException {
+  public ClassRepresentation generateState() throws IOException {
     if (isReady()) {
       ClassName className = ClassName.get(packageName, fileName);
       List<AttributeRepresentation> attributes = state.getAttributes();
@@ -151,24 +151,30 @@ public class StateGenerator {
           .addMethod(generateConstructWithInitializer())
           .addMethods(
               GeneratorUtils.generateGettersAndSetters(fields, keepTogetherGettersAndSetters))
-          .addMethod(generateGetStartMethod())
+          .addMethod(generateGetStartMethod(className))
           .addMethod(generateIsGoalMethod())
           .addMethod(GeneratorUtils.generateEqualsMethod(fields, className, fileName.toLowerCase()))
           .addMethod(GeneratorUtils.generateHashCodeMethod(fields))
           .addMethod(GeneratorUtils.generateToStringMethod(fields, className))
+          .addMethod(generateCopyMethod(className))
           .build();
 
       JavaFile javaFile = JavaFile.builder(packageName, state)
           .skipJavaLangImports(true)
+          .addStaticImport(GeneratedUtils.class, "GeneratedUtils")
           .build();
 
       Path path = Paths.get(directoryName);
 
       javaFile.writeTo(path);
 
+      return new ClassRepresentation(className, fields);
+
     } else {
       //TODO: Handle error
     }
+
+    return null;
   }
 
   private MethodSpec generateConstructWithInitializer() {
@@ -210,12 +216,12 @@ public class StateGenerator {
     return builder.build();
   }
 
-  private MethodSpec generateGetStartMethod() {
+  private MethodSpec generateGetStartMethod(ClassName className) {
     MethodSpec.Builder builder = MethodSpec.methodBuilder("getStart")
         .addModifiers(Modifier.PUBLIC)
         .addAnnotation(Override.class)
-        .returns(ClassName.get(packageName, fileName))
-        .addStatement("$1T state = new $1T()", ClassName.get(packageName, fileName));
+        .returns(className.get(packageName, fileName))
+        .addStatement("$1T state = new $1T()", className.get(packageName, fileName));
 
     for (ParameterRepresentation parameter : state.getStateStartParameters()) {
       builder
@@ -225,26 +231,8 @@ public class StateGenerator {
 
     }
 
-    for (SetAssignRepresentation setStart : state.getSetStarts()) {
-      String attributeName = setStart.getAttribute().getAttributeName();
-      builder
-          .addStatement("state.set" + attributeName + "(new $T<>(Arrays.asList($L))",
-              HashSet.class, GeneratorUtils.getSetStartValuesAsString(setStart));
-    }
-
-    for (MatrixAssignRepresentation matrixStart : state.getMatrixStarts()) {
-      String attributeName = matrixStart.getAttribute().getAttributeName();
-      String dimensionN = matrixStart.getDimensionN();
-      String dimensionM = matrixStart.getDimensionM();
-      String value = matrixStart.getValue();
-      if (matrixStart.getAttribute().getVarType().equals(VarType.NUMBER)) {
-        value = "Double.valueOf(" + value + ")";
-      }
-
-      builder.addStatement("state.get" + attributeName + "().get($L).set($L, $L)",
-          dimensionN,
-          dimensionM, value);
-    }
+    CodeBlock assigns = GeneratorUtils.getAssignStatements(state.getAssigns());
+    builder.addCode(assigns);
 
     for (int i = 0; i < state.getStateStartParameters().size(); i++) {
       builder.endControlFlow();
@@ -262,6 +250,44 @@ public class StateGenerator {
         .returns(boolean.class);
 
     builder.addStatement("return ($L)", state.getStateGoal());
+
+    return builder.build();
+  }
+
+  private MethodSpec generateCopyMethod(ClassName className) {
+    String resultName = "result";
+
+    MethodSpec.Builder builder = MethodSpec.methodBuilder("copy")
+        .addModifiers(Modifier.PUBLIC)
+        .returns(className);
+
+    builder.addStatement("$1T $2L = new $1T()", className, resultName);
+
+    for (AttributeRepresentation attribute : state.getAttributes()) {
+      Class typeClass =
+          attribute.getVarType().equals(VarType.NUMBER) ? Double.class : String.class;
+      String lowerCaseAttributeName = attribute.getAttributeName().toLowerCase();
+
+      if (attribute.getVarStruct().equals(VarStruct.SET)) {
+        builder.beginControlFlow("for ($1T element : $2L)", Double.class, lowerCaseAttributeName)
+            .addStatement("$1L.get$2L().add(element)", resultName, attribute.getAttributeName())
+            .endControlFlow();
+
+      } else {
+        builder.beginControlFlow("for ($1T<$2T> list : $3L)", List.class, typeClass,
+            lowerCaseAttributeName)
+            .addStatement("$1T<$2T> tmpList = new $3T<>()", List.class, typeClass, ArrayList.class)
+            .beginControlFlow("for ($T element : list)", Double.class)
+            .addStatement("tmpList.add(element)")
+            .endControlFlow()
+            .addStatement("$1T index = $2L.indexOf(list)", Integer.class, lowerCaseAttributeName)
+            .addStatement("$1L.get$2L().set(index, tmpList)", resultName,
+                attribute.getAttributeName())
+            .endControlFlow();
+      }
+    }
+
+    builder.addStatement("return $L", resultName);
 
     return builder.build();
   }

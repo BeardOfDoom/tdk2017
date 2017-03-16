@@ -2,25 +2,14 @@ package generator.classes;
 
 import interfaces.OperatorInterface;
 import interfaces.StateInterface;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Operator implements OperatorInterface {
-
-  public static final List<Operator> OPERATORS = new ArrayList<>();
-
-  static {
-    for (int i = 0; i <= 2; i += 1) {
-      for (int j = 0; j <= 2; j += 1) {
-        Operator operator = new Operator(i, j);
-        OPERATORS.add(operator);
-      }
-    }
-  }
 
   private Integer i;
 
   private Integer j;
+
+  private Double cost = 1.0;
 
   public Operator() {
   }
@@ -28,6 +17,16 @@ public class Operator implements OperatorInterface {
   public Operator(Integer i, Integer j) {
     this.i = i;
     this.j = j;
+  }
+
+  @Override
+  public void initOperators() {
+    for (int i = 0; i <= 2; i += 1) {
+      for (int j = 0; j <= 2; j += 1) {
+        Operator operator = new Operator(i, j);
+        OPERATORS.add(operator);
+      }
+    }
   }
 
   public Integer getI() {
@@ -79,23 +78,27 @@ public class Operator implements OperatorInterface {
   }
 
   @Override
-  public boolean isApplicable(StateInterface state) {
-    return true;
+  public boolean isApplicable(StateInterface stateObject) {
+    State original = ((State) stateObject);
+    return i != j && original.getAttr1().get(0).get(i) != 0d
+        && original.getAttr1().get(0).get(j) != original.getAttr2().get(0).get(j);
   }
 
   @Override
-  public StateInterface apply(StateInterface state) {
-    State result = new State();
-    result.setAttr1(((State) state).getAttr1());
-    result.setAttr2(((State) state).getAttr2());
+  public StateInterface apply(StateInterface stateObject) {
+    State original = ((State) stateObject);
+    State state = original.copy();
 
-    Double beer = Math.min(((State) state).getAttr1().get(0).get(i),
-        ((State) state).getAttr2().get(0).get(j) - ((State) state).getAttr1().get(0).get(j));
+    Double beer = GeneratedUtils.min(original.getAttr1().get(0).get(i),
+        original.getAttr2().get(0).get(j) - original.getAttr1().get(0).get(j));
 
-    result.getAttr1().get(0).set(i, ((State) state).getAttr1().get(0).get(i) - beer);
-    result.getAttr1().get(0).set(j, ((State) state).getAttr1().get(0).get(j) + beer);
+    state.getAttr1().get(0).set(i, original.getAttr1().get(0).get(i) - beer);
+    state.getAttr1().get(0).set(j, original.getAttr1().get(0).get(j) + beer);
+    return state;
+  }
 
-    return result;
+  @Override
+  public double getCost() {
+    return cost;
   }
 }
-

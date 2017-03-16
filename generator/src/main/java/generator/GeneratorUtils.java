@@ -1,20 +1,24 @@
 package generator;
 
 import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.lang.model.element.Modifier;
 import misc.VarStruct;
 import misc.VarType;
-import representations.ParameterRepresentation;
-import representations.SetAssignRepresentation;
-import representations.state.AttributeRepresentation;
+import representation.AssignExpressionsRepresentation;
+import representation.MatrixAssignRepresentation;
+import representation.ParameterRepresentation;
+import representation.SetAssignRepresentation;
+import representation.state.AttributeRepresentation;
 
 
 public class GeneratorUtils {
@@ -234,5 +238,29 @@ public class GeneratorUtils {
   public static String getParameterNamesAsString(List<ParameterRepresentation> parameters) {
     return parameters.stream().map(ParameterRepresentation::getParameterName)
         .collect(Collectors.joining(", "));
+  }
+
+  public static CodeBlock getAssignStatements(
+      AssignExpressionsRepresentation assignsRepresentation) {
+    CodeBlock.Builder builder = CodeBlock.builder();
+
+    for (SetAssignRepresentation setStart : assignsRepresentation.getSetAssigns()) {
+      String attributeName = setStart.getAttribute().getAttributeName();
+      builder
+          .addStatement("state.set" + attributeName + "(new $T<>(Arrays.asList($L))",
+              HashSet.class, GeneratorUtils.getSetStartValuesAsString(setStart));
+    }
+
+    for (MatrixAssignRepresentation matrixStart : assignsRepresentation.getMatrixAssigns()) {
+      String attributeName = matrixStart.getAttribute().getAttributeName();
+      String dimensionN = matrixStart.getDimensionN();
+      String dimensionM = matrixStart.getDimensionM();
+      String value = matrixStart.getValue();
+      builder.addStatement("state.get" + attributeName + "().get($L).set($L, $L)",
+          dimensionN,
+          dimensionM, value);
+    }
+
+    return builder.build();
   }
 }
