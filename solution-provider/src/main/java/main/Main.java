@@ -166,24 +166,24 @@ public class Main {
 					OptimalNode optimalNode = new OptimalNode(state.getStart(), null, null, 0, 0);
 					Optimal optimal = new Optimal(optimalNode, operatorClass);
 
-					BestFirstNode bestFirstNode = new BestFirstNode(state.getStart(), null, null, 0);
-					BestFirst bestFirst = new BestFirst(bestFirstNode, operatorClass);
+					BestFirstNode bestFirstNode = new BestFirstNode(state.getStart(), null, null, 0, "", null);
+					BestFirst bestFirst = new BestFirst(bestFirstNode, "", null, operatorClass);
 					
-					ANode aNode = new ANode(state.getStart(), null/*new ANode(state.getStart(), null, null, 100, 0)*/, null, 0, 0);
-					A a = new A(aNode, operatorClass);
-					//System.out.println(aNode.Heuristic("(Nodes.ANode.parent.id + Nodes.ANode.id) ^ 2", new HashSet<>(Arrays.asList("Nodes.ANode.parent.id", "Nodes.ANode.id"))));
+					ANode aNode = new ANode(state.getStart(), null, null, 0, 0, "", null);
+					A a = new A(aNode, "", null, operatorClass);
+					//"(Nodes.ANode.parent.id + Nodes.ANode.id) ^ 2", new HashSet<>(Arrays.asList("Nodes.ANode.parent.id", "Nodes.ANode.id"))
 					
 					//backTrackSimple.search();
-					backTrackCircle.search();
+					//backTrackCircle.search();
 					//backTrackPathLengthLimitation.search();
 					//backTrackOptimal.search();
 					//breadthFirst.search();
 					//depthFirst.search();
 					//optimal.search();
-					//bestFirst.search();
+					bestFirst.search();
 					//a.search();
 						
-					System.out.println(deleteDir(classDestinationFile));
+					deleteDir(classDestinationFile);
 				}
 			}
 		}
