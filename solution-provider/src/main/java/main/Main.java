@@ -7,10 +7,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
 import interfaces.StateInterface;
+import model.UserInput;
 import nodes.ANode;
 import nodes.BackTrackCircleNode;
 import nodes.BackTrackOptimalNode;
@@ -32,16 +34,8 @@ import solutionsearchers.Optimal;
 
 public class Main {
 	
-	// TODO hogy érdemes tárolni a dolgokat? vagy legyen funkció? sebesség vs memória spórolás. Tesztelni meik mit tud. Mind2 kell.
-		// sebesség: mindent memóriában tárolunk.
-		// memória spórolás: mindent kiírunk fájlba, memóriában csak azt tároljuk amit mindenképp szükséges.
-
-	// TODO megfelelő helyre másolás DONEish
 	// TODO valamilyen segitséget nyujtani hogy az interfaceket könnyen elérje a felhasználó
 		
-	// TODO BackTrackPathLengthLimitation-nél és BackTrackOptimal-nál limit javaslat funkció
-	// TODO Heurisztikára ajánlás?
-	// TODO generáljanak kimenetet a keresők
 	// TODO érdekes részek kiemelése
 	
 	// TODO statisztika opció (külön szálakon elindul az összes keresés)
@@ -74,17 +68,21 @@ public class Main {
 		}
 	}
 	
-	public static void main(String[] args) throws IOException, ClassNotFoundException{	
+	public static void main(String[] args) throws IOException, ClassNotFoundException{
+		
+		SolutionMaker asd = new SolutionMaker(new ArrayList<>(Arrays.asList("C:\\Users\\Vécsi Ádám\\Desktop\\State.java", "C:\\Users\\Vécsi Ádám\\Desktop\\Operator.java", "C:\\Users\\Vécsi Ádám\\Desktop\\GeneratedUtils.java")), new UserInput("", false, false, false, false, true, false, false, false, false));
+		asd.start();
+		
 		/*String stateClassFilePath = "C:\\workspace\\Prototypes\\src\\Hanoi\\State.java";
 		String stateInterfaceFilePath = "C:\\workspace\\SzakdogaTMP\\src\\main\\java\\interfaces\\StateInterface.java";
 		String operatorClassFilePath = "C:\\workspace\\Prototypes\\src\\Hanoi\\Operator.java";
 		String operatorInterfaceFilePath = "C:\\workspace\\SzakdogaTMP\\src\\main\\java\\interfaces\\OperatorInterface.java";*/
 		
-		String stateClassFilePath = "C:\\Users\\Vécsi Ádám\\Desktop\\State.java";
+		/*String stateClassFilePath = "C:\\Users\\Vécsi Ádám\\Desktop\\State.java";
 		String stateInterfaceFilePath = "C:\\workspace\\SzakdogaTMP\\src\\main\\java\\interfaces\\StateInterface.java";
 		String operatorClassFilePath = "C:\\Users\\Vécsi Ádám\\Desktop\\Operator.java";
 		String operatorInterfaceFilePath = "C:\\workspace\\SzakdogaTMP\\src\\main\\java\\interfaces\\OperatorInterface.java";
-		String plusClasspath = "C:\\Users\\Vécsi Ádám\\Desktop\\CommonUtils.java";
+		String plusClasspath = "C:\\Users\\Vécsi Ádám\\Desktop\\GeneratedUtils.java";
 	
 		File stateClassFile = new File(stateClassFilePath);
 		File operatorClassFile = new File(operatorClassFilePath);
@@ -97,7 +95,7 @@ public class Main {
 				}
 				URL classDestination = classDestinationFile.toURI().toURL();
 				
-				ProcessBuilder processBuilder = new ProcessBuilder("javac", "-d", classDestination.getPath()/*"C:\\workspace\\SzakdogaTMP\\target\\classes"*/, plusClasspath, stateClassFilePath, stateInterfaceFilePath, operatorClassFilePath, operatorInterfaceFilePath);
+				ProcessBuilder processBuilder = new ProcessBuilder("javac", "-d", classDestination.getPath(), plusClasspath, stateClassFilePath, stateInterfaceFilePath, operatorClassFilePath, operatorInterfaceFilePath);
 				Process process = processBuilder.start();
 				while(process.isAlive());
 				
@@ -186,6 +184,6 @@ public class Main {
 					deleteDir(classDestinationFile);
 				}
 			}
-		}
+		}*/
 	}
 }
