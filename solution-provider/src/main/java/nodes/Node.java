@@ -12,8 +12,6 @@ public abstract class Node {
 	private Node parent;
 	private OperatorInterface operator;
 	private int id;
-	private double heuristic;
-	private boolean isHeuristicCalculated;
 
 	public StateInterface getState() {
 		return state;
@@ -87,21 +85,5 @@ public abstract class Node {
 		} else if (!state.equals(other.state))
 			return false;
 		return true;
-	}
-
-	public double Heuristic(String heuristic, Set<String> variables){
-		if(isHeuristicCalculated){
-			return this.heuristic;
-		} else {
-			if(heuristic.isEmpty()){
-				this.heuristic = 1;
-				isHeuristicCalculated = true;
-			} else {
-				HeuristicParser heuristicParser = new HeuristicParser(heuristic, variables, this);
-				this.heuristic = heuristicParser.Parse();
-				isHeuristicCalculated = true;
-			}
-			return this.heuristic;
-		}
 	}
 }

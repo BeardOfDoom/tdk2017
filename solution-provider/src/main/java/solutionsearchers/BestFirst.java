@@ -3,6 +3,7 @@ package solutionsearchers;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import interfaces.OperatorInterface;
 import interfaces.StateInterface;
@@ -16,12 +17,18 @@ public class BestFirst {
 	
 	private List<OperatorInterface> OPERATORS;
 	private BestFirstNode actual;
+	private String heuristicFunction;
+	private Set<String> variablesInHeuristicFunction;
 	private List<BestFirstNode> openNodes = new ArrayList<>();
 	private List<BestFirstNode> closedNodes = new ArrayList<>();
 	private int maxId;
 	
-	public BestFirst(BestFirstNode start, Class<?> operatorClass){
+	public BestFirst(BestFirstNode start, String heuristicFunction, Set<String> variablesInHeuristicFunction, Class<?> operatorClass){
 		reachedBackTrackCircleNodes = new ArrayList<>();
+		steps = new StringBuilder();
+		openNodes.add(start);
+		this.heuristicFunction = heuristicFunction;
+		this.variablesInHeuristicFunction = variablesInHeuristicFunction;
 		try {
 			Field operatorField = operatorClass.getField("OPERATORS");
 			OPERATORS = (List<OperatorInterface>) operatorField.get(operatorClass);
@@ -29,8 +36,6 @@ public class BestFirst {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		steps = new StringBuilder();
-		openNodes.add(start);
 		maxId = start.getId();
 	}
 	
@@ -60,7 +65,7 @@ public class BestFirst {
 					if(maxId < nodeId)
 						maxId = nodeId;
 					
-					BestFirstNode newNode = new BestFirstNode(newState, node, operator, nodeId);
+					BestFirstNode newNode = new BestFirstNode(newState, node, operator, nodeId, heuristicFunction, variablesInHeuristicFunction);
 					openNodes.add(newNode);
 					
 					if(!reachedBackTrackCircleNodes.contains(newNode)){
@@ -88,7 +93,7 @@ public class BestFirst {
 			actual = openNodes.get(0);
 			
 			for(BestFirstNode openNode : openNodes){
-				if(openNode.Heuristic("", null) < actual.Heuristic("", null)){
+				if(openNode.getHeuristic() < actual.getHeuristic()){
 					actual = openNode;
 				}
 			}

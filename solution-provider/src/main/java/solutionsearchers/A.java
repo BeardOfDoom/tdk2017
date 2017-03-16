@@ -3,6 +3,7 @@ package solutionsearchers;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import interfaces.OperatorInterface;
 import interfaces.StateInterface;
@@ -16,14 +17,18 @@ public class A {
 	
 	private List<OperatorInterface> OPERATORS;
 	private ANode actual;
+	private String heuristicFunction;
+	private Set<String> variablesInHeuristicFunction;
 	private List<ANode> openNodes = new ArrayList<>();
 	private List<ANode> closedNodes = new ArrayList<>();
 	private int maxId;
 	
-	public A(ANode start, Class<?> operatorClass){
+	public A(ANode start, String heuristicFunction, Set<String> variablesInHeuristicFunction, Class<?> operatorClass){
 		reachedBackTrackCircleNodes = new ArrayList<>();
 		steps = new StringBuilder();
 		openNodes.add(start);
+		this.heuristicFunction = heuristicFunction;
+		this.variablesInHeuristicFunction = variablesInHeuristicFunction;
 		try {
 			Field operatorField = operatorClass.getField("OPERATORS");
 			OPERATORS = (List<OperatorInterface>) operatorField.get(operatorClass);
@@ -60,7 +65,7 @@ public class A {
 					if(maxId < nodeId)
 						maxId = nodeId;
 					
-					ANode newNode = new ANode(newState, node, operator, nodeId, node.getPathCost() + operator.getCost());
+					ANode newNode = new ANode(newState, node, operator, nodeId, node.getPathCost() + operator.getCost(), heuristicFunction, variablesInHeuristicFunction);
 					openNodes.add(newNode);
 					
 					if(!reachedBackTrackCircleNodes.contains(newNode)){
@@ -120,7 +125,7 @@ public class A {
 			actual = openNodes.get(0);
 			
 			for(ANode openNode : openNodes){
-				if(openNode.getPathCost() + openNode.Heuristic("", null) < actual.getPathCost() + actual.Heuristic("", null)){
+				if(openNode.getPathCost() + openNode.getHeuristic() < actual.getPathCost() + actual.getHeuristic()){
 					actual = openNode;
 				}
 			}
