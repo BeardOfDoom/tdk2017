@@ -32,7 +32,7 @@ public class OperatorInstantiatorGenerator implements GeneratorInterface {
   }
 
   @Override
-  public ClassRepresentationInterface generate(String directoryName, String packageName,
+  public ClassRepresentation generate(String directoryName, String packageName,
       String fileName) throws IOException {
 
     if (operatorRepresentations.isEmpty()) {

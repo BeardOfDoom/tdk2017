@@ -6,6 +6,7 @@ import generator.StateGenerator;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import misc.ClassManager;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import representation.ClassRepresentation;
@@ -36,6 +37,8 @@ public class Main {
     baseVisitor.visit(tree);
 
     if (!ErrorHandler.containsAnyError()) {
+      ClassManager classManager = new ClassManager();
+
       StateRepresentation stateRepresentation = baseVisitor.getStateRepresentation();
 
       StateGenerator stateGenerator = new StateGenerator();
@@ -43,6 +46,7 @@ public class Main {
       stateGenerator.setKeepTogetherGettersAndSetters(true);
       ClassRepresentation stateClass = stateGenerator
           .generate(OUTPUT_DIRECTORY_NAME, OUTPUT_PACKAGE_NAME, stateRepresentation.getName());
+      classManager.addClassRepresentation(stateClass);
 
       List<OperatorRepresentation> operators = baseVisitor.getOperatorRepresentations();
 
@@ -57,13 +61,20 @@ public class Main {
             .generate(OUTPUT_DIRECTORY_NAME, OUTPUT_PACKAGE_NAME, operators.get(i).getName());
 
         operatorClasses.add(operatorClass);
+        classManager.addClassRepresentation(operatorClass);
       }
 
       OperatorInstantiatorGenerator operatorInstantiatorGenerator = new OperatorInstantiatorGenerator();
       operatorInstantiatorGenerator.setOperatorRepresentations(operatorClasses);
-      operatorInstantiatorGenerator
+
+      ClassRepresentation operatorInstantiatorClass = operatorInstantiatorGenerator
           .generate(OUTPUT_DIRECTORY_NAME, OUTPUT_PACKAGE_NAME, OPERATOR_INSTANTIATOR_NAME);
 
+      classManager.addClassRepresentation(operatorInstantiatorClass);
+
+      System.out.println(classManager.getFilePaths());
+
+      //TODO: Add GeneratedUtils to classManager
       System.out.println("Files created!");
     }
   }

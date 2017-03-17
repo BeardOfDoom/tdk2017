@@ -38,7 +38,6 @@ public class ClassRepresentation implements ClassRepresentationInterface {
     this.fields = fields;
   }
 
-  @Override
   public String getFilePath() {
     return filePath;
   }
