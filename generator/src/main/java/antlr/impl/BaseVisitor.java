@@ -2,6 +2,7 @@ package antlr.impl;
 
 import antlr.SMLBaseVisitor;
 import antlr.SMLParser.Assign_expressionContext;
+import antlr.SMLParser.ExprContext;
 import antlr.SMLParser.ExpressionContext;
 import antlr.SMLParser.Operation_descriptionContext;
 import antlr.SMLParser.Operator_effectContext;
@@ -34,6 +35,8 @@ public class BaseVisitor extends SMLBaseVisitor {
 
   private StateRepresentation stateRepresentation = new StateRepresentation();
   private OperatorRepresentation operatorRepresentation = new OperatorRepresentation();
+  private List<OperatorRepresentation> operatorRepresentations = new ArrayList<>();
+
   private StateExpressionVisitor stateExpressionVisitor = new StateExpressionVisitor();
   private OperatorExpressionVisitor operatorExpressionVisitor = new OperatorExpressionVisitor();
 
@@ -41,8 +44,19 @@ public class BaseVisitor extends SMLBaseVisitor {
     return stateRepresentation;
   }
 
-  public OperatorRepresentation getOperatorRepresentation() {
-    return operatorRepresentation;
+  public List<OperatorRepresentation> getOperatorRepresentations() {
+    return operatorRepresentations;
+  }
+
+  @Override
+  public Object visitExpr(ExprContext ctx) {
+    if (ctx.name_defining_expression() != null) {
+      stateRepresentation.setName(ctx.name_defining_expression().name().getText());
+    } else {
+      stateRepresentation.setName("State");
+    }
+
+    return super.visitExpr(ctx);
   }
 
   @Override
@@ -101,6 +115,12 @@ public class BaseVisitor extends SMLBaseVisitor {
 
   @Override
   public Object visitOperation_description(Operation_descriptionContext ctx) {
+    if (ctx.name_defining_expression() != null) {
+      operatorRepresentation.setName(ctx.name_defining_expression().name().getText());
+    } else {
+      operatorRepresentation.setName("Operator" + (operatorRepresentations.size() + 1));
+    }
+
     Double operatorCost =
         ctx.operator_cost() == null ? 1d
             : Double.parseDouble(ctx.operator_cost().number().getText());
@@ -136,6 +156,10 @@ public class BaseVisitor extends SMLBaseVisitor {
 
     operatorRepresentation.setAssigns(assignRepresentation);
 
+    operatorRepresentations.add(operatorRepresentation);
+
+    operatorRepresentation = new OperatorRepresentation();
+
     return super.visitOperator_effect(ctx);
   }
 
@@ -143,6 +167,7 @@ public class BaseVisitor extends SMLBaseVisitor {
     return stateRepresentation.getAttributes().stream()
         .noneMatch(attribute -> attribute.getAttributeName().equals(varName));
   }
+
 
   //TODO: Handle error
   private AttributeRepresentation getAttributeFromReference(String reference) {

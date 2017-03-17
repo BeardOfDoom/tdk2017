@@ -3,28 +3,27 @@ package generator.classes;
 import interfaces.OperatorInterface;
 import interfaces.StateInterface;
 
-public class Operator implements OperatorInterface {
-
+public class Operator1 implements OperatorInterface {
   private Integer i;
 
   private Integer j;
 
   private Double cost = 1.0;
 
-  public Operator() {
+  public Operator1() {
   }
 
-  public Operator(Integer i, Integer j) {
+  public Operator1(Integer i, Integer j) {
     this.i = i;
     this.j = j;
   }
 
   @Override
   public void initOperators() {
-    for (int i = 0; i <= 2; i += 1) {
-      for (int j = 0; j <= 2; j += 1) {
-        Operator operator = new Operator(i, j);
-        OPERATORS.add(operator);
+    for(int i = 0; i <= 2; i += 1) {
+      for(int j = 0; j <= 2; j += 1) {
+        Operator1 operator1 = new Operator1(i, j);
+        OPERATORS.add(operator1);
       }
     }
   }
@@ -54,12 +53,12 @@ public class Operator implements OperatorInterface {
       return false;
     }
 
-    Operator operator = (Operator) o;
+    Operator1 operator1 = (Operator1) o;
 
-    if (i != null ? !i.equals(operator.i) : operator.i != null) {
+    if (i != null ? !i.equals(operator1.i) : operator1.i != null) {
       return false;
     }
-    return j != null ? j.equals(operator.j) : operator.j == null;
+    return j != null ? j.equals(operator1.j) : operator1.j == null;
   }
 
   @Override
@@ -71,17 +70,16 @@ public class Operator implements OperatorInterface {
 
   @Override
   public String toString() {
-    return "Operator{" +
-        "i=" + i +
-        ", j=" + j +
-        "}";
+    return "Operator1{" +
+    	"i=" + i +
+    	", j=" + j +
+    	"}";
   }
 
   @Override
   public boolean isApplicable(StateInterface stateObject) {
     State original = ((State) stateObject);
-    return i != j && original.getAttr1().get(0).get(i) != 0d
-        && original.getAttr1().get(0).get(j) != original.getAttr2().get(0).get(j);
+    return !i.equals(j) && original.getAttr1().get(0).get(i) != 0d && !original.getAttr1().get(0).get(j).equals(original.getAttr2().get(0).get(j));
   }
 
   @Override
@@ -89,8 +87,7 @@ public class Operator implements OperatorInterface {
     State original = ((State) stateObject);
     State state = original.copy();
 
-    Double beer = GeneratedUtils.min(original.getAttr1().get(0).get(i),
-        original.getAttr2().get(0).get(j) - original.getAttr1().get(0).get(j));
+    Double beer = GeneratedUtils.min(original.getAttr1().get(0).get(i), original.getAttr2().get(0).get(j) - original.getAttr1().get(0).get(j));
 
     state.getAttr1().get(0).set(i, original.getAttr1().get(0).get(i) - beer);
     state.getAttr1().get(0).set(j, original.getAttr1().get(0).get(j) + beer);

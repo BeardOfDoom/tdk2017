@@ -232,6 +232,18 @@ public class SMLBaseListener implements SMLListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterName_defining_expression(SMLParser.Name_defining_expressionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitName_defining_expression(SMLParser.Name_defining_expressionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterAssign_expression(SMLParser.Assign_expressionContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -251,18 +263,6 @@ public class SMLBaseListener implements SMLListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitParen_expr(SMLParser.Paren_exprContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterUnary_expr(SMLParser.Unary_exprContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitUnary_expr(SMLParser.Unary_exprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -316,6 +316,18 @@ public class SMLBaseListener implements SMLListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterTwo_param_unary_expr(SMLParser.Two_param_unary_exprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitTwo_param_unary_expr(SMLParser.Two_param_unary_exprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterName_expr(SMLParser.Name_exprContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -335,6 +347,18 @@ public class SMLBaseListener implements SMLListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitWord_expr(SMLParser.Word_exprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterOne_param_unary_expr(SMLParser.One_param_unary_exprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitOne_param_unary_expr(SMLParser.One_param_unary_exprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

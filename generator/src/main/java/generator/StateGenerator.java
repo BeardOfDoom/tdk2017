@@ -7,7 +7,7 @@ import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeSpec;
-import generator.classes.GeneratedUtils;
+import interfaces.GeneratorInterface;
 import interfaces.StateInterface;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -22,24 +22,18 @@ import representation.ClassRepresentation;
 import representation.ParameterRepresentation;
 import representation.state.AttributeRepresentation;
 import representation.state.StateRepresentation;
+import utils.CommonUtils;
 
-public class StateGenerator {
+public class StateGenerator implements GeneratorInterface {
 
   private StateRepresentation state;
-  private String directoryName;
-  private String packageName;
-  private String fileName;
   private boolean keepTogetherGettersAndSetters = true;
 
   public StateGenerator() {
   }
 
-  public StateGenerator(StateRepresentation representation, String directoryName,
-      String packageName, String fileName, boolean keepTogetherGettersAndSetters) {
-    this.state = representation;
-    this.directoryName = directoryName;
-    this.packageName = packageName;
-    this.fileName = fileName;
+  public StateGenerator(StateRepresentation state, boolean keepTogetherGettersAndSetters) {
+    this.state = state;
     this.keepTogetherGettersAndSetters = keepTogetherGettersAndSetters;
   }
 
@@ -51,30 +45,6 @@ public class StateGenerator {
     this.state = state;
   }
 
-  public String getDirectoryName() {
-    return directoryName;
-  }
-
-  public void setDirectoryName(String directoryName) {
-    this.directoryName = directoryName;
-  }
-
-  public String getPackageName() {
-    return packageName;
-  }
-
-  public void setPackageName(String packageName) {
-    this.packageName = packageName;
-  }
-
-  public String getFileName() {
-    return fileName;
-  }
-
-  public void setFileName(String fileName) {
-    this.fileName = fileName;
-  }
-
   public Boolean getKeepTogetherGettersAndSetters() {
     return keepTogetherGettersAndSetters;
   }
@@ -84,97 +54,43 @@ public class StateGenerator {
   }
 
   @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
+  public ClassRepresentation generate(String directoryName, String packageName,
+      String fileName) throws IOException {
 
-    StateGenerator that = (StateGenerator) o;
-
-    if (keepTogetherGettersAndSetters != that.keepTogetherGettersAndSetters) {
-      return false;
-    }
-    if (state != null ? !state.equals(that.state)
-        : that.state != null) {
-      return false;
-    }
-    if (directoryName != null ? !directoryName.equals(that.directoryName)
-        : that.directoryName != null) {
-      return false;
-    }
-    if (packageName != null ? !packageName.equals(that.packageName) : that.packageName != null) {
-      return false;
-    }
-    return fileName != null ? fileName.equals(that.fileName) : that.fileName == null;
-  }
-
-  @Override
-  public int hashCode() {
-    int result = state != null ? state.hashCode() : 0;
-    result = 31 * result + (directoryName != null ? directoryName.hashCode() : 0);
-    result = 31 * result + (packageName != null ? packageName.hashCode() : 0);
-    result = 31 * result + (fileName != null ? fileName.hashCode() : 0);
-    result = 31 * result + (keepTogetherGettersAndSetters ? 1 : 0);
-    return result;
-  }
-
-  @Override
-  public String toString() {
-    return "StateGenerator{" +
-        "state=" + state +
-        ", directoryName='" + directoryName + '\'' +
-        ", packageName='" + packageName + '\'' +
-        ", fileName='" + fileName + '\'' +
-        ", keepTogetherGettersAndSetters=" + keepTogetherGettersAndSetters +
-        '}';
-  }
-
-  public boolean isReady() {
-    return state != null && directoryName != null && packageName != null
-        && fileName != null;
-  }
-
-  //TODO: handle error!
-  public ClassRepresentation generateState() throws IOException {
-    if (isReady()) {
-      ClassName className = ClassName.get(packageName, fileName);
-      List<AttributeRepresentation> attributes = state.getAttributes();
-      List<FieldSpec> fields = GeneratorUtils.generateFieldsFromAttributes(attributes);
-
-      TypeSpec state = TypeSpec.classBuilder(fileName)
-          .addModifiers(Modifier.PUBLIC)
-          .addSuperinterface(StateInterface.class)
-          .addFields(fields)
-          .addMethod(generateConstructWithInitializer())
-          .addMethods(
-              GeneratorUtils.generateGettersAndSetters(fields, keepTogetherGettersAndSetters))
-          .addMethod(generateGetStartMethod(className))
-          .addMethod(generateIsGoalMethod())
-          .addMethod(GeneratorUtils.generateEqualsMethod(fields, className, fileName.toLowerCase()))
-          .addMethod(GeneratorUtils.generateHashCodeMethod(fields))
-          .addMethod(GeneratorUtils.generateToStringMethod(fields, className))
-          .addMethod(generateCopyMethod(className))
-          .build();
-
-      JavaFile javaFile = JavaFile.builder(packageName, state)
-          .skipJavaLangImports(true)
-          .addStaticImport(GeneratedUtils.class, "GeneratedUtils")
-          .build();
-
-      Path path = Paths.get(directoryName);
-
-      javaFile.writeTo(path);
-
-      return new ClassRepresentation(className, fields);
-
-    } else {
-      //TODO: Handle error
+    if (state == null) {
+      System.out.println("hiba");
     }
 
-    return null;
+    ClassName className = ClassName.get(packageName, fileName);
+    List<AttributeRepresentation> attributes = state.getAttributes();
+    List<FieldSpec> fields = GeneratorUtils.generateFieldsFromAttributes(attributes);
+
+    TypeSpec state = TypeSpec.classBuilder(fileName)
+        .addModifiers(Modifier.PUBLIC)
+        .addSuperinterface(StateInterface.class)
+        .addFields(fields)
+        .addMethod(generateConstructWithInitializer())
+        .addMethods(
+            GeneratorUtils.generateGettersAndSetters(fields, keepTogetherGettersAndSetters))
+        .addMethod(generateGetStartMethod(className))
+        .addMethod(generateIsGoalMethod())
+        .addMethod(GeneratorUtils.generateEqualsMethod(fields, className, fileName.toLowerCase()))
+        .addMethod(GeneratorUtils.generateHashCodeMethod(fields))
+        .addMethod(GeneratorUtils.generateToStringMethod(fields, className))
+        .addMethod(generateCopyMethod(className))
+        .build();
+
+    JavaFile javaFile = JavaFile.builder(packageName, state)
+        .skipJavaLangImports(true)
+        .build();
+
+    Path path = Paths.get(directoryName);
+
+    javaFile.writeTo(path);
+
+    String filePath = CommonUtils.getFilePath(directoryName, packageName, fileName);
+
+    return new ClassRepresentation(className, fields, filePath);
   }
 
   private MethodSpec generateConstructWithInitializer() {
@@ -220,8 +136,8 @@ public class StateGenerator {
     MethodSpec.Builder builder = MethodSpec.methodBuilder("getStart")
         .addModifiers(Modifier.PUBLIC)
         .addAnnotation(Override.class)
-        .returns(className.get(packageName, fileName))
-        .addStatement("$1T state = new $1T()", className.get(packageName, fileName));
+        .returns(className)
+        .addStatement("$1T state = new $1T()", className);
 
     for (ParameterRepresentation parameter : state.getStateStartParameters()) {
       builder
@@ -249,7 +165,7 @@ public class StateGenerator {
         .addAnnotation(Override.class)
         .returns(boolean.class);
 
-    builder.addStatement("return ($L)", state.getStateGoal());
+    builder.addStatement("return $L", state.getStateGoal());
 
     return builder.build();
   }

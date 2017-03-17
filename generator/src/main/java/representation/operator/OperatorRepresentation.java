@@ -8,11 +8,20 @@ import representation.ParameterRepresentation;
 
 public class OperatorRepresentation {
 
+  String name;
   Double cost;
   String operatorPrecondition;
   List<ParameterRepresentation> parameters = new ArrayList<>();
   List<VariableRepresentation> variables = new ArrayList<>();
   AssignExpressionsRepresentation assigns;
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
 
   public Double getCost() {
     return cost;

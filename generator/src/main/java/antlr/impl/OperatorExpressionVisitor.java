@@ -3,7 +3,7 @@ package antlr.impl;
 import antlr.SMLParser.Reference_exprContext;
 import utils.CommonUtils;
 
-public class OperatorExpressionVisitor extends StateExpressionVisitor {
+public class OperatorExpressionVisitor extends ExpressionVisitor {
 
   @Override
   public String visitReference_expr(Reference_exprContext ctx) {

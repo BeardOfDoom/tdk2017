@@ -7,7 +7,7 @@ import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
-import generator.classes.GeneratedUtils;
+import interfaces.GeneratorInterface;
 import interfaces.OperatorInterface;
 import interfaces.StateInterface;
 import java.io.IOException;
@@ -19,17 +19,22 @@ import representation.ClassRepresentation;
 import representation.ParameterRepresentation;
 import representation.operator.OperatorRepresentation;
 import representation.operator.VariableRepresentation;
+import utils.CommonUtils;
 
-public class OperatorGenerator {
+public class OperatorGenerator implements GeneratorInterface {
 
   private OperatorRepresentation operator;
   private ClassRepresentation stateClass;
-  private String directoryName;
-  private String packageName;
-  private String fileName;
   private boolean keepTogetherGettersAndSetters = true;
 
   public OperatorGenerator() {
+  }
+
+  public OperatorGenerator(OperatorRepresentation operator,
+      ClassRepresentation stateClass, boolean keepTogetherGettersAndSetters) {
+    this.operator = operator;
+    this.stateClass = stateClass;
+    this.keepTogetherGettersAndSetters = keepTogetherGettersAndSetters;
   }
 
   public OperatorRepresentation getOperator() {
@@ -40,28 +45,12 @@ public class OperatorGenerator {
     this.operator = operator;
   }
 
-  public String getDirectoryName() {
-    return directoryName;
+  public ClassRepresentation getStateClass() {
+    return stateClass;
   }
 
-  public void setDirectoryName(String directoryName) {
-    this.directoryName = directoryName;
-  }
-
-  public String getPackageName() {
-    return packageName;
-  }
-
-  public void setPackageName(String packageName) {
-    this.packageName = packageName;
-  }
-
-  public String getFileName() {
-    return fileName;
-  }
-
-  public void setFileName(String fileName) {
-    this.fileName = fileName;
+  public void setStateClass(ClassRepresentation stateClass) {
+    this.stateClass = stateClass;
   }
 
   public boolean isKeepTogetherGettersAndSetters() {
@@ -72,57 +61,75 @@ public class OperatorGenerator {
     this.keepTogetherGettersAndSetters = keepTogetherGettersAndSetters;
   }
 
-  public ClassRepresentation getStateClass() {
-    return stateClass;
-  }
-
-  public void setStateClass(ClassRepresentation stateClass) {
-    this.stateClass = stateClass;
-  }
-
-  public boolean isReady() {
-    return operator != null && directoryName != null && packageName != null
-        && fileName != null;
-  }
-
-  public ClassRepresentation generateOperator() throws IOException {
-    if (isReady()) {
-      ClassName className = ClassName.get(packageName, fileName);
-      List<ParameterRepresentation> parameters = operator.getParameters();
-      List<FieldSpec> fields = GeneratorUtils.generateFieldsFromParameters(parameters);
-
-      TypeSpec operator = TypeSpec.classBuilder(fileName)
-          .addModifiers(Modifier.PUBLIC)
-          .addSuperinterface(OperatorInterface.class)
-          .addFields(fields)
-          .addField(generateCostField())
-          .addMethod(generateInitOperatorsMethod(parameters, className))
-          .addMethod(GeneratorUtils.generateEmptyConstructor())
-          .addMethod(GeneratorUtils.generateConstructor(fields))
-          .addMethods(
-              GeneratorUtils.generateGettersAndSetters(fields, keepTogetherGettersAndSetters))
-          .addMethod(GeneratorUtils.generateEqualsMethod(fields, className, fileName.toLowerCase()))
-          .addMethod(GeneratorUtils.generateHashCodeMethod(fields))
-          .addMethod(GeneratorUtils.generateToStringMethod(fields, className))
-          .addMethod(generateIsApplicableMethod())
-          .addMethod(generateApplyMethod())
-          .addMethod(generateGetCostMethod())
-          .build();
-
-      JavaFile javaFile = JavaFile.builder(packageName, operator)
-          .skipJavaLangImports(true)
-          .addStaticImport(GeneratedUtils.class, "GeneratedUtils")
-          .build();
-
-      Path path = Paths.get(directoryName);
-
-      javaFile.writeTo(path);
-
-      return new ClassRepresentation(className, fields);
-    } else {
-      //TODO: Handle error
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
     }
-    return null;
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+
+    OperatorGenerator that = (OperatorGenerator) o;
+
+    if (keepTogetherGettersAndSetters != that.keepTogetherGettersAndSetters) {
+      return false;
+    }
+    if (operator != null ? !operator.equals(that.operator) : that.operator != null) {
+      return false;
+    }
+    return stateClass != null ? stateClass.equals(that.stateClass) : that.stateClass == null;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = operator != null ? operator.hashCode() : 0;
+    result = 31 * result + (stateClass != null ? stateClass.hashCode() : 0);
+    result = 31 * result + (keepTogetherGettersAndSetters ? 1 : 0);
+    return result;
+  }
+
+  @Override
+  public ClassRepresentation generate(String directoryName, String packageName, String fileName)
+      throws IOException {
+
+    if (operator == null || stateClass == null) {
+      System.out.println("hiba");
+    }
+
+    ClassName className = ClassName.get(packageName, fileName);
+    List<ParameterRepresentation> parameters = operator.getParameters();
+    List<FieldSpec> fields = GeneratorUtils.generateFieldsFromParameters(parameters);
+
+    TypeSpec operator = TypeSpec.classBuilder(fileName)
+        .addModifiers(Modifier.PUBLIC)
+        .addSuperinterface(OperatorInterface.class)
+        .addFields(fields)
+        .addField(generateCostField())
+        .addMethod(generateInitOperatorsMethod(parameters, className))
+        .addMethod(GeneratorUtils.generateEmptyConstructor())
+        .addMethod(GeneratorUtils.generateConstructor(fields))
+        .addMethods(
+            GeneratorUtils.generateGettersAndSetters(fields, keepTogetherGettersAndSetters))
+        .addMethod(GeneratorUtils.generateEqualsMethod(fields, className, fileName.toLowerCase()))
+        .addMethod(GeneratorUtils.generateHashCodeMethod(fields))
+        .addMethod(GeneratorUtils.generateToStringMethod(fields, className))
+        .addMethod(generateIsApplicableMethod())
+        .addMethod(generateApplyMethod())
+        .addMethod(generateGetCostMethod())
+        .build();
+
+    JavaFile javaFile = JavaFile.builder(packageName, operator)
+        .skipJavaLangImports(true)
+        .build();
+
+    Path path = Paths.get(directoryName);
+
+    javaFile.writeTo(path);
+
+    String filePath = CommonUtils.getFilePath(directoryName, packageName, fileName);
+
+    return new ClassRepresentation(className, fields, filePath);
   }
 
   private MethodSpec generateInitOperatorsMethod(List<ParameterRepresentation> parameters,

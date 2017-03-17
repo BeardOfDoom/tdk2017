@@ -1,6 +1,6 @@
 grammar SML;
 
-expr: state_expr OPERATOR_DELIMITER operation_expr+ EOF;
+expr: STATE_DELIMITER name_defining_expression? state_expr OPERATOR_DELIMITER operation_expr+ EOF;
 
 state_expr: state_description state_start state_goal;
 
@@ -16,7 +16,7 @@ state_goal: STATE_GOAL_DELIMITER parameter_description_line* expression;
 
 operation_expr: operation_description operator_precondition operator_effect;
 
-operation_description: OPERATOR_DESCRIPTION_DELIMITER operator_cost? parameter_description_line*;
+operation_description: OPERATOR_DESCRIPTION_DELIMITER name_defining_expression? operator_cost? parameter_description_line*;
 operator_cost: KEYWORD_COST number;
 
 operator_precondition: OPERATOR_PRECONDITION_DELIMITER expression?;
@@ -34,6 +34,7 @@ unary_operator: KEYWORD_MAXIMUM | KEYWORD_MINIMUM | KEYWORD_AVERAGE | KEYWORD_CA
 boolean_operator: KEYWORD_AND | KEYWORD_OR;
 
 var_defining_expression: KEYWORD_VAR attr_type name SYMBOL_ASSIGN expression;
+name_defining_expression: KEYWORD_NAME name;
 assign_expression: ((attr_reference SYMBOL_ASSIGN init_statement) | (matrix_reference SYMBOL_ASSIGN expression));
 
 expression
@@ -41,7 +42,8 @@ expression
   | left=expression comparator right=expression #compare_expr
   | left=expression boolean_operator right=expression #bool_expr
   | left=expression binary_operator right=expression #binary_expr
-  | unary_operator SYMBOL_LPAREN left=expression (SYMBOL_COMMA right=expression)? SYMBOL_RPAREN #unary_expr
+  | unary_operator SYMBOL_LPAREN expression SYMBOL_RPAREN #one_param_unary_expr
+  | unary_operator SYMBOL_LPAREN left=expression (SYMBOL_COMMA right=expression)? SYMBOL_RPAREN #two_param_unary_expr
   | reference #reference_expr
   | name #name_expr
   | number #number_expr
@@ -69,6 +71,7 @@ KEYWORD_TIMES: 'times';
 KEYWORD_ATTRIBUTE: 'Attr';
 KEYWORD_VAR: 'var';
 KEYWORD_COST: 'cost';
+KEYWORD_NAME: 'name';
 
 KEYWORD_IS: 'is';
 KEYWORD_OF: 'of';
@@ -113,6 +116,7 @@ KEYWORD_AND: 'and';
 KEYWORD_OR: 'or';
 KEYWORD_NOT: 'not';
 
+STATE_DELIMITER: 'STATE:';
 STATE_ATTRIBUTES_DELIMITER: 'STATE_ATTRIBUTES:';
 STATE_START_DELIMITER: 'STATE_START:';
 STATE_GOAL_DELIMITER: 'STATE_GOAL:';

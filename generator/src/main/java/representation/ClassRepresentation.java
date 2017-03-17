@@ -2,21 +2,24 @@ package representation;
 
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
+import interfaces.ClassRepresentationInterface;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ClassRepresentation {
+public class ClassRepresentation implements ClassRepresentationInterface {
 
   ClassName className;
   List<FieldSpec> fields = new ArrayList<>();
+  String filePath;
 
   public ClassRepresentation() {
   }
 
   public ClassRepresentation(ClassName className,
-      List<FieldSpec> fields) {
+      List<FieldSpec> fields, String filePath) {
     this.className = className;
     this.fields = fields;
+    this.filePath = filePath;
   }
 
   public ClassName getClassName() {
@@ -36,6 +39,15 @@ public class ClassRepresentation {
   }
 
   @Override
+  public String getFilePath() {
+    return filePath;
+  }
+
+  public void setFilePath(String filePath) {
+    this.filePath = filePath;
+  }
+
+  @Override
   public boolean equals(Object o) {
     if (this == o) {
       return true;
@@ -49,13 +61,17 @@ public class ClassRepresentation {
     if (className != null ? !className.equals(that.className) : that.className != null) {
       return false;
     }
-    return fields != null ? fields.equals(that.fields) : that.fields == null;
+    if (fields != null ? !fields.equals(that.fields) : that.fields != null) {
+      return false;
+    }
+    return filePath != null ? filePath.equals(that.filePath) : that.filePath == null;
   }
 
   @Override
   public int hashCode() {
     int result = className != null ? className.hashCode() : 0;
     result = 31 * result + (fields != null ? fields.hashCode() : 0);
+    result = 31 * result + (filePath != null ? filePath.hashCode() : 0);
     return result;
   }
 
@@ -64,6 +80,7 @@ public class ClassRepresentation {
     return "ClassRepresentation{" +
         "className=" + className +
         ", fields=" + fields +
+        ", filePath='" + filePath + '\'' +
         '}';
   }
 }

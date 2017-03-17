@@ -5,25 +5,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class State implements StateInterface {
-
   private List<List<Double>> attr1;
 
   private List<List<Double>> attr2;
 
   public State() {
-    List<List<Double>> initAttr1 = new ArrayList<>();
-    for (int i = 0; i < 1; i++) {
+    List<List<Double>> initAttr1= new ArrayList<>();
+    for(int i = 0; i<1; i++) {
       List<Double> tmpList = new ArrayList<>();
-      for (int j = 0; j < 3; j++) {
+      for(int j = 0; j<3; j++) {
         tmpList.add(0.0);
       }
       initAttr1.add(tmpList);
     }
     this.setAttr1(initAttr1);
-    List<List<Double>> initAttr2 = new ArrayList<>();
-    for (int i = 0; i < 1; i++) {
+    List<List<Double>> initAttr2= new ArrayList<>();
+    for(int i = 0; i<1; i++) {
       List<Double> tmpList = new ArrayList<>();
-      for (int j = 0; j < 3; j++) {
+      for(int j = 0; j<3; j++) {
         tmpList.add(0.0);
       }
       initAttr2.add(tmpList);
@@ -61,7 +60,7 @@ public class State implements StateInterface {
 
   @Override
   public boolean isGoal() {
-    return (attr1.get(0).get(0) == 0d && attr2.get(1).get(1) == 1d);
+    return attr1.get(0).get(0) == 4d;
   }
 
   @Override
@@ -91,9 +90,9 @@ public class State implements StateInterface {
   @Override
   public String toString() {
     return "State{" +
-        "attr1=" + attr1 +
-        ", attr2=" + attr2 +
-        "}";
+    	"attr1=" + attr1 +
+    	", attr2=" + attr2 +
+    	"}";
   }
 
   public State copy() {

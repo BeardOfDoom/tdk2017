@@ -1,10 +1,10 @@
 package utils;
 
-import antlr.impl.ErrorListener;
 import antlr.SMLLexer;
 import antlr.SMLParser.Dimension_partContext;
 import antlr.SMLParser.Matrix_referenceContext;
 import antlr.SMLParser.Parameter_description_lineContext;
+import antlr.impl.ErrorListener;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -65,6 +65,10 @@ public class CommonUtils {
             : dimensionPartM.name().getText();
 
     return Arrays.asList(dimensionN, dimensionM);
+  }
+
+  public static String getFilePath(String directoryName, String packageName, String fileName) {
+    return directoryName + "\\" + packageName.replace(".", "\\") + "\\" + fileName;
   }
 
 }

@@ -7,6 +7,7 @@ import representation.ParameterRepresentation;
 
 public class StateRepresentation {
 
+  private String name;
   private List<AttributeRepresentation> attributes = new ArrayList<>();
   private AssignExpressionsRepresentation assigns;
   private List<ParameterRepresentation> stateStartParameters = new ArrayList<>();
@@ -14,6 +15,14 @@ public class StateRepresentation {
   private String stateGoal;
 
   public StateRepresentation() {
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
   }
 
   public List<AttributeRepresentation> getAttributes() {
@@ -61,7 +70,7 @@ public class StateRepresentation {
   public void addAttribute(AttributeRepresentation representation) {
     attributes.add(representation);
   }
-  
+
   public void addStateStartParameter(ParameterRepresentation parameter) {
     stateStartParameters.add(parameter);
   }

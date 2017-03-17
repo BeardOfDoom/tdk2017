@@ -119,6 +119,12 @@ public interface SMLVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitVar_defining_expression(SMLParser.Var_defining_expressionContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link SMLParser#name_defining_expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitName_defining_expression(SMLParser.Name_defining_expressionContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link SMLParser#assign_expression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -131,13 +137,6 @@ public interface SMLVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitParen_expr(SMLParser.Paren_exprContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code unary_expr}
-	 * labeled alternative in {@link SMLParser#expression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitUnary_expr(SMLParser.Unary_exprContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code compare_expr}
 	 * labeled alternative in {@link SMLParser#expression}.
@@ -167,6 +166,13 @@ public interface SMLVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitBool_expr(SMLParser.Bool_exprContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code two_param_unary_expr}
+	 * labeled alternative in {@link SMLParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTwo_param_unary_expr(SMLParser.Two_param_unary_exprContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code name_expr}
 	 * labeled alternative in {@link SMLParser#expression}.
 	 * @param ctx the parse tree
@@ -180,6 +186,13 @@ public interface SMLVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitWord_expr(SMLParser.Word_exprContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code one_param_unary_expr}
+	 * labeled alternative in {@link SMLParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitOne_param_unary_expr(SMLParser.One_param_unary_exprContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code number_expr}
 	 * labeled alternative in {@link SMLParser#expression}.
