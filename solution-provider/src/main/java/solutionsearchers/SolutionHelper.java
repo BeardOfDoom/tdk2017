@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import interfaces.OperatorInterface;
@@ -37,7 +36,7 @@ public class SolutionHelper {
 	public static void writeOutputForGraphic(Class<?> solutionSearcher, List<Node> nodes, Node solution, String steps){
 		BufferedWriter writer = null;
 		try {
-			writer = new BufferedWriter(new FileWriter("C:\\Documents\\SzakdogaTesztKimenet\\TMP.txt"));
+			writer = new BufferedWriter(new FileWriter("C:\\Documents\\SzakdogaTesztKimenet\\" + solutionSearcher.getSimpleName() + ".txt"));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

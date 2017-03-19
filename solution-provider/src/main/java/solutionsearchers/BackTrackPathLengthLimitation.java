@@ -2,7 +2,9 @@ package solutionsearchers;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import interfaces.OperatorInterface;
 import interfaces.StateInterface;
@@ -11,18 +13,50 @@ import nodes.Node;
 
 public class BackTrackPathLengthLimitation {
 	
-	private List<Node> reachedBackTrackCircleNodes;
+	private Map<StateInterface, Integer> stepsOnStates;
+	private Map<String, Integer> stepsOnEdges;
+	private List<Node> reachedBackTrackPathLengthLimitationNodes;
 	private StringBuilder steps;
+	private List<String> activateNodes;
+	private List<String> inactivateNodes;
+	private List<String> stepOnNodes;
+	private List<String> closeNodes;
+	private List<String> activateEdges;
+	private List<String> inactivateEdges;
 	
 	private List<OperatorInterface> OPERATORS;
 	private BackTrackPathLengthLimitationNode actual;
 	private int pathLengthLimitation;
 	private int maxId;
 	
+	private void appendSteps(){
+		steps.append("Activated nodes: " + activateNodes);
+		activateNodes.clear();
+		steps.append(" Inactivated nodes: " + inactivateNodes);
+		inactivateNodes.clear();
+		steps.append(" Stepped on nodes: " + stepOnNodes);
+		stepOnNodes.clear();
+		steps.append(" Closed nodes: " + closeNodes);
+		closeNodes.clear();
+		steps.append(" Activated edges: " + activateEdges);
+		activateEdges.clear();
+		steps.append(" Inactivated edges: " + inactivateEdges + "\n");
+		inactivateEdges.clear();
+	}
+	
 	public BackTrackPathLengthLimitation(BackTrackPathLengthLimitationNode start, int pathLengthLimitation, Class<?> operatorClass){
-		reachedBackTrackCircleNodes = new ArrayList<>();
+		stepsOnStates = new HashMap<>();
+		stepsOnEdges = new HashMap<>();
+		reachedBackTrackPathLengthLimitationNodes = new ArrayList<>();
 		steps = new StringBuilder();
+		activateNodes = new ArrayList<>();
+		inactivateNodes = new ArrayList<>();
+		stepOnNodes = new ArrayList<>();
+		closeNodes = new ArrayList<>();
+		activateEdges = new ArrayList<>();
+		inactivateEdges = new ArrayList<>();
 		actual = start;
+		actual.setNumOfNodeStepOns(1);
 		try {
 			Field operatorField = operatorClass.getField("OPERATORS");
 			OPERATORS = (List<OperatorInterface>) operatorField.get(operatorClass);
@@ -30,7 +64,10 @@ public class BackTrackPathLengthLimitation {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		steps.append(actual.getId() + "\n");
+		activateNodes.add(String.valueOf(actual.getId()));
+		stepOnNodes.add(String.valueOf(actual.getId()));
+		appendSteps();
+		//steps.append(actual.getId() + "\n");
 		this.pathLengthLimitation = pathLengthLimitation;
 		maxId = start.getId();
 	}
@@ -43,10 +80,21 @@ public class BackTrackPathLengthLimitation {
 				break;
 			}
 			
-			if(!reachedBackTrackCircleNodes.contains(actual)){
-				reachedBackTrackCircleNodes.add(actual);
+			if(!reachedBackTrackPathLengthLimitationNodes.contains(actual)){
+				reachedBackTrackPathLengthLimitationNodes.add(actual);
 			}
 			
+			if(!stepsOnStates.containsKey(actual.getState())){
+				stepsOnStates.put(actual.getState(), actual.getNumOfNodeStepOns());
+			}
+			
+			if(actual.getOperator() != null){
+				String operatorId = actual.getParent().getId() + "-OP" + OPERATORS.indexOf(actual.getOperator()) + "-" + actual.getId();
+				if(!stepsOnEdges.containsKey(operatorId)){
+					stepsOnEdges.put(operatorId, actual.getNumOfEdgeStepOns());
+				}
+			}
+
 			if(actual.getState().isGoal()){
 				if(steps.charAt(steps.length() - 1) == '\n')
 					steps.setLength(steps.length() - 1);
@@ -54,9 +102,25 @@ public class BackTrackPathLengthLimitation {
 			}
 			
 			if(actual.getDepth() == pathLengthLimitation){
-				OperatorInterface operator = actual.getOperator();
+				//OperatorInterface operator = actual.getOperator();
+				String operatorId = actual.getParent().getId() + "-OP" + OPERATORS.indexOf(actual.getOperator()) + "-" + actual.getId();
+				if(actual.getNumOfEdgeStepOns() == 1){
+					inactivateEdges.add(operatorId);
+				}
+				stepsOnEdges.put(operatorId, actual.getNumOfEdgeStepOns() - 1);
+				
+				if(actual.getNumOfNodeStepOns() == 1){
+					inactivateNodes.add(String.valueOf(actual.getId()));
+				} else {
+					closeNodes.add(String.valueOf(actual.getId()));
+				}
+				stepsOnStates.put(actual.getState(), actual.getNumOfNodeStepOns() - 1);
+				
 				actual = (BackTrackPathLengthLimitationNode) actual.getParent();
-				steps.append("BACK OP" + OPERATORS.indexOf(operator) + " " + actual.getId() + "\n");
+				
+				stepOnNodes.add(String.valueOf(actual.getId()));
+				appendSteps();
+				//steps.append("BACK OP" + OPERATORS.indexOf(operator) + " " + actual.getId() + "\n");
 			}
 			
 			boolean wasOperatorUsed = false;
@@ -65,31 +129,66 @@ public class BackTrackPathLengthLimitation {
 				if (operator.isApplicable(actual.getState()) && !actual.getTried().contains(operator)) {
 					actual.getTried().add(operator);
 					StateInterface newState = operator.apply(actual.getState());
-					int nodeId = SolutionHelper.getNodeId(newState, maxId, reachedBackTrackCircleNodes);
+					int nodeId = SolutionHelper.getNodeId(newState, maxId, reachedBackTrackPathLengthLimitationNodes);
 					
 					if(maxId < nodeId)
 						maxId = nodeId;
 					
 					BackTrackPathLengthLimitationNode newNode = new BackTrackPathLengthLimitationNode(newState, actual, operator, nodeId, new ArrayList<>(), actual.getDepth() + 1);
 					actual = newNode;
+					actual.setNumOfNodeStepOns(1);
+					actual.setNumOfEdgeStepOns(1);
 					wasOperatorUsed = true;
 					break;
 				}
 			}
 			
 			if (!wasOperatorUsed) {
-				OperatorInterface operator = actual.getOperator();
+				//OperatorInterface operator = actual.getOperator();
+				if(actual.getParent() != null){
+					String operatorId = actual.getParent().getId() + "-OP" + OPERATORS.indexOf(actual.getOperator()) + "-" + actual.getId();
+					if(actual.getNumOfEdgeStepOns() == 1){
+						inactivateEdges.add(operatorId);
+					}
+					stepsOnEdges.put(operatorId, actual.getNumOfEdgeStepOns() - 1);
+				}
+				
+				if(actual.getNumOfNodeStepOns() == 1){
+					inactivateNodes.add(String.valueOf(actual.getId()));
+				} else {
+					closeNodes.add(String.valueOf(actual.getId()));
+				}
+				stepsOnStates.put(actual.getState(), actual.getNumOfNodeStepOns() - 1);
+				
 				actual = (BackTrackPathLengthLimitationNode) actual.getParent();
+				
 				if(actual != null){
-					steps.append("BACK OP" + OPERATORS.indexOf(operator) + " " + actual.getId() + "\n");
+					stepOnNodes.add(String.valueOf(actual.getId()));
+					//steps.append("BACK OP" + OPERATORS.indexOf(operator) + " " + actual.getId() + "\n");
 				}
 			} else {
-				steps.append("OP" + OPERATORS.indexOf(actual.getOperator()) + " " + actual.getId() + "\n");
+				String operatorId = actual.getParent().getId() + "-OP" + OPERATORS.indexOf(actual.getOperator()) + "-" + actual.getId();
+				if(stepsOnEdges.containsKey(operatorId)){
+					actual.setNumOfEdgeStepOns(stepsOnEdges.get(operatorId) + 1);
+					stepsOnEdges.put(operatorId, actual.getNumOfEdgeStepOns());
+				}
+				
+				if(stepsOnStates.containsKey(actual.getState())){
+					actual.setNumOfNodeStepOns(stepsOnStates.get(actual.getState()) + 1);
+					stepsOnStates.put(actual.getState(), actual.getNumOfNodeStepOns());
+				}
+				
+				activateEdges.add(actual.getParent().getId() + "-OP" + OPERATORS.indexOf(actual.getOperator()) + "-" + actual.getId());
+				activateNodes.add(String.valueOf(actual.getId()));
+				stepOnNodes.add(String.valueOf(actual.getId()));
+				closeNodes.add(String.valueOf(actual.getParent().getId()));
+				//steps.append("OP" + OPERATORS.indexOf(actual.getOperator()) + " " + actual.getId() + "\n");
 			}
+			appendSteps();
 		}
 		
 		if(actual != null){
-			SolutionHelper.writeOutputForGraphic(getClass(), reachedBackTrackCircleNodes, actual, steps.toString());
+			SolutionHelper.writeOutputForGraphic(getClass(), reachedBackTrackPathLengthLimitationNodes, actual, steps.toString());
 		} else {
 			System.out.println("No solution.");
 		}

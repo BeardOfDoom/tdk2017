@@ -12,8 +12,14 @@ import nodes.Node;
 
 public class BreadthFirst {
 
-	private List<Node> reachedBackTrackCircleNodes;
+	private List<Node> reachedBreadthFirstNodes;
 	private StringBuilder steps;
+	private List<String> activateNodes;
+	private List<String> inactivateNodes;
+	private List<String> stepOnNodes;
+	private List<String> closeNodes;
+	private List<String> activateEdges;
+	private List<String> inactivateEdges;
 	
 	private List<OperatorInterface> OPERATORS;
 	private BreadthFirstNode actual;
@@ -21,8 +27,30 @@ public class BreadthFirst {
 	private LinkedList<BreadthFirstNode> closedNodes = new LinkedList<>();
 	private int maxId;
 	
+	private void appendSteps(){
+		steps.append("Activated nodes: " + activateNodes);
+		activateNodes.clear();
+		steps.append(" Inactivated nodes: " + inactivateNodes);
+		inactivateNodes.clear();
+		steps.append(" Stepped on nodes: " + stepOnNodes);
+		stepOnNodes.clear();
+		steps.append(" Closed nodes: " + closeNodes);
+		closeNodes.clear();
+		steps.append(" Activated edges: " + activateEdges);
+		activateEdges.clear();
+		steps.append(" Inactivated edges: " + inactivateEdges + "\n");
+		inactivateEdges.clear();
+	}
+	
 	public BreadthFirst(BreadthFirstNode start, Class<?> operatorClass){
-		reachedBackTrackCircleNodes = new ArrayList<>();
+		reachedBreadthFirstNodes = new ArrayList<>();
+		steps = new StringBuilder();
+		activateNodes = new ArrayList<>();
+		inactivateNodes = new ArrayList<>();
+		stepOnNodes = new ArrayList<>();
+		closeNodes = new ArrayList<>();
+		activateEdges = new ArrayList<>();
+		inactivateEdges = new ArrayList<>();
 		try {
 			Field operatorField = operatorClass.getField("OPERATORS");
 			OPERATORS = (List<OperatorInterface>) operatorField.get(operatorClass);
@@ -30,8 +58,9 @@ public class BreadthFirst {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		steps = new StringBuilder();
 		openNodes.add(start);
+		activateNodes.add(String.valueOf(start.getId()));
+		appendSteps();
 		maxId = start.getId();
 	}
 	
@@ -45,8 +74,8 @@ public class BreadthFirst {
 	}
 	
 	private void extend(BreadthFirstNode node){
-		List<Integer> newOpenNodeIdList = new ArrayList<>();
-		List<String> operatorIdList = new ArrayList<>();
+		//List<Integer> newOpenNodeIdList = new ArrayList<>();
+		//List<String> operatorIdList = new ArrayList<>();
 		
 		for (OperatorInterface operator : OPERATORS) {
 			if(operator.isApplicable(node.getState())){
@@ -56,7 +85,7 @@ public class BreadthFirst {
 				boolean isClosedNodesContains = isContains(closedNodes, newState);
 				
 				if(!(isOpenNodesContains || isClosedNodesContains)){
-					int nodeId = SolutionHelper.getNodeId(newState, maxId, reachedBackTrackCircleNodes);
+					int nodeId = SolutionHelper.getNodeId(newState, maxId, reachedBreadthFirstNodes);
 					
 					if(maxId < nodeId)
 						maxId = nodeId;
@@ -64,18 +93,22 @@ public class BreadthFirst {
 					BreadthFirstNode newNode = new BreadthFirstNode(newState, node, operator, nodeId, node.getDepth() + 1);
 					openNodes.addLast(newNode);
 					
-					if(!reachedBackTrackCircleNodes.contains(newNode)){
-						reachedBackTrackCircleNodes.add(newNode);
+					if(!reachedBreadthFirstNodes.contains(newNode)){
+						reachedBreadthFirstNodes.add(newNode);
 					}
 					
-					newOpenNodeIdList.add(newNode.getId());
-					operatorIdList.add("OP" + OPERATORS.indexOf(operator));
+					activateNodes.add(String.valueOf(newNode.getId()));
+					activateEdges.add(newNode.getParent().getId() + "-OP" + OPERATORS.indexOf(newNode.getOperator()) + "-" + newNode.getId());
+					//newOpenNodeIdList.add(newNode.getId());
+					//operatorIdList.add("OP" + OPERATORS.indexOf(operator));
 				}
 			}
 		}
 		openNodes.remove(node);
 		closedNodes.add(node);
-		steps.append(operatorIdList + "|" + newOpenNodeIdList + "|");
+		appendSteps();
+		closeNodes.add(String.valueOf(node.getId()));
+		//steps.append(operatorIdList + "|" + newOpenNodeIdList + "|");
 	}
 	
 	public void search(){
@@ -87,16 +120,20 @@ public class BreadthFirst {
 			}
 			
 			actual = openNodes.getFirst();
-			if(!reachedBackTrackCircleNodes.contains(actual)){
-				reachedBackTrackCircleNodes.add(actual);
+			stepOnNodes.add(String.valueOf(actual.getId()));
+			if(!reachedBreadthFirstNodes.contains(actual)){
+				reachedBreadthFirstNodes.add(actual);
 			}
-			if(actual.getOperator() != null){
-				steps.append("OP" + OPERATORS.indexOf(actual.getOperator()) + "|" + actual.getId() + "\n");
+
+			
+			/*if(actual.getOperator() != null){
+				//steps.append("OP" + OPERATORS.indexOf(actual.getOperator()) + "|" + actual.getId() + "\n");
 			} else {
-				steps.append(actual.getId() + "\n");
-			}
+				//steps.append(actual.getId() + "\n");
+			}*/
 			
 			if(actual.getState().isGoal()){
+				appendSteps();
 				if(steps.charAt(steps.length() - 1) == '\n')
 					steps.setLength(steps.length() - 1);
 				break;
@@ -105,7 +142,7 @@ public class BreadthFirst {
 			extend(actual);
 		}
 		if(!openNodes.isEmpty()){
-			SolutionHelper.writeOutputForGraphic(getClass(), reachedBackTrackCircleNodes, actual, steps.toString());
+			SolutionHelper.writeOutputForGraphic(getClass(), reachedBreadthFirstNodes, actual, steps.toString());
 		} else {
 			System.out.println("No solution.");
 		}

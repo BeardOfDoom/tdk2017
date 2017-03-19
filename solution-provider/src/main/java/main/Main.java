@@ -1,36 +1,10 @@
 package main;
 
-import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.regex.Pattern;
 
-import interfaces.StateInterface;
 import model.UserInput;
-import nodes.ANode;
-import nodes.BackTrackCircleNode;
-import nodes.BackTrackOptimalNode;
-import nodes.BackTrackPathLengthLimitationNode;
-import nodes.BackTrackSimpleNode;
-import nodes.BestFirstNode;
-import nodes.BreadthFirstNode;
-import nodes.DepthFirstNode;
-import nodes.OptimalNode;
-import solutionsearchers.A;
-import solutionsearchers.BackTrackCircle;
-import solutionsearchers.BackTrackOptimal;
-import solutionsearchers.BackTrackPathLengthLimitation;
-import solutionsearchers.BackTrackSimple;
-import solutionsearchers.BestFirst;
-import solutionsearchers.BreadthFirst;
-import solutionsearchers.DepthFirst;
-import solutionsearchers.Optimal;
 
 public class Main {
 	
@@ -40,7 +14,7 @@ public class Main {
 	
 	// TODO statisztika opció (külön szálakon elindul az összes keresés)
 
-	private static final String JAVA = ".java";
+	/*private static final String JAVA = ".java";
 	
 	private static List<File> loadableClasses = new ArrayList<>();
 	
@@ -51,9 +25,9 @@ public class Main {
 			}
 		}
 		return file.delete();
-	}
+	}*/
 	
-	private static void getLoadableClassesInFolderAndSubFolders(File folder){
+	/*private static void getLoadableClassesInFolderAndSubFolders(File folder){
 		if(folder.isDirectory()){
 			for(File file : folder.listFiles()){
 				getLoadableClassesInFolderAndSubFolders(file);
@@ -66,11 +40,15 @@ public class Main {
 				loadableClasses.add(classFile);
 			}
 		}
-	}
+	}*/
 	
 	public static void main(String[] args) throws IOException, ClassNotFoundException{
 		
-		SolutionMaker asd = new SolutionMaker(new ArrayList<>(Arrays.asList("C:\\Users\\Vécsi Ádám\\Desktop\\State.java", "C:\\Users\\Vécsi Ádám\\Desktop\\Operator.java", "C:\\Users\\Vécsi Ádám\\Desktop\\GeneratedUtils.java")), new UserInput("", false, false, false, false, true, false, false, false, false));
+		String laci3korsoState = "C:\\Users\\Vécsi Ádám\\Desktop\\State.java";
+		String laci3korsoOperator = "C:\\Users\\Vécsi Ádám\\Desktop\\Operator.java";
+		String laciPlusz = "C:\\Users\\Vécsi Ádám\\Desktop\\GeneratedUtils.java";
+		
+		SolutionMaker asd = new SolutionMaker(new ArrayList<>(Arrays.asList(laci3korsoState, laci3korsoOperator, laciPlusz/*"C:\\workspace\\Prototypes\\src\\Hanoi\\State.java", "C:\\workspace\\Prototypes\\src\\Hanoi\\Operator.java"*/)), new UserInput("", false, true, false, false, false, false, false, false, false));
 		asd.start();
 		
 		/*String stateClassFilePath = "C:\\workspace\\Prototypes\\src\\Hanoi\\State.java";

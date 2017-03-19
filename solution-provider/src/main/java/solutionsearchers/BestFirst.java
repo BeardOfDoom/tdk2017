@@ -2,7 +2,9 @@ package solutionsearchers;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import interfaces.OperatorInterface;
@@ -12,8 +14,15 @@ import nodes.Node;
 
 public class BestFirst {
 
+	private Map<StateInterface, Integer> stepsOnStates;
 	private List<Node> reachedBackTrackCircleNodes;
 	private StringBuilder steps;
+	private List<String> activateNodes;
+	private List<String> inactivateNodes;
+	private List<String> stepOnNodes;
+	private List<String> closeNodes;
+	private List<String> activateEdges;
+	private List<String> inactivateEdges;
 	
 	private List<OperatorInterface> OPERATORS;
 	private BestFirstNode actual;
@@ -23,10 +32,31 @@ public class BestFirst {
 	private List<BestFirstNode> closedNodes = new ArrayList<>();
 	private int maxId;
 	
+	private void appendSteps(){
+		steps.append("Activated nodes: " + activateNodes);
+		activateNodes.clear();
+		steps.append(" Inactivated nodes: " + inactivateNodes);
+		inactivateNodes.clear();
+		steps.append(" Stepped on nodes: " + stepOnNodes);
+		stepOnNodes.clear();
+		steps.append(" Closed nodes: " + closeNodes);
+		closeNodes.clear();
+		steps.append(" Activated edges: " + activateEdges);
+		activateEdges.clear();
+		steps.append(" Inactivated edges: " + inactivateEdges + "\n");
+		inactivateEdges.clear();
+	}
+	
 	public BestFirst(BestFirstNode start, String heuristicFunction, Set<String> variablesInHeuristicFunction, Class<?> operatorClass){
+		stepsOnStates = new HashMap<>();
 		reachedBackTrackCircleNodes = new ArrayList<>();
 		steps = new StringBuilder();
-		openNodes.add(start);
+		activateNodes = new ArrayList<>();
+		inactivateNodes = new ArrayList<>();
+		stepOnNodes = new ArrayList<>();
+		closeNodes = new ArrayList<>();
+		activateEdges = new ArrayList<>();
+		inactivateEdges = new ArrayList<>();
 		this.heuristicFunction = heuristicFunction;
 		this.variablesInHeuristicFunction = variablesInHeuristicFunction;
 		try {
@@ -36,6 +66,9 @@ public class BestFirst {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		openNodes.add(start);
+		activateNodes.add(String.valueOf(start.getId()));
+		appendSteps();
 		maxId = start.getId();
 	}
 	
@@ -49,8 +82,8 @@ public class BestFirst {
 	}
 	
 	private void extend(BestFirstNode node){
-		List<Integer> newOpenNodeIdList = new ArrayList<>();
-		List<String> operatorIdList = new ArrayList<>();
+		//List<Integer> newOpenNodeIdList = new ArrayList<>();
+		//List<String> operatorIdList = new ArrayList<>();
 		
 		for (OperatorInterface operator : OPERATORS) {
 			if(operator.isApplicable(node.getState())){
@@ -72,14 +105,18 @@ public class BestFirst {
 						reachedBackTrackCircleNodes.add(newNode);
 					}
 					
-					newOpenNodeIdList.add(newNode.getId());
-					operatorIdList.add("OP" + OPERATORS.indexOf(operator));
+					activateNodes.add(String.valueOf(newNode.getId()));
+					activateEdges.add(newNode.getParent().getId() + "-OP" + OPERATORS.indexOf(newNode.getOperator()) + "-" + newNode.getId());
+					//newOpenNodeIdList.add(newNode.getId());
+					//operatorIdList.add("OP" + OPERATORS.indexOf(operator));
 				}
 			}
 		}
 		openNodes.remove(node);
 		closedNodes.add(node);
-		steps.append(operatorIdList + "|" + newOpenNodeIdList + "|");
+		appendSteps();
+		closeNodes.add(String.valueOf(node.getId()));
+		//steps.append(operatorIdList + "|" + newOpenNodeIdList + "|");
 	}
 	
 	public void search(){
@@ -98,16 +135,19 @@ public class BestFirst {
 				}
 			}
 			
+			stepOnNodes.add(String.valueOf(actual.getId()));
 			if(!reachedBackTrackCircleNodes.contains(actual)){
 				reachedBackTrackCircleNodes.add(actual);
 			}
-			if(actual.getOperator() != null){
+			
+			/*if(actual.getOperator() != null){
 				steps.append("OP" + OPERATORS.indexOf(actual.getOperator()) + "|" + actual.getId() + "\n");
 			} else {
 				steps.append(actual.getId() + "\n");
-			}
+			}*/
 			
 			if(actual.getState().isGoal()){
+				appendSteps();
 				if(steps.charAt(steps.length() - 1) == '\n')
 					steps.setLength(steps.length() - 1);
 				break;

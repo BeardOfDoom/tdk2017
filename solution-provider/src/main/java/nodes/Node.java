@@ -1,10 +1,7 @@
 package nodes;
 
-import java.util.Set;
-
 import interfaces.OperatorInterface;
 import interfaces.StateInterface;
-import nodes.heuristicparser.HeuristicParser;
 
 public abstract class Node {
 	
@@ -12,6 +9,8 @@ public abstract class Node {
 	private Node parent;
 	private OperatorInterface operator;
 	private int id;
+	private int numOfNodeStepOns;
+	private int numOfEdgeStepOns;
 
 	public StateInterface getState() {
 		return state;
@@ -43,6 +42,22 @@ public abstract class Node {
 
 	public void setId(int id) {
 		this.id = id;
+	}
+
+	public int getNumOfNodeStepOns() {
+		return numOfNodeStepOns;
+	}
+
+	public void setNumOfNodeStepOns(int numOfStepOns) {
+		this.numOfNodeStepOns = numOfStepOns;
+	}
+
+	public int getNumOfEdgeStepOns() {
+		return numOfEdgeStepOns;
+	}
+
+	public void setNumOfEdgeStepOns(int numOfEdgeStepOns) {
+		this.numOfEdgeStepOns = numOfEdgeStepOns;
 	}
 
 	@Override
