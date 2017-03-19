@@ -79,7 +79,7 @@ public class Operator1 implements OperatorInterface {
   @Override
   public boolean isApplicable(StateInterface stateObject) {
     State original = ((State) stateObject);
-    return !i.equals(j) && original.getAttr1().get(0).get(i) != 0d && !original.getAttr1().get(0).get(j).equals(original.getAttr2().get(0).get(j));
+    return !i.equals(j) && original.getAttr1().get(0).get(i) != 0d && original.getAttr1().get(0).get(j) < original.getAttr2().get(0).get(j);
   }
 
   @Override

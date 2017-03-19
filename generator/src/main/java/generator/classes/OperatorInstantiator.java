@@ -14,10 +14,6 @@ public class OperatorInstantiator implements OperatorInstantiatorInterface {
     operator1.initOperators();
     result.addAll(Operator1.OPERATORS);
 
-    Operator2 operator2 = new Operator2();
-    operator2.initOperators();
-    result.addAll(Operator2.OPERATORS);
-
     return result;
   }
 }

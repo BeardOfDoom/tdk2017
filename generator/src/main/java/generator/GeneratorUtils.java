@@ -7,6 +7,7 @@ import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -247,8 +248,8 @@ public class GeneratorUtils {
     for (SetAssignRepresentation setStart : assignsRepresentation.getSetAssigns()) {
       String attributeName = setStart.getAttribute().getAttributeName();
       builder
-          .addStatement("state.set" + attributeName + "(new $T<>(Arrays.asList($L))",
-              HashSet.class, GeneratorUtils.getSetStartValuesAsString(setStart));
+          .addStatement("state.set" + attributeName + "(new $1T<>($2T.asList($3L)))",
+              HashSet.class, Arrays.class, GeneratorUtils.getSetStartValuesAsString(setStart));
     }
 
     for (MatrixAssignRepresentation matrixStart : assignsRepresentation.getMatrixAssigns()) {

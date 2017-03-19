@@ -72,8 +72,6 @@ public class Main {
 
       classManager.addClassRepresentation(operatorInstantiatorClass);
 
-      System.out.println(classManager.getFilePaths());
-
       //TODO: Add GeneratedUtils to classManager
       System.out.println("Files created!");
     }

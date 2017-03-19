@@ -56,6 +56,9 @@ parameter_description_line: KEYWORD_PARAM name ((KEYWORD_FROM INT KEYWORD_TO INT
 
 /*-----------------------------------------------------------------------------------------------*/
 
+word: SYMBOL_QUOTE CHAR (INT | CHAR)+ SYMBOL_QUOTE;
+SYMBOL_QUOTE: '\"';
+
 attr_name: KEYWORD_ATTRIBUTE INT;
 attr_reference: SYMBOL_REFERENCE (INT | name);
 matrix_reference: attr_reference dimension;
@@ -94,9 +97,9 @@ SYMBOL_SUBSTRACT: '-';
 SYMBOL_MULTIPLICATION: '*';
 SYMBOL_DIVISION: '/';
 
+
 SYMBOL_ASSIGN: '=';
 SYMBOL_REFERENCE: '$';
-SYMBOL_QUOTE: '\"';
 SYMBOL_COMMA : ',' ;
 
 SYMBOL_LPAREN: '(' ;
@@ -133,11 +136,6 @@ SIGN: ('+' | '-');
 CHAR: ('a'..'z' | 'A'..'Z');
 
 number: SIGN? (INT | FLOAT);
-numbers: (number (SYMBOL_COMMA number)*);
-words: (word (SYMBOL_COMMA word)*);
-
-word: SYMBOL_QUOTE (INT | CHAR)+ SYMBOL_QUOTE;
-
 name: CHAR+;
 
 WS: [ \t\r\n]+ -> skip ;

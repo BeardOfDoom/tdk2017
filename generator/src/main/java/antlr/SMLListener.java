@@ -348,6 +348,16 @@ public interface SMLListener extends ParseTreeListener {
 	 */
 	void exitParameter_description_line(SMLParser.Parameter_description_lineContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link SMLParser#word}.
+	 * @param ctx the parse tree
+	 */
+	void enterWord(SMLParser.WordContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SMLParser#word}.
+	 * @param ctx the parse tree
+	 */
+	void exitWord(SMLParser.WordContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link SMLParser#attr_name}.
 	 * @param ctx the parse tree
 	 */
@@ -417,36 +427,6 @@ public interface SMLListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitNumber(SMLParser.NumberContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link SMLParser#numbers}.
-	 * @param ctx the parse tree
-	 */
-	void enterNumbers(SMLParser.NumbersContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link SMLParser#numbers}.
-	 * @param ctx the parse tree
-	 */
-	void exitNumbers(SMLParser.NumbersContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link SMLParser#words}.
-	 * @param ctx the parse tree
-	 */
-	void enterWords(SMLParser.WordsContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link SMLParser#words}.
-	 * @param ctx the parse tree
-	 */
-	void exitWords(SMLParser.WordsContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link SMLParser#word}.
-	 * @param ctx the parse tree
-	 */
-	void enterWord(SMLParser.WordContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link SMLParser#word}.
-	 * @param ctx the parse tree
-	 */
-	void exitWord(SMLParser.WordContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link SMLParser#name}.
 	 * @param ctx the parse tree
