@@ -17,7 +17,7 @@ import utils.ErrorHandler;
 
 public class Main {
 
-  private static final String INPUT_FILE_NAME = "input.txt";
+  private static final String INPUT_FILE_NAME = "D:\\Laci\\egyetem\\szakdolgozat\\tdk2017\\generator\\input.txt";
 
   private static final String OUTPUT_DIRECTORY_NAME = "generated";
   private static final String OUTPUT_PACKAGE_NAME = "com.prototype";
