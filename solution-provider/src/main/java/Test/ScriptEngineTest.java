@@ -1,11 +1,13 @@
 package Test;
 
+import java.io.File;
 import java.util.Arrays;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
+import org.apache.commons.io.FilenameUtils;
 import org.nfunk.jep.JEP;
 
 public class ScriptEngineTest {
@@ -57,10 +59,11 @@ public class ScriptEngineTest {
 	    myParser.addFunction("testFunction", new newFunctionTest());
 	    myParser.addVariable("x", 10);
 	    myParser.parseExpression("5 * 5 + 2 ^ 2 + testFunction(x, x, x, x)");
-	    System.out.println(myParser.getValue());*/
+	    System.out.println(myParser.getValue());
 		System.out.println(Double.POSITIVE_INFINITY);
 		System.out.println(ScriptEngineTest.class.getSuperclass().newInstance());
-		System.out.println(Arrays.asList(ScriptEngineTest.class.getDeclaredConstructors()));
+		System.out.println(Arrays.asList(ScriptEngineTest.class.getDeclaredConstructors()));*/
+		System.out.println(FilenameUtils.isExtension("C:\\Users\\Vécsi Ádám\\Desktop\\GeneratedUtils.java", "txt"));
 	}
 	
 }

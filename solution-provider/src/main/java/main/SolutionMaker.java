@@ -13,6 +13,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.io.FilenameUtils;
+
+import exceptions.CompilationException;
+import exceptions.OperatorInitializationException;
+import exceptions.OperatorNotFoundException;
+import exceptions.StateInitializationException;
+import exceptions.StateNotFoundException;
+import exceptions.TemporaryFolderCreationException;
+import exceptions.TemporaryFolderDeletionException;
+import exceptions.WrongFileExtensionException;
 import interfaces.OperatorInterface;
 import interfaces.StateInterface;
 import model.UserInput;
@@ -45,58 +55,62 @@ public class SolutionMaker {
 	private Class<?> stateClass;
 	private List<Class<?>> operatorClasses;
 	
-	public SolutionMaker(List<String> filePaths, UserInput userInput){
+	public SolutionMaker(List<String> filePaths, UserInput userInput) throws TemporaryFolderCreationException, MalformedURLException{
 		this.filePaths = filePaths;
 		this.userInput = userInput;
 		classDestinationFile = new File("externalClasses/");
 		makeTemporaryFolderForClasses();
-		try {
-			classDestinationURL = classDestinationFile.toURI().toURL();
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		classDestinationURL = classDestinationFile.toURI().toURL();
 		loadableClasses = new ArrayList<>();
 		operatorClasses = new ArrayList<>();
 	}
 	
-	public void start(){
+	public void start() throws WrongFileExtensionException, CompilationException, IOException, ClassNotFoundException, StateNotFoundException, OperatorNotFoundException, StateInitializationException, OperatorInitializationException, TemporaryFolderDeletionException{
 		validateFilePaths();
 		compileFiles();
 		getLoadableClassesInFolder(classDestinationFile);
 		loadClasses();
 		initAndStartChosenSolutionSearchers();
-		deleteFolder(classDestinationFile);
-	}
-	
-	private void validateFilePaths(){
-		// TODO validate file formats
-	}
-	
-	private void makeTemporaryFolderForClasses(){
-		// TODO exception
-		if(!classDestinationFile.exists()){
-			classDestinationFile.mkdirs();
+		if(!deleteFolder(classDestinationFile)){
+			throw new TemporaryFolderDeletionException("Could not delete this folder: " + classDestinationFile.getAbsolutePath());
 		}
 	}
 	
-	private void compileFiles(){
-		// TODO exception try-t kivenni
-		List<String> processBuilderArgList = new ArrayList<>(Arrays.asList("javac", "-d", classDestinationURL.getPath(), getClass().getClassLoader().getResource("interfaces/StateInterface.java").getPath(), getClass().getClassLoader().getResource("interfaces/OperatorInterface.java").getPath()));
+	private void validateFilePaths() throws WrongFileExtensionException{
+		for(String filePath : filePaths){
+			if(!FilenameUtils.isExtension(filePath, "java")){
+				throw new WrongFileExtensionException();
+			}
+		}
+	}
+	
+	private void makeTemporaryFolderForClasses() throws TemporaryFolderCreationException{
+		try{
+			if(!classDestinationFile.exists()){
+				classDestinationFile.mkdirs();
+			}
+		} catch (Exception e){
+			throw new TemporaryFolderCreationException(e);
+		}
+	}
+	
+	private void compileFiles() throws CompilationException, IOException{
+		List<String> processBuilderArgList = new ArrayList<>(Arrays.asList("javac", "-d", classDestinationURL.getPath(), "-nowarn", getClass().getClassLoader().getResource("interfaces/StateInterface.java").getPath(), getClass().getClassLoader().getResource("interfaces/OperatorInterface.java").getPath()));
 		processBuilderArgList.addAll(filePaths);
 		
 		ProcessBuilder processBuilder = new ProcessBuilder(processBuilderArgList);
-		try {
-			Process process = processBuilder.start();
-			while(process.isAlive());
-			BufferedReader errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-			String line = null;
-			while((line = errorReader.readLine()) != null){
-				System.out.println(line);
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		Process process = processBuilder.start();
+		while(process.isAlive());
+		BufferedReader errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+			
+		StringBuilder compilationError = new StringBuilder();
+		String line = null;
+		while((line = errorReader.readLine()) != null){
+			compilationError.append(line);
+		}
+		
+		if(!compilationError.toString().isEmpty()){
+			throw new CompilationException(compilationError.toString());
 		}
 	}
 	
@@ -115,53 +129,44 @@ public class SolutionMaker {
 		}
 	}
 	
-	private void loadClasses(){
+	private void loadClasses() throws ClassNotFoundException, IOException, StateNotFoundException, OperatorNotFoundException{
 		boolean isStateClassFound = false;
 		boolean isOperatorClassFound = false;
 		URLClassLoader loader = new URLClassLoader(new URL[] { classDestinationURL });
 		for (File classFile : loadableClasses) {
-		    try {
-		    	String classNameAndPackage = classFile.getAbsolutePath().replace(classDestinationFile.getAbsolutePath() + "\\", "").replace("\\", ".");
-		    	classNameAndPackage = classNameAndPackage.substring(0, classNameAndPackage.length() - 6);
-		        Class<?> cls = loader.loadClass(classNameAndPackage);
-		        if(StateInterface.class.isAssignableFrom(cls) && !StateInterface.class.equals(cls)){
-		        	stateClass = cls;
-		        	isStateClassFound = true;
-		        } else if(OperatorInterface.class.isAssignableFrom(cls) && !OperatorInterface.class.equals(cls)){
-		        	operatorClasses.add(cls);
-		        	//operatorClass.getMethod("initOperators").invoke(operatorClass.newInstance());
-		        	//isOperatorClassFound = true;
-		        }
-		    } catch (Exception ex) {
-		    	// TODO generated
-		    	ex.printStackTrace();
-		    }
+			String classNameAndPackage = classFile.getAbsolutePath()
+					.replace(classDestinationFile.getAbsolutePath() + "\\", "").replace("\\", ".");
+			
+			classNameAndPackage = classNameAndPackage.substring(0, classNameAndPackage.length() - 6);
+			Class<?> cls = loader.loadClass(classNameAndPackage);
+			if (StateInterface.class.isAssignableFrom(cls) && !StateInterface.class.equals(cls)) {
+				stateClass = cls;
+				isStateClassFound = true;
+			} else if (OperatorInterface.class.isAssignableFrom(cls) && !OperatorInterface.class.equals(cls)) {
+				operatorClasses.add(cls);
+				isOperatorClassFound = true; 
+			}
 		}
-		try {
-			loader.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		
+		loader.close();
+		
 		if(!isStateClassFound){
-			// TODO exception
+			throw new StateNotFoundException();
 		} else if(!isOperatorClassFound){
-			// TODO exception
+			throw new OperatorNotFoundException();
 		}
 	}
 	
-	private void initAndStartChosenSolutionSearchers(){
+	private void initAndStartChosenSolutionSearchers() throws StateInitializationException, OperatorInitializationException{
 		OperatorInstantiator operatorInstantiator = new OperatorInstantiator();
 		List<OperatorInterface> OPERATORS = operatorInstantiator.getOperatorInstances(operatorClasses);
 		
-		// TODO try kivétele
 		StateInterface state = null;
 		try {
 			state = (StateInterface) stateClass.getConstructor().newInstance();
-		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-			| InvocationTargetException | NoSuchMethodException | SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+				| NoSuchMethodException | SecurityException e) {
+			throw new StateInitializationException(e);
 		}
 		
 		if(userInput.isDoBackTrackSimple()){

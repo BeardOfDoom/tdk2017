@@ -5,12 +5,14 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
+import exceptions.OperatorInitializationException;
+import exceptions.StateInitializationException;
 import interfaces.OperatorInterface;
 
 @SuppressWarnings("unchecked")
 public class OperatorInstantiator{
 	
-  public List<OperatorInterface> getOperatorInstances(List<Class<?>> operatorClasses) {
+  public List<OperatorInterface> getOperatorInstances(List<Class<?>> operatorClasses) throws OperatorInitializationException {
     List<OperatorInterface> result = new ArrayList<>();
 
 	for(Class<?> operatorClass : operatorClasses){
@@ -20,7 +22,7 @@ public class OperatorInstantiator{
 			result.addAll((List<OperatorInterface>) operatorField.get(operatorClass));
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
 				| SecurityException | InstantiationException | NoSuchFieldException e) {
-			e.printStackTrace();
+			throw new OperatorInitializationException(e);
 		}
 	}
     return result;
