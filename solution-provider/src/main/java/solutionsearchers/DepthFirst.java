@@ -1,11 +1,8 @@
 package solutionsearchers;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import interfaces.OperatorInterface;
 import interfaces.StateInterface;
@@ -14,7 +11,6 @@ import nodes.Node;
 
 public class DepthFirst {
 	
-	private Map<StateInterface, Integer> stepsOnStates;
 	private List<Node> reachedBackTrackCircleNodes;
 	private StringBuilder steps;
 	private List<String> activateNodes;
@@ -45,8 +41,7 @@ public class DepthFirst {
 		inactivateEdges.clear();
 	}
 	
-	public DepthFirst(DepthFirstNode start, Class<?> operatorClass){
-		stepsOnStates = new HashMap<>();
+	public DepthFirst(DepthFirstNode start, List<OperatorInterface> OPERATORS){
 		reachedBackTrackCircleNodes = new ArrayList<>();
 		steps = new StringBuilder();
 		activateNodes = new ArrayList<>();
@@ -55,13 +50,7 @@ public class DepthFirst {
 		closeNodes = new ArrayList<>();
 		activateEdges = new ArrayList<>();
 		inactivateEdges = new ArrayList<>();
-		try {
-			Field operatorField = operatorClass.getField("OPERATORS");
-			OPERATORS = (List<OperatorInterface>) operatorField.get(operatorClass);
-		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		this.OPERATORS = OPERATORS;
 		openNodes.add(start);
 		activateNodes.add(String.valueOf(start.getId()));
 		appendSteps();

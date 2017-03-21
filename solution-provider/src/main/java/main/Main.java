@@ -44,11 +44,11 @@ public class Main {
 	
 	public static void main(String[] args) throws IOException, ClassNotFoundException{
 		
-		String laci3korsoState = "C:\\Users\\Vécsi Ádám\\Desktop\\State.java";
-		String laci3korsoOperator = "C:\\Users\\Vécsi Ádám\\Desktop\\Operator.java";
+		String laciState = "C:\\Users\\Vécsi Ádám\\Desktop\\State.java";
+		String laciOperator = "C:\\Users\\Vécsi Ádám\\Desktop\\Operator1.java";
 		String laciPlusz = "C:\\Users\\Vécsi Ádám\\Desktop\\GeneratedUtils.java";
 		
-		SolutionMaker asd = new SolutionMaker(new ArrayList<>(Arrays.asList(laci3korsoState, laci3korsoOperator, laciPlusz/*"C:\\workspace\\Prototypes\\src\\Hanoi\\State.java", "C:\\workspace\\Prototypes\\src\\Hanoi\\Operator.java"*/)), new UserInput("", false, true, false, false, false, false, false, false, false));
+		SolutionMaker asd = new SolutionMaker(new ArrayList<>(Arrays.asList(laciState, laciOperator, laciPlusz/*"C:\\workspace\\Prototypes\\src\\Hanoi\\State.java", "C:\\workspace\\Prototypes\\src\\Hanoi\\Operator.java"*/)), new UserInput("", false, true, true, true, true, true, true, true, true));
 		asd.start();
 		
 		/*String stateClassFilePath = "C:\\workspace\\Prototypes\\src\\Hanoi\\State.java";

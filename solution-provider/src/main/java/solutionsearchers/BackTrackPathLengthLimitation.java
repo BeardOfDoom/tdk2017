@@ -1,6 +1,5 @@
 package solutionsearchers;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -44,7 +43,7 @@ public class BackTrackPathLengthLimitation {
 		inactivateEdges.clear();
 	}
 	
-	public BackTrackPathLengthLimitation(BackTrackPathLengthLimitationNode start, int pathLengthLimitation, Class<?> operatorClass){
+	public BackTrackPathLengthLimitation(BackTrackPathLengthLimitationNode start, int pathLengthLimitation, List<OperatorInterface> OPERATORS){
 		stepsOnStates = new HashMap<>();
 		stepsOnEdges = new HashMap<>();
 		reachedBackTrackPathLengthLimitationNodes = new ArrayList<>();
@@ -57,18 +56,12 @@ public class BackTrackPathLengthLimitation {
 		inactivateEdges = new ArrayList<>();
 		actual = start;
 		actual.setNumOfNodeStepOns(1);
-		try {
-			Field operatorField = operatorClass.getField("OPERATORS");
-			OPERATORS = (List<OperatorInterface>) operatorField.get(operatorClass);
-		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		this.pathLengthLimitation = pathLengthLimitation;
+		this.OPERATORS = OPERATORS;
 		activateNodes.add(String.valueOf(actual.getId()));
 		stepOnNodes.add(String.valueOf(actual.getId()));
 		appendSteps();
 		//steps.append(actual.getId() + "\n");
-		this.pathLengthLimitation = pathLengthLimitation;
 		maxId = start.getId();
 	}
 	

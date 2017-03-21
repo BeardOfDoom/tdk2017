@@ -1,6 +1,5 @@
 package solutionsearchers;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,7 +51,7 @@ public class BackTrackCircle {
 		return false;
 	}
 	
-	public BackTrackCircle(BackTrackCircleNode start, Class<?> operatorClass){
+	public BackTrackCircle(BackTrackCircleNode start, List<OperatorInterface> OPERATORS){
 		stepsOnStates = new HashMap<>();
 		reachedBackTrackCircleNodes = new ArrayList<>();
 		steps = new StringBuilder();
@@ -64,13 +63,7 @@ public class BackTrackCircle {
 		inactivateEdges = new ArrayList<>();
 		actual = start;
 		actual.setNumOfNodeStepOns(1);
-		try {
-			Field operatorField = operatorClass.getField("OPERATORS");
-			OPERATORS = (List<OperatorInterface>) operatorField.get(operatorClass);
-		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		this.OPERATORS = OPERATORS;
 		activateNodes.add(String.valueOf(actual.getId()));
 		stepOnNodes.add(String.valueOf(actual.getId()));
 		appendSteps();

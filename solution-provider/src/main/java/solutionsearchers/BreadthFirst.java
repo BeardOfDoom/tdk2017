@@ -1,6 +1,5 @@
 package solutionsearchers;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -42,7 +41,7 @@ public class BreadthFirst {
 		inactivateEdges.clear();
 	}
 	
-	public BreadthFirst(BreadthFirstNode start, Class<?> operatorClass){
+	public BreadthFirst(BreadthFirstNode start, List<OperatorInterface> OPERATORS){
 		reachedBreadthFirstNodes = new ArrayList<>();
 		steps = new StringBuilder();
 		activateNodes = new ArrayList<>();
@@ -51,13 +50,7 @@ public class BreadthFirst {
 		closeNodes = new ArrayList<>();
 		activateEdges = new ArrayList<>();
 		inactivateEdges = new ArrayList<>();
-		try {
-			Field operatorField = operatorClass.getField("OPERATORS");
-			OPERATORS = (List<OperatorInterface>) operatorField.get(operatorClass);
-		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		this.OPERATORS = OPERATORS;
 		openNodes.add(start);
 		activateNodes.add(String.valueOf(start.getId()));
 		appendSteps();

@@ -43,26 +43,7 @@ public class SolutionMaker {
 	private URL classDestinationURL;
 	private List<File> loadableClasses;
 	private Class<?> stateClass;
-	private Class<?> operatorClass;
-	
-	/*private BackTrackSimpleNode backTrackSimpleNodeStart;
-	private BackTrackSimple backTrackSimple;
-	private BackTrackCircleNode backTrackCircleNodeStart;
-	private BackTrackCircle backTrackCircle;
-	private BackTrackPathLengthLimitationNode backTrackPathLengthLimitationNode;
-	private BackTrackPathLengthLimitation backTrackPathLengthLimitation;
-	private BackTrackOptimalNode backTrackOptimalNode;
-	private BackTrackOptimal backTrackOptimal;
-	private BreadthFirstNode breadthFirstNode;
-	private BreadthFirst breadthFirst;
-	private DepthFirstNode depthFirstNode;
-	private DepthFirst depthFirst;
-	private OptimalNode optimalNode;
-	private Optimal optimal;
-	private BestFirstNode bestFirstNode;
-	private BestFirst bestFirs;
-	private ANode aNode;
-	private A a;*/
+	private List<Class<?>> operatorClasses;
 	
 	public SolutionMaker(List<String> filePaths, UserInput userInput){
 		this.filePaths = filePaths;
@@ -76,6 +57,7 @@ public class SolutionMaker {
 			e.printStackTrace();
 		}
 		loadableClasses = new ArrayList<>();
+		operatorClasses = new ArrayList<>();
 	}
 	
 	public void start(){
@@ -145,11 +127,10 @@ public class SolutionMaker {
 		        if(StateInterface.class.isAssignableFrom(cls) && !StateInterface.class.equals(cls)){
 		        	stateClass = cls;
 		        	isStateClassFound = true;
-		        } else if (OperatorInterface.class.isAssignableFrom(cls) && !OperatorInterface.class.equals(cls)){
-		        	System.out.println();
-		        	operatorClass = cls;
-		        	operatorClass.getMethod("initOperators").invoke(operatorClass.newInstance());
-		        	isOperatorClassFound = true;
+		        } else if(OperatorInterface.class.isAssignableFrom(cls) && !OperatorInterface.class.equals(cls)){
+		        	operatorClasses.add(cls);
+		        	//operatorClass.getMethod("initOperators").invoke(operatorClass.newInstance());
+		        	//isOperatorClassFound = true;
 		        }
 		    } catch (Exception ex) {
 		    	// TODO generated
@@ -170,6 +151,9 @@ public class SolutionMaker {
 	}
 	
 	private void initAndStartChosenSolutionSearchers(){
+		OperatorInstantiator operatorInstantiator = new OperatorInstantiator();
+		List<OperatorInterface> OPERATORS = operatorInstantiator.getOperatorInstances(operatorClasses);
+		
 		// TODO try kivétele
 		StateInterface state = null;
 		try {
@@ -182,55 +166,55 @@ public class SolutionMaker {
 		
 		if(userInput.isDoBackTrackSimple()){
 			BackTrackSimpleNode backTrackSimpleNodeStart = new BackTrackSimpleNode(state.getStart(), null, null, 0, new ArrayList<>());
-			BackTrackSimple backTrackSimple = new BackTrackSimple(backTrackSimpleNodeStart, operatorClass);
+			BackTrackSimple backTrackSimple = new BackTrackSimple(backTrackSimpleNodeStart, OPERATORS);
 			backTrackSimple.search();
 		}
 		
 		if(userInput.isDoBackTrackCircle()){
 			BackTrackCircleNode backTrackCircleNodeStart = new BackTrackCircleNode(state.getStart(), null, null, 0, new ArrayList<>());
-			BackTrackCircle backTrackCircle = new BackTrackCircle(backTrackCircleNodeStart, operatorClass);
+			BackTrackCircle backTrackCircle = new BackTrackCircle(backTrackCircleNodeStart, OPERATORS);
 			backTrackCircle.search();
 		}
 
 		if (userInput.isDoBackTrackPathLengthLimitation()) {
 			BackTrackPathLengthLimitationNode backTrackPathLengthLimitationNode = new BackTrackPathLengthLimitationNode(state.getStart(), null, null, 0, new ArrayList<>(), 0);
-			BackTrackPathLengthLimitation backTrackPathLengthLimitation = new BackTrackPathLengthLimitation(backTrackPathLengthLimitationNode, 10, operatorClass);
+			BackTrackPathLengthLimitation backTrackPathLengthLimitation = new BackTrackPathLengthLimitation(backTrackPathLengthLimitationNode, 10, OPERATORS);
 			backTrackPathLengthLimitation.search();
 		}
 
 		if (userInput.isDoBackTrackOptimal()) {
 			BackTrackOptimalNode backTrackOptimalNode = new BackTrackOptimalNode(state.getStart(), null, null, 0, new ArrayList<>(), 0);
-			BackTrackOptimal backTrackOptimal = new BackTrackOptimal(backTrackOptimalNode, 10, operatorClass);
+			BackTrackOptimal backTrackOptimal = new BackTrackOptimal(backTrackOptimalNode, 10, OPERATORS);
 			backTrackOptimal.search();
 		}
 
 		if (userInput.isDoBreadthFirst()) {
 			BreadthFirstNode breadthFirstNode = new BreadthFirstNode(state.getStart(), null, null, 0, 0);
-			BreadthFirst breadthFirst = new BreadthFirst(breadthFirstNode, operatorClass);
+			BreadthFirst breadthFirst = new BreadthFirst(breadthFirstNode, OPERATORS);
 			breadthFirst.search();
 		}
 
 		if (userInput.isDoDepthFirst()) {
 			DepthFirstNode depthFirstNode = new DepthFirstNode(state.getStart(), null, null, 0, 0);
-			DepthFirst depthFirst = new DepthFirst(depthFirstNode, operatorClass);
+			DepthFirst depthFirst = new DepthFirst(depthFirstNode, OPERATORS);
 			depthFirst.search();
 		}
 
 		if (userInput.isDoOptimal()) {
 			OptimalNode optimalNode = new OptimalNode(state.getStart(), null, null, 0, 0);
-			Optimal optimal = new Optimal(optimalNode, operatorClass);
+			Optimal optimal = new Optimal(optimalNode, OPERATORS);
 			optimal.search();
 		}
 
 		if (userInput.isDoBestFirst()) {
 			BestFirstNode bestFirstNode = new BestFirstNode(state.getStart(), null, null, 0, "", null);
-			BestFirst bestFirst = new BestFirst(bestFirstNode, "", null, operatorClass);
+			BestFirst bestFirst = new BestFirst(bestFirstNode, "", null, OPERATORS);
 			bestFirst.search();
 		}
 
 		if (userInput.isDoA()) {
 			ANode aNode = new ANode(state.getStart(), null, null, 0, 0, "", null);
-			A a = new A(aNode, "", null, operatorClass);
+			A a = new A(aNode, "", null, OPERATORS);
 			a.search();
 		}
 	}

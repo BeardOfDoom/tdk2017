@@ -1,6 +1,5 @@
 package solutionsearchers;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -46,7 +45,7 @@ public class BackTrackOptimal {
 		inactivateEdges.clear();
 	}
 	
-	public BackTrackOptimal(BackTrackOptimalNode start, int pathLengthLimitation, Class<?> operatorClass){
+	public BackTrackOptimal(BackTrackOptimalNode start, int pathLengthLimitation, List<OperatorInterface> OPERATORS){
 		stepsOnStates = new HashMap<>();
 		stepsOnEdges = new HashMap<>();
 		reachedBackTrackOptimalNodes = new ArrayList<>();
@@ -59,19 +58,13 @@ public class BackTrackOptimal {
 		inactivateEdges = new ArrayList<>();
 		actual = start;
 		actual.setNumOfNodeStepOns(1);
-		try {
-			Field operatorField = operatorClass.getField("OPERATORS");
-			OPERATORS = (List<OperatorInterface>) operatorField.get(operatorClass);
-		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		this.pathLengthLimitation = pathLengthLimitation;
+		this.OPERATORS = OPERATORS;
 		activateNodes.add(String.valueOf(actual.getId()));
 		stepOnNodes.add(String.valueOf(actual.getId()));
 		appendSteps();
 		//steps.append(actual.getId() + "\n");
 		didFind = false;
-		this.pathLengthLimitation = pathLengthLimitation;
 		maxId = start.getId();
 	}
 	
