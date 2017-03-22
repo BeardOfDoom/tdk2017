@@ -26,8 +26,10 @@ public class Main {
 		String laciState = "C:\\Users\\Vécsi Ádám\\Desktop\\State.java";
 		String laciOperator = "C:\\Users\\Vécsi Ádám\\Desktop\\Operator1.java";
 		String laciPlusz = "C:\\Users\\Vécsi Ádám\\Desktop\\GeneratedUtils.java";
+		String stateInterface = "C:\\Users\\Vécsi Ádám\\Desktop\\StateInterface.java";
+		String operatorInterface = "C:\\Users\\Vécsi Ádám\\Desktop\\OperatorInterface.java";
 		try {
-		SolutionMaker asd = new SolutionMaker(new ArrayList<>(Arrays.asList(laciState, laciOperator, laciPlusz/*"C:\\workspace\\Prototypes\\src\\Hanoi\\State.java", "C:\\workspace\\Prototypes\\src\\Hanoi\\Operator.java"*/)), new UserInput("", false, false, true, false, false, false, false, false, false));
+		SolutionMaker asd = new SolutionMaker(new ArrayList<>(Arrays.asList(laciState, laciOperator, laciPlusz, stateInterface, operatorInterface/*"C:\\workspace\\Prototypes\\src\\Hanoi\\State.java", "C:\\workspace\\Prototypes\\src\\Hanoi\\Operator.java"*/)), new UserInput("", false, true, false, false, true, false, false, false, false));
 			asd.start();
 		} catch (WrongFileExtensionException | TemporaryFolderCreationException | CompilationException | IOException | ClassNotFoundException | StateNotFoundException | OperatorNotFoundException | StateInitializationException | OperatorInitializationException | TemporaryFolderDeletionException e) {
 			// TODO Auto-generated catch block

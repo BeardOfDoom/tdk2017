@@ -1,14 +1,10 @@
 package main;
 
-import exceptions.*;
-import interfaces.OperatorInterface;
-import interfaces.StateInterface;
-import model.UserInput;
-import nodes.*;
-import org.apache.commons.io.FilenameUtils;
-import solutionsearchers.*;
-
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -16,6 +12,38 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import org.apache.commons.io.FilenameUtils;
+
+import exceptions.CompilationException;
+import exceptions.OperatorInitializationException;
+import exceptions.OperatorNotFoundException;
+import exceptions.StateInitializationException;
+import exceptions.StateNotFoundException;
+import exceptions.TemporaryFolderCreationException;
+import exceptions.TemporaryFolderDeletionException;
+import exceptions.WrongFileExtensionException;
+import interfaces.OperatorInterface;
+import interfaces.StateInterface;
+import model.UserInput;
+import nodes.ANode;
+import nodes.BackTrackCircleNode;
+import nodes.BackTrackOptimalNode;
+import nodes.BackTrackPathLengthLimitationNode;
+import nodes.BackTrackSimpleNode;
+import nodes.BestFirstNode;
+import nodes.BreadthFirstNode;
+import nodes.DepthFirstNode;
+import nodes.OptimalNode;
+import solutionsearchers.A;
+import solutionsearchers.BackTrackCircle;
+import solutionsearchers.BackTrackOptimal;
+import solutionsearchers.BackTrackPathLengthLimitation;
+import solutionsearchers.BackTrackSimple;
+import solutionsearchers.BestFirst;
+import solutionsearchers.BreadthFirst;
+import solutionsearchers.DepthFirst;
+import solutionsearchers.Optimal;
 
 public class SolutionMaker {
 	

@@ -35,11 +35,14 @@ public class SolutionHelper {
 	}
 	
 	public static String writeOutputForGraphic(Class<?> solutionSearcher, List<Node> nodes, Node solution, String steps){
+		File outputFolder = new File("solutionOutputs");
 		File output = new File("solutionOutpus/" + solutionSearcher.getSimpleName() + ".txt");
-		
+		if(!outputFolder.exists())
+			outputFolder.mkdirs();
+			
 		BufferedWriter writer = null;
 		try {
-			writer = new BufferedWriter(new FileWriter(output));
+			writer = new BufferedWriter(new FileWriter(output.getAbsolutePath()));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
