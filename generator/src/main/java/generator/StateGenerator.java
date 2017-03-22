@@ -5,7 +5,7 @@ import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.ParameterizedTypeName;
+import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import interfaces.GeneratorInterface;
 import interfaces.StateInterface;
@@ -24,6 +24,7 @@ import representation.state.AttributeRepresentation;
 import representation.state.StateRepresentation;
 import utils.CommonUtils;
 
+//TODO: Review set functions
 public class StateGenerator implements GeneratorInterface {
 
   private StateRepresentation state;
@@ -105,6 +106,7 @@ public class StateGenerator implements GeneratorInterface {
     return builder.build();
   }
 
+  //TODO: hiba a tmpList nél nem attributeType hanem az inner Type
   private CodeBlock generateInitializer(AttributeRepresentation attribute) {
     CodeBlock.Builder builder = CodeBlock.builder();
     String attributeName = attribute.getAttributeName();
@@ -115,18 +117,31 @@ public class StateGenerator implements GeneratorInterface {
     } else {
       Integer dimensionN = attribute.getDimension().getDimensionN();
       Integer dimensionM = attribute.getDimension().getDimensionM();
-      ParameterizedTypeName attributeType = GeneratorUtils.getAttributeType(attribute);
+      TypeName attributeType = GeneratorUtils.getAttributeType(attribute);
+      TypeName innerAttributeType = GeneratorUtils.getInnerAttributeType(attribute);
 
       builder
           .addStatement("$T init" + attributeName + "= new $T<>()", attributeType, ArrayList.class)
           .beginControlFlow("for(int i = 0; i<$L; i++)", dimensionN)
-          .addStatement("$T<$T> tmpList = new $T<>()", List.class, Double.class, ArrayList.class)
+          .addStatement("$1T tmpList = new $2T<>()", innerAttributeType, ArrayList.class)
           .beginControlFlow("for(int j = 0; j<$L; j++)", dimensionM)
-          .addStatement("tmpList.add($L)", 0d)
+          .add(getMatrixStart(attribute))
           .endControlFlow()
           .addStatement("init" + attributeName + ".add(tmpList)")
           .endControlFlow()
           .addStatement("this.set" + attributeName + "(init" + attributeName + ")");
+    }
+
+    return builder.build();
+  }
+
+  private CodeBlock getMatrixStart(AttributeRepresentation attribute) {
+    CodeBlock.Builder builder = CodeBlock.builder();
+
+    if (attribute.getVarType().equals(VarType.NUMBER)) {
+      builder.addStatement("tmpList.add($L)", 0d);
+    } else {
+      builder.addStatement("tmpList.add(new $T())", String.class);
     }
 
     return builder.build();
@@ -185,7 +200,7 @@ public class StateGenerator implements GeneratorInterface {
       String lowerCaseAttributeName = attribute.getAttributeName().toLowerCase();
 
       if (attribute.getVarStruct().equals(VarStruct.SET)) {
-        builder.beginControlFlow("for ($1T element : $2L)", Double.class, lowerCaseAttributeName)
+        builder.beginControlFlow("for ($1T element : $2L)", typeClass, lowerCaseAttributeName)
             .addStatement("$1L.get$2L().add(element)", resultName, attribute.getAttributeName())
             .endControlFlow();
 
@@ -193,7 +208,7 @@ public class StateGenerator implements GeneratorInterface {
         builder.beginControlFlow("for ($1T<$2T> list : $3L)", List.class, typeClass,
             lowerCaseAttributeName)
             .addStatement("$1T<$2T> tmpList = new $3T<>()", List.class, typeClass, ArrayList.class)
-            .beginControlFlow("for ($T element : list)", Double.class)
+            .beginControlFlow("for ($T element : list)", typeClass)
             .addStatement("tmpList.add(element)")
             .endControlFlow()
             .addStatement("$1T index = $2L.indexOf(list)", Integer.class, lowerCaseAttributeName)

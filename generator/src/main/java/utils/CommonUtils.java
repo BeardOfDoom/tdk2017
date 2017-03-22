@@ -1,9 +1,12 @@
 package utils;
 
+import antlr.SMLBaseVisitor;
 import antlr.SMLLexer;
+import antlr.SMLParser;
 import antlr.SMLParser.Dimension_partContext;
 import antlr.SMLParser.Matrix_referenceContext;
 import antlr.SMLParser.Parameter_description_lineContext;
+import antlr.impl.BaseVisitor;
 import antlr.impl.ErrorListener;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -12,24 +15,57 @@ import java.util.Arrays;
 import java.util.List;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.tree.ParseTree;
 import representation.ParameterRepresentation;
+import representation.ProjectRepresentation;
+import representation.operator.OperatorRepresentation;
+import representation.state.StateRepresentation;
 
 public class CommonUtils {
 
-  public static CommonTokenStream readTokensFromFile(String filename) throws IOException {
+  private CommonUtils() {
+  }
+
+  public static ProjectRepresentation processInputFile(String filename) throws IOException {
+    boolean containsError = true;
+
     BufferedReader reader = new BufferedReader(new FileReader(filename));
     ANTLRInputStream input = new ANTLRInputStream(reader);
-
     SMLLexer lexer = new SMLLexer(input);
     lexer.addErrorListener(new ErrorListener());
     CommonTokenStream tokens = new CommonTokenStream(lexer);
 
-    return tokens;
+    SMLParser parser = new SMLParser(tokens);
+    parser.setBuildParseTree(true);
+    ParseTree tree = parser.expr();
+
+    if (parser.getNumberOfSyntaxErrors() > 0) {
+      System.out.println("parser");
+      containsError = true;
+    }
+
+    try {
+      SMLBaseVisitor visitor = new SMLBaseVisitor();
+      visitor.visit(tree);
+    } catch (Exception e) {
+      System.out.println("visitor");
+    }
+
+    if (!containsError) {
+
+      System.out.println("Base Visitor");
+
+      BaseVisitor baseVisitor = new BaseVisitor();
+      baseVisitor.visit(tree);
+
+      StateRepresentation stateRepresentation = baseVisitor.getStateRepresentation();
+      List<OperatorRepresentation> operatorRepresentations = baseVisitor
+          .getOperatorRepresentations();
+    }
+
+    return new ProjectRepresentation(containsError, null, null);
   }
 
-  public static String getWordContent(String word) {
-    return word.substring(1, word.length() - 1);
-  }
 
   public static ParameterRepresentation getParameterRepresentationFromContext(
       Parameter_description_lineContext parameter) {
@@ -47,7 +83,6 @@ public class CommonUtils {
 
     return parameterRepresentation;
   }
-
 
   public static List<String> getDimensionsFromMatrixReferenceContext(
       Matrix_referenceContext matrix) {

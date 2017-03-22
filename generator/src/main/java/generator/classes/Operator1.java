@@ -2,8 +2,11 @@ package generator.classes;
 
 import interfaces.OperatorInterface;
 import interfaces.StateInterface;
+import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 
 public class Operator1 implements OperatorInterface {
+
   private Integer i;
 
   private Integer j;
@@ -20,8 +23,8 @@ public class Operator1 implements OperatorInterface {
 
   @Override
   public void initOperators() {
-    for(int i = 0; i <= 2; i += 1) {
-      for(int j = 0; j <= 2; j += 1) {
+    for (int i = 0; i <= 2; i += 1) {
+      for (int j = 0; j <= 2; j += 1) {
         Operator1 operator1 = new Operator1(i, j);
         OPERATORS.add(operator1);
       }
@@ -71,15 +74,15 @@ public class Operator1 implements OperatorInterface {
   @Override
   public String toString() {
     return "Operator1{" +
-    	"i=" + i +
-    	", j=" + j +
-    	"}";
+        "i=" + i +
+        ", j=" + j +
+        "}";
   }
 
   @Override
   public boolean isApplicable(StateInterface stateObject) {
     State original = ((State) stateObject);
-    return !i.equals(j) && original.getAttr1().get(0).get(i) != 0d && original.getAttr1().get(0).get(j) < original.getAttr2().get(0).get(j);
+    return true;
   }
 
   @Override
@@ -87,12 +90,21 @@ public class Operator1 implements OperatorInterface {
     State original = ((State) stateObject);
     State state = original.copy();
 
-    Double beer = GeneratedUtils.min(original.getAttr1().get(0).get(i), original.getAttr2().get(0).get(j) - original.getAttr1().get(0).get(j));
-
-    state.getAttr1().get(0).set(i, original.getAttr1().get(0).get(i) - beer);
-    state.getAttr1().get(0).set(j, original.getAttr1().get(0).get(j) + beer);
     return state;
   }
+
+  private Object getFieldObject(State state, Integer number) throws IllegalAccessException {
+    Field field = state.getClass().getDeclaredFields()[number];
+    field.setAccessible(true);
+    return field.get(state);
+  }
+
+  private Type getFieldType(State state, Integer number) {
+    Field field = state.getClass().getDeclaredFields()[number];
+    field.setAccessible(true);
+    return field.getType();
+  }
+
 
   @Override
   public double getCost() {

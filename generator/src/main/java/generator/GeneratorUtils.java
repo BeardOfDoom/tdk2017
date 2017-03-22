@@ -21,8 +21,8 @@ import representation.ParameterRepresentation;
 import representation.SetAssignRepresentation;
 import representation.state.AttributeRepresentation;
 
-
 public class GeneratorUtils {
+
 
   public static List<FieldSpec> generateFieldsFromAttributes(
       List<AttributeRepresentation> attributes) {
@@ -214,21 +214,19 @@ public class GeneratorUtils {
   }
 
   public static ParameterizedTypeName getAttributeType(AttributeRepresentation attribute) {
-    TypeName innerType;
+    TypeName innerType = getInnerAttributeType(attribute);
+    return attribute.getVarStruct().equals(VarStruct.SET) ? ParameterizedTypeName
+        .get(ClassName.get(Set.class), innerType)
+        : ParameterizedTypeName.get(ClassName.get(List.class), innerType);
+  }
+
+  public static TypeName getInnerAttributeType(AttributeRepresentation attribute) {
     if (attribute.getVarStruct().equals(VarStruct.SET)) {
-      if (attribute.getVarType().equals(VarType.NUMBER)) {
-        innerType = TypeName.get(Double.class);
-      } else {
-        innerType = TypeName.get(String.class);
-      }
-      return ParameterizedTypeName.get(ClassName.get(Set.class), innerType);
+      return attribute.getVarType().equals(VarType.NUMBER) ? TypeName.get(Double.class)
+          : TypeName.get(String.class);
     } else {
-      if (attribute.getVarType().equals(VarType.NUMBER)) {
-        innerType = ParameterizedTypeName.get(List.class, Double.class);
-      } else {
-        innerType = ParameterizedTypeName.get(List.class, Double.class);
-      }
-      return ParameterizedTypeName.get(ClassName.get(List.class), innerType);
+      return attribute.getVarType().equals(VarType.NUMBER) ? ParameterizedTypeName
+          .get(List.class, Double.class) : ParameterizedTypeName.get(List.class, String.class);
     }
   }
 

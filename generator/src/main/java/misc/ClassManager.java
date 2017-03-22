@@ -1,24 +1,25 @@
 package misc;
 
-import interfaces.ClassManagerInterface;
 import java.util.ArrayList;
 import java.util.List;
 import representation.ClassRepresentation;
 
-public class ClassManager implements ClassManagerInterface {
+public class ClassManager {
 
-  private List<ClassRepresentation> classes = new ArrayList<>();
+  private static List<ClassRepresentation> classes = new ArrayList<>();
 
-  public List<ClassRepresentation> getClasses() {
+  private ClassManager() {
+  }
+
+  public static List<ClassRepresentation> getClasses() {
     return classes;
   }
 
-  public void setClasses(List<ClassRepresentation> classes) {
-    this.classes = classes;
+  public static void setClasses(List<ClassRepresentation> classes) {
+    ClassManager.classes = classes;
   }
 
-  @Override
-  public List<String> getFilePaths() {
+  public static List<String> getFilePaths() {
     List<String> result = new ArrayList<>();
 
     classes.forEach(currentClass -> result.add(currentClass.getFilePath()));
@@ -26,7 +27,16 @@ public class ClassManager implements ClassManagerInterface {
     return result;
   }
 
-  public void addClassRepresentation(ClassRepresentation classRepresentation) {
+  public static void addClass(ClassRepresentation classRepresentation) {
     classes.add(classRepresentation);
   }
+
+  public static void addClasses(List<ClassRepresentation> classes) {
+    ClassManager.classes.addAll(classes);
+  }
+
+  public static void clear() {
+    ClassManager.classes.clear();
+  }
+
 }

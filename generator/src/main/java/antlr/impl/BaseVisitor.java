@@ -212,6 +212,7 @@ public class BaseVisitor extends SMLBaseVisitor {
         for (ExpressionContext expression : currentLine.init_statement().expression()) {
           setAssign.addValue(getExpressionValue(expression, type));
         }
+
         result.addSetAssignment(setAssign);
       } else if (currentLine.attr_reference() == null && currentLine.matrix_reference() != null) {
         MatrixAssignRepresentation matrixStart = new MatrixAssignRepresentation();

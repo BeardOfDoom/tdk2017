@@ -3,6 +3,7 @@ STATE:
 STATE_ATTRIBUTES:
 Attr1 is matrix[1][3] of number
 Attr2 is matrix[1][3] of number
+Attr3 is set of word
 
 STATE_START:
 $1[0][0] = 5
@@ -12,6 +13,8 @@ $1[0][2] = 0
 $2[0][0] = 5
 $2[0][1] = 3
 $2[0][2] = 2
+
+$3 = {"apple", "mandatory"}
 
 STATE_GOAL:
 $1[0][0] == 4

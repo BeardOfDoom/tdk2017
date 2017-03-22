@@ -5,18 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-
-/*
-  - min
-  - max
-  - card
-  - sum
-  - avg
-  - union
-  - intersect
- */
-
-
 public class GeneratedUtils {
 
   private GeneratedUtils() {
@@ -74,18 +62,31 @@ public class GeneratedUtils {
     return result;
   }
 
-  //TODO: Is it worth to select the iterating set??
-  public static Set<Double> intersect(Set<Double> setA, Set<Double> setB) {
-    Set<Double> result = new HashSet<>();
+  public static <T extends Object> Set<T> intersect(Set<T> setA, Set<T> setB) {
+    Set<T> result = new HashSet<>();
 
-    for (Double element : setA) {
-      if (setB.contains(element)) {
-        result.add(element);
-      }
-    }
+    result.addAll(setA);
+    result.retainAll(setB);
 
     return result;
   }
+
+  public static <T extends Object> Set<T> difference(Set<T> setA, Set<T> setB) {
+    Set<T> result = new HashSet<>();
+    result.addAll(setA);
+    result.remove(setB);
+
+    return result;
+  }
+
+  public static <T extends Object> void add(Set<T> set, T element) {
+    set.add(element);
+  }
+
+  public static <T extends Object> void remove(Set<T> set, T element) {
+    set.remove(element);
+  }
+
 
   public static <T extends Object> Double card(Set<T> set) {
     return Double.valueOf(set.size());

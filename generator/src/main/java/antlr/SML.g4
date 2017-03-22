@@ -35,29 +35,26 @@ boolean_operator: KEYWORD_AND | KEYWORD_OR;
 
 var_defining_expression: KEYWORD_VAR attr_type name SYMBOL_ASSIGN expression;
 name_defining_expression: KEYWORD_NAME name;
-assign_expression: ((attr_reference SYMBOL_ASSIGN init_statement) | (matrix_reference SYMBOL_ASSIGN expression));
 
 expression
-  : SYMBOL_LPAREN expression SYMBOL_RPAREN #paren_expr
+  :  SYMBOL_LPAREN expression SYMBOL_RPAREN #paren_expr
   | left=expression comparator right=expression #compare_expr
   | left=expression boolean_operator right=expression #bool_expr
   | left=expression binary_operator right=expression #binary_expr
   | unary_operator SYMBOL_LPAREN expression SYMBOL_RPAREN #one_param_unary_expr
   | unary_operator SYMBOL_LPAREN left=expression (SYMBOL_COMMA right=expression)? SYMBOL_RPAREN #two_param_unary_expr
   | reference #reference_expr
-  | name #name_expr
-  | number #number_expr
   | word #word_expr
+  | number #number_expr
+  | name #name_expr
   ;
 
-init_statement: SYMBOL_LBRACE (expression (SYMBOL_COMMA expression)*) SYMBOL_RBRACE;
+assign_expression: ((attr_reference SYMBOL_ASSIGN init_statement) | (matrix_reference SYMBOL_ASSIGN expression));
+init_statement: SYMBOL_LBRACE (expression (SYMBOL_COMMA  expression)*) SYMBOL_RBRACE;
 
 parameter_description_line: KEYWORD_PARAM name ((KEYWORD_FROM INT KEYWORD_TO INT (KEYWORD_BY INT)?));
 
 /*-----------------------------------------------------------------------------------------------*/
-
-word: SYMBOL_QUOTE CHAR (INT | CHAR)+ SYMBOL_QUOTE;
-SYMBOL_QUOTE: '\"';
 
 attr_name: KEYWORD_ATTRIBUTE INT;
 attr_reference: SYMBOL_REFERENCE (INT | name);
@@ -78,10 +75,8 @@ KEYWORD_NAME: 'name';
 
 KEYWORD_IS: 'is';
 KEYWORD_OF: 'of';
-
 KEYWORD_SET: 'set';
 KEYWORD_MATRIX: 'matrix';
-
 KEYWORD_WORD: 'word';
 KEYWORD_NUMBER: 'number';
 
@@ -97,10 +92,10 @@ SYMBOL_SUBSTRACT: '-';
 SYMBOL_MULTIPLICATION: '*';
 SYMBOL_DIVISION: '/';
 
-
 SYMBOL_ASSIGN: '=';
 SYMBOL_REFERENCE: '$';
 SYMBOL_COMMA : ',' ;
+SYMBOL_QUOTE: '\"';
 
 SYMBOL_LPAREN: '(' ;
 SYMBOL_RPAREN: ')' ;
@@ -133,9 +128,9 @@ INT: (('0' | '1'..'9') '0'..'9'*);
 FLOAT: (('0' | '1'..'9') '0'..'9'*)'.'('0'..'9'*);
 SIGN: ('+' | '-');
 
-CHAR: ('a'..'z' | 'A'..'Z');
-
 number: SIGN? (INT | FLOAT);
+word: (SYMBOL_QUOTE .*? SYMBOL_QUOTE);
 name: CHAR+;
+CHAR: ('a'..'z' | 'A'..'Z');
 
 WS: [ \t\r\n]+ -> skip ;
