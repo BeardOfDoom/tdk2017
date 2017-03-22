@@ -118,6 +118,18 @@
       <version>0.7.7</version>
     </dependency>
 
+    <!-- MODULES -->
+    <dependency>
+      <groupId>hu.laci.szakdolgozat</groupId>
+      <artifactId>SML</artifactId>
+      <version>1.0</version>
+    </dependency>
+    <dependency>
+      <groupId>SzakdogaTMP</groupId>
+      <artifactId>SzakdogaTMP</artifactId>
+      <version>1.0</version>
+    </dependency>
+
   </dependencies>
 
   <build>
