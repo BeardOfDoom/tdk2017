@@ -5,17 +5,16 @@ import exceptions.*;
 import hu.david.veres.graph.form.SolutionForm;
 import hu.david.veres.graph.form.SolutionFormToUserInputConverter;
 import main.SolutionMaker;
+import misc.ClassManager;
 import model.UserInput;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import misc.*;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 
 @Controller
 public class SolutionController {
@@ -54,8 +53,6 @@ public class SolutionController {
         } catch (OperatorNotFoundException e) {
             e.printStackTrace();
         } catch (StateNotFoundException e) {
-            e.printStackTrace();
-        } catch (URISyntaxException e) {
             e.printStackTrace();
         }
 
