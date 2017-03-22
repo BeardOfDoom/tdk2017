@@ -72,7 +72,7 @@ public class BackTrackCircle {
 		maxId = start.getId();
 	}
 	
-	public void search(){
+	public String search(){
 		while(true){		
 			if(actual == null){
 				if(steps.charAt(steps.length() - 1) == '\n')
@@ -162,9 +162,10 @@ public class BackTrackCircle {
 		}
 		
 		if(actual != null){
-			SolutionHelper.writeOutputForGraphic(getClass(), reachedBackTrackCircleNodes, actual, steps.toString());
+			return SolutionHelper.writeOutputForGraphic(getClass(), reachedBackTrackCircleNodes, actual, steps.toString());
 		} else {
 			System.out.println("No solution.");
+			return null;
 		}
 	}
 }

@@ -121,7 +121,7 @@ public class Optimal {
 		//steps.append(operatorIdList + "|" + newOpenNodeIdList + "|");
 	}
 	
-	public void search(){
+	public String search(){
 		while(true){
 			if(openNodes.isEmpty()){
 				if(steps.charAt(steps.length() - 1) == '\n')
@@ -159,9 +159,10 @@ public class Optimal {
 		}
 		
 		if(!openNodes.isEmpty()){
-			SolutionHelper.writeOutputForGraphic(getClass(), reachedBackTrackCircleNodes, actual, steps.toString());
+			return SolutionHelper.writeOutputForGraphic(getClass(), reachedBackTrackCircleNodes, actual, steps.toString());
 		} else {
 			System.out.println("No solution.");
+			return null;
 		}
 	}
 	

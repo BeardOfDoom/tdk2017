@@ -1,6 +1,8 @@
 package Test;
 
 import java.io.File;
+import java.net.URISyntaxException;
+import java.nio.file.Paths;
 import java.util.Arrays;
 
 import javax.script.ScriptEngine;
@@ -47,7 +49,7 @@ public class ScriptEngineTest {
 
 
 
-	public static void main(String[] args) throws ScriptException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException {
+	public static void main(String[] args) throws ScriptException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, URISyntaxException {
 		/*ScriptEngineManager mgr = new ScriptEngineManager();
 	    ScriptEngine engine = mgr.getEngineByName("JavaScript");
 	    String foo = "";
@@ -63,7 +65,8 @@ public class ScriptEngineTest {
 		System.out.println(Double.POSITIVE_INFINITY);
 		System.out.println(ScriptEngineTest.class.getSuperclass().newInstance());
 		System.out.println(Arrays.asList(ScriptEngineTest.class.getDeclaredConstructors()));*/
-		System.out.println(FilenameUtils.isExtension("C:\\Users\\Vécsi Ádám\\Desktop\\GeneratedUtils.java", "txt"));
+		System.out.println(Test.class.getClassLoader().getResource("interfaces/StateInterface.java").getPath());
+		System.out.println(Paths.get(Test.class.getClassLoader().getResource("interfaces/StateInterface.java").toURI()));
 	}
 	
 }

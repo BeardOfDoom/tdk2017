@@ -68,7 +68,7 @@ public class BackTrackOptimal {
 		maxId = start.getId();
 	}
 	
-	public void search(){
+	public String search(){
 		while(true){	
 			if(actual == null){
 				if(steps.charAt(steps.length() - 1) == '\n')
@@ -188,9 +188,10 @@ public class BackTrackOptimal {
 		}
 		
 		if(didFind){
-			SolutionHelper.writeOutputForGraphic(getClass(), reachedBackTrackOptimalNodes, solution, steps.toString());
+			return SolutionHelper.writeOutputForGraphic(getClass(), reachedBackTrackOptimalNodes, solution, steps.toString());
 		} else {
 			System.out.println("Unsuccessfull search.");
+			return null;
 		}
 	}
 }

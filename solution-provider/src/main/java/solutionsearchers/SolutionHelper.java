@@ -1,6 +1,7 @@
 package solutionsearchers;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashSet;
@@ -33,10 +34,12 @@ public class SolutionHelper {
 		return builder.toString();
 	}
 	
-	public static void writeOutputForGraphic(Class<?> solutionSearcher, List<Node> nodes, Node solution, String steps){
+	public static String writeOutputForGraphic(Class<?> solutionSearcher, List<Node> nodes, Node solution, String steps){
+		File output = new File("solutionOutpus/" + solutionSearcher.getSimpleName() + ".txt");
+		
 		BufferedWriter writer = null;
 		try {
-			writer = new BufferedWriter(new FileWriter("C:\\Documents\\SzakdogaTesztKimenet\\" + solutionSearcher.getSimpleName() + ".txt"));
+			writer = new BufferedWriter(new FileWriter(output));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -139,6 +142,7 @@ public class SolutionHelper {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		return output.getAbsolutePath();
 	}
 	
 	public static int getNodeId(StateInterface state, int maxId, List<Node> reachedNodes){

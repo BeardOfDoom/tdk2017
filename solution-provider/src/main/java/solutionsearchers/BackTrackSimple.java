@@ -61,7 +61,7 @@ public class BackTrackSimple{
 		maxId = start.getId();
 	}
 	
-	public void search(){
+	public String search(){
 		while(true){
 			if(actual == null){
 				if(steps.charAt(steps.length() - 1) == '\n')
@@ -139,9 +139,10 @@ public class BackTrackSimple{
 		}
 		
 		if(actual != null){
-			SolutionHelper.writeOutputForGraphic(getClass(), reachedBackTrackSimpleNodes, actual, steps.toString());
+			return SolutionHelper.writeOutputForGraphic(getClass(), reachedBackTrackSimpleNodes, actual, steps.toString());
 		} else {
 			System.out.println("No solution.");
+			return null;
 		}
 	}
 }
