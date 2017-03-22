@@ -130,24 +130,39 @@ public class SolutionMaker {
 	}
 	
 	private void loadClasses() throws ClassNotFoundException, IOException, StateNotFoundException, OperatorNotFoundException{
+		// TODO interface not found exception
+		List<Class<?>> classList = new ArrayList<>();
+		Class<?> stateInterface = null;
+		Class<?> operatorInterface = null;
 		boolean isStateClassFound = false;
 		boolean isOperatorClassFound = false;
 		URLClassLoader loader = new URLClassLoader(new URL[] { classDestinationURL });
 		for (File classFile : loadableClasses) {
+			String className = classFile.getName().substring(0, classFile.getName().length() - 6);
 			String classNameAndPackage = classFile.getAbsolutePath()
 					.replace(classDestinationFile.getAbsolutePath() + "\\", "").replace("\\", ".");
 			
 			classNameAndPackage = classNameAndPackage.substring(0, classNameAndPackage.length() - 6);
 			Class<?> cls = loader.loadClass(classNameAndPackage);
-			if (StateInterface.class.isAssignableFrom(cls) && !StateInterface.class.equals(cls)) {
-				stateClass = cls;
-				isStateClassFound = true;
-			} else if (OperatorInterface.class.isAssignableFrom(cls) && !OperatorInterface.class.equals(cls)) {
-				operatorClasses.add(cls);
-				isOperatorClassFound = true; 
+			classList.add(cls);
+			
+			if(className.equals("StateInterface")){
+				stateInterface = cls;
+			} else if(className.equals("OperatorInterface")){
+				operatorInterface = cls;
 			}
 		}
 		
+		for(Class<?> clazz : classList){
+			if (stateInterface.isAssignableFrom(clazz) && !stateInterface.equals(clazz)) {
+				stateClass = clazz;
+				isStateClassFound = true;
+			} else if (operatorInterface.isAssignableFrom(clazz) && !operatorInterface.equals(clazz)) {
+				operatorClasses.add(clazz);
+				isOperatorClassFound = true; 
+			}
+		}
+
 		loader.close();
 		
 		if(!isStateClassFound){
