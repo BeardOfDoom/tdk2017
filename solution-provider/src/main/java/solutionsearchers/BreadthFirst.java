@@ -104,7 +104,7 @@ public class BreadthFirst {
 		//steps.append(operatorIdList + "|" + newOpenNodeIdList + "|");
 	}
 	
-	public void search(){
+	public String search(){
 		while(true){
 			if(openNodes.isEmpty()){
 				if(steps.charAt(steps.length() - 1) == '\n')
@@ -135,9 +135,10 @@ public class BreadthFirst {
 			extend(actual);
 		}
 		if(!openNodes.isEmpty()){
-			SolutionHelper.writeOutputForGraphic(getClass(), reachedBreadthFirstNodes, actual, steps.toString());
+			return SolutionHelper.writeOutputForGraphic(getClass(), reachedBreadthFirstNodes, actual, steps.toString());
 		} else {
 			System.out.println("No solution.");
+			return null;
 		}
 	}
 }

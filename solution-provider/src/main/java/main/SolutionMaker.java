@@ -95,7 +95,7 @@ public class SolutionMaker {
 	}
 	
 	private void compileFiles() throws CompilationException, IOException{
-		List<String> processBuilderArgList = new ArrayList<>(Arrays.asList("javac", "-d", classDestinationURL.getPath(), "-nowarn", getClass().getClassLoader().getResource("interfaces/StateInterface.java").getPath(), getClass().getClassLoader().getResource("interfaces/OperatorInterface.java").getPath()));
+		List<String> processBuilderArgList = new ArrayList<>(Arrays.asList("javac", "-d", classDestinationURL.getPath(), "-nowarn"/*, getClass().getClassLoader().getResource("interfaces/StateInterface.java").getPath(), getClass().getClassLoader().getResource("interfaces/OperatorInterface.java").getPath()*/));
 		processBuilderArgList.addAll(filePaths);
 		
 		ProcessBuilder processBuilder = new ProcessBuilder(processBuilderArgList);
@@ -157,7 +157,8 @@ public class SolutionMaker {
 		}
 	}
 	
-	private void initAndStartChosenSolutionSearchers() throws StateInitializationException, OperatorInitializationException{
+	private List<String> initAndStartChosenSolutionSearchers() throws StateInitializationException, OperatorInitializationException{
+		List<String> outputFilePaths = new ArrayList<>();
 		OperatorInstantiator operatorInstantiator = new OperatorInstantiator();
 		List<OperatorInterface> OPERATORS = operatorInstantiator.getOperatorInstances(operatorClasses);
 		
@@ -172,56 +173,58 @@ public class SolutionMaker {
 		if(userInput.isDoBackTrackSimple()){
 			BackTrackSimpleNode backTrackSimpleNodeStart = new BackTrackSimpleNode(state.getStart(), null, null, 0, new ArrayList<>());
 			BackTrackSimple backTrackSimple = new BackTrackSimple(backTrackSimpleNodeStart, OPERATORS);
-			backTrackSimple.search();
+			outputFilePaths.add(backTrackSimple.search());
 		}
 		
 		if(userInput.isDoBackTrackCircle()){
 			BackTrackCircleNode backTrackCircleNodeStart = new BackTrackCircleNode(state.getStart(), null, null, 0, new ArrayList<>());
 			BackTrackCircle backTrackCircle = new BackTrackCircle(backTrackCircleNodeStart, OPERATORS);
-			backTrackCircle.search();
+			outputFilePaths.add(backTrackCircle.search());
 		}
 
 		if (userInput.isDoBackTrackPathLengthLimitation()) {
 			BackTrackPathLengthLimitationNode backTrackPathLengthLimitationNode = new BackTrackPathLengthLimitationNode(state.getStart(), null, null, 0, new ArrayList<>(), 0);
 			BackTrackPathLengthLimitation backTrackPathLengthLimitation = new BackTrackPathLengthLimitation(backTrackPathLengthLimitationNode, 10, OPERATORS);
-			backTrackPathLengthLimitation.search();
+			outputFilePaths.add(backTrackPathLengthLimitation.search());
 		}
 
 		if (userInput.isDoBackTrackOptimal()) {
 			BackTrackOptimalNode backTrackOptimalNode = new BackTrackOptimalNode(state.getStart(), null, null, 0, new ArrayList<>(), 0);
 			BackTrackOptimal backTrackOptimal = new BackTrackOptimal(backTrackOptimalNode, 10, OPERATORS);
-			backTrackOptimal.search();
+			outputFilePaths.add(backTrackOptimal.search());
 		}
 
 		if (userInput.isDoBreadthFirst()) {
 			BreadthFirstNode breadthFirstNode = new BreadthFirstNode(state.getStart(), null, null, 0, 0);
 			BreadthFirst breadthFirst = new BreadthFirst(breadthFirstNode, OPERATORS);
-			breadthFirst.search();
+			outputFilePaths.add(breadthFirst.search());
 		}
 
 		if (userInput.isDoDepthFirst()) {
 			DepthFirstNode depthFirstNode = new DepthFirstNode(state.getStart(), null, null, 0, 0);
 			DepthFirst depthFirst = new DepthFirst(depthFirstNode, OPERATORS);
-			depthFirst.search();
+			outputFilePaths.add(depthFirst.search());
 		}
 
 		if (userInput.isDoOptimal()) {
 			OptimalNode optimalNode = new OptimalNode(state.getStart(), null, null, 0, 0);
 			Optimal optimal = new Optimal(optimalNode, OPERATORS);
-			optimal.search();
+			outputFilePaths.add(optimal.search());
 		}
 
 		if (userInput.isDoBestFirst()) {
 			BestFirstNode bestFirstNode = new BestFirstNode(state.getStart(), null, null, 0, "", null);
 			BestFirst bestFirst = new BestFirst(bestFirstNode, "", null, OPERATORS);
-			bestFirst.search();
+			outputFilePaths.add(bestFirst.search());
 		}
 
 		if (userInput.isDoA()) {
 			ANode aNode = new ANode(state.getStart(), null, null, 0, 0, "", null);
 			A a = new A(aNode, "", null, OPERATORS);
-			a.search();
+			outputFilePaths.add(a.search());
 		}
+		
+		return outputFilePaths;
 	}
 	
 	public static boolean deleteFolder(File file) {
