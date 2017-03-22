@@ -1,6 +1,6 @@
 package something;
 
-import something.StateInterface;
+import interfaces.StateInterface;
 import java.util.ArrayList;
 import java.util.List;
 

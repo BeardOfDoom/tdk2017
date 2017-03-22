@@ -1,0 +1,40 @@
+info
+BreadthFirst
+nodes
+7|State{attr1=[[1.0, 2.0, 2.0]], attr2=[[5.0, 3.0, 2.0]]}
+6|State{attr1=[[4.0, 1.0, 0.0]], attr2=[[5.0, 3.0, 2.0]]}
+1|State{attr1=[[2.0, 3.0, 0.0]], attr2=[[5.0, 3.0, 2.0]]}
+0|State{attr1=[[5.0, 0.0, 0.0]], attr2=[[5.0, 3.0, 2.0]]}
+4|State{attr1=[[2.0, 1.0, 2.0]], attr2=[[5.0, 3.0, 2.0]]}
+3|State{attr1=[[0.0, 3.0, 2.0]], attr2=[[5.0, 3.0, 2.0]]}
+2|State{attr1=[[3.0, 0.0, 2.0]], attr2=[[5.0, 3.0, 2.0]]}
+5|State{attr1=[[3.0, 2.0, 0.0]], attr2=[[5.0, 3.0, 2.0]]}
+operators
+OP0|Operator1{i=0, j=0}
+OP1|Operator1{i=0, j=1}
+OP2|Operator1{i=0, j=2}
+OP3|Operator1{i=1, j=0}
+OP4|Operator1{i=1, j=1}
+OP5|Operator1{i=1, j=2}
+OP6|Operator1{i=2, j=0}
+OP7|Operator1{i=2, j=1}
+OP8|Operator1{i=2, j=2}
+connections
+0|1|OP1
+0|2|OP2
+1|3|OP2
+1|4|OP5
+2|5|OP7
+4|6|OP6
+5|7|OP2
+steps
+Activated nodes: [0] Inactivated nodes: [] Stepped on nodes: [] Closed nodes: [] Activated edges: [] Inactivated edges: []
+Activated nodes: [1, 2] Inactivated nodes: [] Stepped on nodes: [0] Closed nodes: [] Activated edges: [0-OP1-1, 0-OP2-2] Inactivated edges: []
+Activated nodes: [3, 4] Inactivated nodes: [] Stepped on nodes: [1] Closed nodes: [0] Activated edges: [1-OP2-3, 1-OP5-4] Inactivated edges: []
+Activated nodes: [5] Inactivated nodes: [] Stepped on nodes: [2] Closed nodes: [1] Activated edges: [2-OP7-5] Inactivated edges: []
+Activated nodes: [] Inactivated nodes: [] Stepped on nodes: [3] Closed nodes: [2] Activated edges: [] Inactivated edges: []
+Activated nodes: [6] Inactivated nodes: [] Stepped on nodes: [4] Closed nodes: [3] Activated edges: [4-OP6-6] Inactivated edges: []
+Activated nodes: [7] Inactivated nodes: [] Stepped on nodes: [5] Closed nodes: [4] Activated edges: [5-OP2-7] Inactivated edges: []
+Activated nodes: [] Inactivated nodes: [] Stepped on nodes: [6] Closed nodes: [5] Activated edges: [] Inactivated edges: []
+solution
+0 OP1 1 OP5 4 OP6 6 

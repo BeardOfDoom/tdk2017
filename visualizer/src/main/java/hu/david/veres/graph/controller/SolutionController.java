@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 
 @Controller
 public class SolutionController {
@@ -54,7 +55,10 @@ public class SolutionController {
             e.printStackTrace();
         } catch (StateNotFoundException e) {
             e.printStackTrace();
-        }
+        } catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
         System.out.println("SOLUTION - " + solutionForm);
         model.addAttribute("solutionForm", new SolutionForm());

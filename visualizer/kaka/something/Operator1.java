@@ -1,7 +1,7 @@
 package something;
 
-import something.OperatorInterface;
-import something.StateInterface;
+import interfaces.OperatorInterface;
+import interfaces.StateInterface;
 
 public class Operator1 implements OperatorInterface {
   private Integer i;
