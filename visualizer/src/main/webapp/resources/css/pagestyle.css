@@ -1,0 +1,82 @@
+body{
+	background: #fff;
+}
+
+.myNavbar{
+	border: none;
+	border-radius: 0;
+	margin-bottom: 0;
+}
+
+#myCarousel{
+	margin-top: 0;
+}
+
+.myBrand{
+	font-size: 25px;
+}
+
+.carousel .item img{
+	max-height: 200px;
+	width: 100%;
+	object-fit: cover;
+}
+
+.carousel .item h3{
+	font-size: 40px;
+}
+
+.myContainer .row{
+	margin-top: 30px;
+	margin-bottom: 30px;
+	padding: 20px;
+	background: #eee;
+	/*border: 2px solid black;*/
+}
+
+.response{
+	margin-top: 30px;
+}
+
+.form-div{
+	margin-top: 30px;
+	margin-bottom: 30px;
+}
+
+.process-identifier{
+	margin-left: 10px;
+	margin-right: 10px;
+}
+
+svg{
+	background-color: white;
+	display: block;
+	margin: 30px auto;
+	box-shadow: 10px 10px 5px #888888;
+}
+
+#operatorDescription {
+	position: absolute;
+	border: 2px solid black;
+	background-color: cornflowerblue;
+	color: white;
+	font-size: larger;
+	padding: 15px;
+	text-align: center;
+	border-radius: 10px;
+	opacity: 0;
+	pointer-events: none;
+}
+
+#nodeDescription {
+	position: absolute;
+	border: 2px solid black;
+	background-color: cornflowerblue;
+	color: white;
+	font-size: larger;
+	padding: 15px;
+	text-align: center;
+	border-radius: 10px;
+	opacity: 0;
+	pointer-events: none;
+}

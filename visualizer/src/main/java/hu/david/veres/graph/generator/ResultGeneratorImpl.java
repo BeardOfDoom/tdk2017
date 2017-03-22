@@ -3,12 +3,14 @@ package hu.david.veres.graph.generator;
 import hu.david.veres.graph.model.*;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 @Component
 @Scope("prototype")
@@ -16,6 +18,10 @@ public class ResultGeneratorImpl implements ResultGenerator {
 
     private static final String DELIMITER_PIPE = "\\|";
     private static final String DELIMITER_SPACE = " ";
+    private static final String DELIMITER_CLOSE_SQUARE_BRACKET = "\\]";
+    private static final String DELIMITER_COMMA_AND_SPACE = ", ";
+    private static final char OPEN_SQUARE_BRACKET = '[';
+    private static final String EMPTY_LINE = "";
 
     private static final String LABEL_INFO = "info";
     private static final String LABEL_NODES = "nodes";
@@ -36,11 +42,11 @@ public class ResultGeneratorImpl implements ResultGenerator {
     private Result result;
 
     @Override
-    public Result generate(MultipartFile file) throws IOException {
+    public Result generate(File file) throws IOException {
 
         result = new Result();
 
-        BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()));
+        BufferedReader reader = new BufferedReader(new FileReader(file));
         String line;
 
         while ((line = reader.readLine()) != null) {
@@ -61,11 +67,11 @@ public class ResultGeneratorImpl implements ResultGenerator {
                     break;
                 case LABEL_STEPS:
                     state = STATE_STEPS;
-                    // the first line contains the start node id
-                    result.getInfo().setStartNodeId(Integer.parseInt(reader.readLine()));
                     break;
                 case LABEL_SOLUTION:
                     state = STATE_SOLUTION;
+                    break;
+                case EMPTY_LINE:
                     break;
                 default:
                     processLine(line);
@@ -111,13 +117,6 @@ public class ResultGeneratorImpl implements ResultGenerator {
         String searchAlgorithmName = reader.readLine();
         result.getInfo().setSearchAlgorithmName(searchAlgorithmName);
 
-        String lowerCase = searchAlgorithmName.toLowerCase();
-        if (lowerCase.contains("backtrack")) {
-            result.getInfo().setSearchAlgorithmType("backtrack");
-        } else {
-            result.getInfo().setSearchAlgorithmType("tree");
-        }
-
     }
 
     private void processNode(String line) {
@@ -159,75 +158,36 @@ public class ResultGeneratorImpl implements ResultGenerator {
 
     private void processSteps(String line) {
 
-        /*
-        String[] parts = line.split(DELIMITER_SPACE);
+        String[] parts = line.split(DELIMITER_CLOSE_SQUARE_BRACKET);
 
-        List<Integer> steps = Arrays.stream(parts).map(Integer::valueOf).collect(Collectors.toList());
+        Step step = new Step();
 
-        result.setSteps(steps);
-        */
-
-        // TODO: !!!!
-        String searchAlgorithmType = result.getInfo().getSearchAlgorithmType();
-        switch (searchAlgorithmType) {
-            case "backtrack":
-                processBacktrackStep(line);
-                break;
-            case "tree":
-                processTreeStep(line);
-                break;
-        }
-
-    }
-
-    private void processBacktrackStep(String line) {
-
-        String[] parts = line.split(DELIMITER_SPACE);
-
-        BacktrackStep step = new BacktrackStep();
-
-        if (parts.length == 2) {
-
-            step.setBack(false);
-            step.setOperatorId(parts[0]);
-            step.setNodeId(parts[1]);
-
-        } else if (parts.length == 3) {
-
-            step.setBack(true);
-            step.setOperatorId(parts[1]);
-            step.setNodeId(parts[2]);
-
-        }
+        step.setActivatedNodes(extractStringListFromStepPart(parts[0]));
+        step.setInactivatedNodes(extractStringListFromStepPart(parts[1]));
+        step.setSteppedOnNodes(extractStringListFromStepPart(parts[2]));
+        step.setClosedNodes(extractStringListFromStepPart(parts[3]));
+        step.setActivatedConnections(extractStringListFromStepPart(parts[4]));
+        step.setInactivatedConnections(extractStringListFromStepPart(parts[5]));
 
         result.getSteps().add(step);
 
     }
 
-    private void processTreeStep(String line) {
+    private List<String> extractStringListFromStepPart(String part) {
 
-        String[] parts = line.split(DELIMITER_PIPE);
+        String values = part.substring(part.indexOf(OPEN_SQUARE_BRACKET) + 1);
 
-        TreeStep step = new TreeStep();
-
-        if (!parts[0].equals("[]")) {
-            step.setOpenedOperatorIds(Arrays.asList(parts[0].substring(1, parts[0].length() - 1).split(", ")));
+        if (values.isEmpty()) {
+            return Collections.emptyList();
         }
-        if (!parts[1].equals("[]")) {
-            step.setOpenedNodeIds(Arrays.asList(parts[1].substring(1, parts[1].length() - 1).split(", ")));
-        }
-        step.setOperatorId(parts[2]);
-        step.setNodeId(parts[3]);
 
-        result.getSteps().add(step);
+        return Arrays.asList(values.split(DELIMITER_COMMA_AND_SPACE));
 
     }
 
     private void processSolution(String line) {
 
         String[] parts = line.split(DELIMITER_SPACE);
-
-        // List<Integer> solution = Arrays.stream(parts).map(Integer::valueOf).collect(Collectors.toList());
 
         result.setSolution(Arrays.asList(parts));
 

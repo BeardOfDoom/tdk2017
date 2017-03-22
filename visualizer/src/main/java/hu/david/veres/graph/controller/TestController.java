@@ -30,7 +30,7 @@ public class TestController {
     }
     */
 
-    @RequestMapping(path = "/graph", method = RequestMethod.GET)
+    @RequestMapping(path = "/testgraph", method = RequestMethod.GET)
     public String graphPage(){
         return "graph";
     }

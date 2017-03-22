@@ -12,7 +12,5 @@ import lombok.Setter;
 public class Info {
 
     private String searchAlgorithmName;
-    private String searchAlgorithmType;
-    private int startNodeId;
 
 }

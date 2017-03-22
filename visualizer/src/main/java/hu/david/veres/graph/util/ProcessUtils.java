@@ -1,8 +1,9 @@
 package hu.david.veres.graph.util;
 
+import org.apache.commons.lang.RandomStringUtils;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import org.apache.commons.lang.RandomStringUtils;
 
 public final class ProcessUtils {
 
@@ -17,6 +18,7 @@ public final class ProcessUtils {
         String randomString = RandomStringUtils.randomAlphanumeric(20);
 
         return timeStamp + "_" + randomString;
+
     }
 
 }

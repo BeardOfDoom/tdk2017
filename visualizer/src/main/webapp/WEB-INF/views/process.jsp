@@ -14,6 +14,17 @@
     <script src="${d3js}"></script>
 
     <style>
+
+        body{
+            background-color: #5DFF6C;
+        }
+
+        svg{
+            background-color: white;
+            display: block;
+            margin: auto;
+        }
+
         #operatorDescription {
                     position: absolute;
                     border: 2px solid black;
@@ -24,7 +35,21 @@
                     text-align: center;
                     border-radius: 10px;
                     opacity: 0;
+                    pointer-events: none;
                 }
+
+        #nodeDescription {
+                            position: absolute;
+                            border: 2px solid black;
+                            background-color: cornflowerblue;
+                            color: white;
+                            font-size: larger;
+                            padding: 15px;
+                            text-align: center;
+                            border-radius: 10px;
+                            opacity: 0;
+                            pointer-events: none;
+                        }
     </style>
 
 </head>
@@ -37,11 +62,16 @@
     <!-- <button id="next">Next</button>
     <button id="solution">Solution</button> -->
 
+    <p>
 	<button id="stepButton">STEP</button>
+	<button id="backButton">BACK</button>
+	<button id="solutionButton">SOLUTION</button>
+	</p>
 
     <svg width="960" height="600"></svg>
 
     <div id="operatorDescription"></div>
+    <div id="nodeDescription"></div>
 
     <c:url value="/resources/js/graph.js" var="graphJs" />
     <script src="${graphJs}"></script>

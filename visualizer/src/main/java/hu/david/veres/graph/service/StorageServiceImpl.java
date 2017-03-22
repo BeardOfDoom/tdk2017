@@ -8,10 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 @Service
 public class StorageServiceImpl implements StorageService {
@@ -30,23 +28,61 @@ public class StorageServiceImpl implements StorageService {
     private ObjectMapper objectMapper;
 
     @Override
-    public void storeUploadedFile(MultipartFile file, String newFileName) throws IOException {
+    public File storeUploadedFile(MultipartFile file, String newFileName) throws IOException {
 
-        Path fileUploadFolderLocation = Paths.get(fileUploadFolderName);
+        File newFile = new File(fileUploadFolderName + SLASH + newFileName + EXTENSION_TXT);
 
-        Files.copy(file.getInputStream(), fileUploadFolderLocation.resolve(newFileName + EXTENSION_TXT));
+        file.transferTo(newFile);
+
+        return newFile;
+
+    }
+
+    @Override
+    public File getUploadedFile(String fileName) throws FileNotFoundException {
+
+        File file = new File(fileUploadFolderName + SLASH + fileName + EXTENSION_TXT);
+
+        if(!file.exists()){
+            throw new FileNotFoundException();
+        }
+
+        return file;
+
+    }
+
+    @Override
+    public void deleteUploadedFile(String fileName) {
+
+        File file = new File(fileUploadFolderName + SLASH + fileName + EXTENSION_TXT);
+
+        if (file.exists()) {
+
+            file.delete();
+
+        }
 
     }
 
     @Override
     public void storeResultInJsonFile(Result result, String newFileName) throws IOException {
 
-        Path jsonFolderLocation = Paths.get(jsonFolderName);
-
-        File file = new File(jsonFolderLocation.toString() + SLASH + newFileName + EXTENSION_JSON);
+        File file = new File(jsonFolderName + SLASH + newFileName + EXTENSION_JSON);
 
         objectMapper.writerWithDefaultPrettyPrinter().writeValue(file, result);
 
     }
 
+    @Override
+    public File getJsonFile(String fileName) throws FileNotFoundException {
+
+        File file = new File(jsonFolderName + SLASH + fileName + EXTENSION_JSON);
+
+        if(!file.exists()){
+            throw new FileNotFoundException();
+        }
+
+        return file;
+
+    }
 }

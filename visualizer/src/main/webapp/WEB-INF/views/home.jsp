@@ -10,8 +10,10 @@
 	<c:url value="/resources/js/jquery-3.1.1.min.js" var="jQuery" />
 	<c:url value="/resources/css/bootstrap.min.css" var="bootstrapCss" />
 	<c:url value="/resources/js/bootstrap.min.js" var="bootstrapJs" />
+	<c:url value="/resources/css/pagestyle.css" var="pageStyle" />
 
 	<link rel="stylesheet" type="text/css" href="${bootstrapCss}" />
+	<link rel="stylesheet" type="text/css" href="${pageStyle}" />
 	<script src="${jQuery}"></script>
 	<script src="${bootstrapJs}"></script>
 
@@ -22,59 +24,17 @@
 
 <body>
 
-<nav class="navbar navbar-default">
-  <div class="container-fluid">
-    <!-- Brand and toggle get grouped for better mobile display -->
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <a class="navbar-brand" href="#">Brand</a>
-    </div>
+<%@include file="header.jsp" %>
 
-    <!-- Collect the nav links, forms, and other content for toggling -->
-    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-      <ul class="nav navbar-nav">
-        <li class="active"><a href="#">Link <span class="sr-only">(current)</span></a></li>
-        <li><a href="#">Link</a></li>
-        <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
-          <ul class="dropdown-menu">
-            <li><a href="#">Action</a></li>
-            <li><a href="#">Another action</a></li>
-            <li><a href="#">Something else here</a></li>
-            <li role="separator" class="divider"></li>
-            <li><a href="#">Separated link</a></li>
-            <li role="separator" class="divider"></li>
-            <li><a href="#">One more separated link</a></li>
-          </ul>
-        </li>
-      </ul>
-      <form class="navbar-form navbar-left">
-        <div class="form-group">
-          <input type="text" class="form-control" placeholder="Search">
-        </div>
-        <button type="submit" class="btn btn-default">Submit</button>
-      </form>
-      <ul class="nav navbar-nav navbar-right">
-        <li><a href="#">Link</a></li>
-        <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
-          <ul class="dropdown-menu">
-            <li><a href="#">Action</a></li>
-            <li><a href="#">Another action</a></li>
-            <li><a href="#">Something else here</a></li>
-            <li role="separator" class="divider"></li>
-            <li><a href="#">Separated link</a></li>
-          </ul>
-        </li>
-      </ul>
-    </div><!-- /.navbar-collapse -->
-  </div><!-- /.container-fluid -->
-</nav>
+<div class="container myContainer">
+	<div class="row">
+		<h1>TODO</h1>
+		<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed rutrum dignissim felis et luctus. Vivamus ac sollicitudin orci. Maecenas finibus vehicula lacus. Aliquam erat volutpat. Fusce congue velit in tellus cursus tincidunt. Maecenas quis tellus vitae ligula ornare varius. Donec a purus ex.</p>
+		<p>Maecenas consequat mauris massa, ut aliquam metus tempus accumsan. Aenean ultricies eget tortor vitae placerat. Proin odio erat, sodales in accumsan vitae, aliquam vitae massa. Vivamus semper, velit nec luctus facilisis, sem purus tincidunt enim, id bibendum nisi nisl quis sapien. Pellentesque nec justo vitae arcu lacinia imperdiet. Proin dictum augue a ligula finibus porta a sed ex. Donec aliquet porta justo quis dignissim. Cras venenatis facilisis erat ut rutrum. Vivamus est enim, porttitor sed consequat sed, ornare non dolor. Maecenas efficitur non ligula a blandit. Vestibulum non porttitor erat.</p>
+		<p>Duis non sapien augue. Morbi rhoncus a neque at vehicula. Sed vulputate ullamcorper felis, ac vestibulum tortor interdum in. Vestibulum luctus nulla et sagittis placerat. Morbi quis congue nulla. Mauris convallis pulvinar leo et viverra. Cras semper nulla eget dictum gravida. Sed iaculis, felis non mattis elementum, nunc turpis faucibus nisl, sed facilisis elit ex nec sapien.</p>
+		<p>Vestibulum vel nunc risus. Integer in scelerisque tortor. Praesent eget arcu sit amet odio lacinia sollicitudin. Morbi quis lacus vestibulum, maximus eros at, dapibus leo. Mauris mauris mi, tristique vitae turpis ut, fermentum ornare felis. Vivamus nibh erat, vehicula et dapibus vitae, accumsan sit amet nisi. Pellentesque commodo libero urna, eget sodales ante tincidunt malesuada. Praesent vel nisi sit amet tellus dapibus porttitor ac vel eros. Donec fringilla euismod urna, sagittis porta est accumsan id. Ut id elit id orci dictum euismod. Suspendisse euismod ante non lorem congue, eu molestie mauris blandit. Phasellus vitae imperdiet orci. Aenean consectetur, erat in laoreet molestie, purus augue mollis enim, condimentum congue tellus odio non libero. Sed et sapien eget augue facilisis tempor. Donec hendrerit viverra sagittis.</p>
+	</div>
+</div>
 
 </body>
 

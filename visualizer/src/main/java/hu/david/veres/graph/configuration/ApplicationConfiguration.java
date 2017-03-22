@@ -1,6 +1,7 @@
 package hu.david.veres.graph.configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -66,6 +67,13 @@ public class ApplicationConfiguration {
     @Bean
     public ObjectMapper objectMapper() {
         return new ObjectMapper();
+    }
+
+    // Bean for conversion between entities and dtos
+
+    @Bean
+    public ModelMapper modelMapper(){
+        return new ModelMapper();
     }
 
 }

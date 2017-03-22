@@ -1,37 +1,58 @@
-var svg = d3.select("svg"),
-	width = +svg.attr("width"),
-	height = +svg.attr("height");
+// width and height of the svg image
+var width = +d3.select("svg").attr("width"),
+	height = +d3.select("svg").attr("height");
 
+// zoom behavior
+var zoom = d3.zoom()
+	.scaleExtent([1/5, 10])
+	.on("zoom", zoomed);
+
+// zoom function
+function zoomed() {
+	svg.attr("transform", d3.event.transform);
+}
+
+// the group of the graph components
+var svg = d3.select("svg")
+	.call(zoom)
+	.append("g")
+	.attr("id", "graph");
+
+// force simulation
 var simulation = d3.forceSimulation()
-	.force("link", d3.forceLink().distance(50).id(function(d){return d.id;}))
+	.force("link", d3.forceLink().distance(75).id(function(d){return d.id;}))
 	.force("charge", d3.forceManyBody())
 	.force("center", d3.forceCenter(width / 2, height / 2));
 
 var steps;
 var nodes;
 var operators;
+var solution;
 
-var stepIndex = 0;
-var activeNodeId;
-var searchAlgorithmType;
-var connectionHistory = [];
+var stepIndex;
+var drag;
+var solutionVisible;
+var changeHistory;
+var statuses;
 
 function initGraph(jsonUrl){
 
 	d3.json(jsonUrl, function(error, graph) {
 		
+		// if error occurs, throw exception
 		if (error) throw error;
 		
+		// set nodes for graph
 		simulation
 			.nodes(graph.nodes)
 			.on("tick", ticked);
 		
+		// set links for graph
 		simulation.force("link")
 			.links(graph.connections);
 		
-		// TODO
+		// generate markers for the end of the connections
 		svg.append("defs").selectAll("marker")
-			// .data(["futureMarker", "normalMarker"])
 			.data(graph.connections)
 			.enter().append("marker")
 			.attr("id", function(d) { return "m" + d.source.id + "-" + d.operatorId + "-" + d.target.id; })
@@ -45,51 +66,62 @@ function initGraph(jsonUrl){
 			.append("path")
 			.attr("d", "M0,-5L10,0L0,5");
 		
+		// generate connections
 		var path = svg.append("g")
+			.attr("id", "connections")
 			.selectAll("path")
 			.data(graph.connections)
 			.enter().append("path")
 			.attr("id", function(d){ return "c" + d.source.id + "-" + d.operatorId + "-" + d.target.id; })
-			// .attr("class", "futureConnection")
 			.style("fill", "none")
 			.style("stroke", "lightgray")
 			.style("stroke-width", "1")
-			// .attr("marker-end", function(d) { return "url(#futureMarker)"; });
 			.attr("marker-end", function(d) { return "url(#m" + d.source.id + "-" + d.operatorId + "-" + d.target.id + ")"; });
+			
+		// generate solution path
+		var solutionPathsGroup = svg.append("g")
+			.attr("id", "solution")
+			.style("opacity", "0");
+
+		for(i=0; i<graph.solution.length-2; i+=2){
+			var solutionPathId = "s" + graph.solution[i] + "-" + graph.solution[i+1] + "-" + graph.solution[i+2];
+			solutionPathsGroup.append("path")
+				.attr("id", solutionPathId)
+				.style("fill", "none")
+				.style("stroke", "red")
+				.style("stroke-width", "2");
+		}
 		
+		// generate nodes
 		var node = svg.append("g")
+			.attr("id", "nodes")
 			.selectAll("circle")
 			.data(graph.nodes)
 			.enter().append("circle")
 			.attr("id", function(d){ return "n" + d.id; })
-			// .attr("class", "futureNode")
 			.attr("r", 5)
 			.style("stroke", "lightgray")
 			.style("fill", "white")
+			.on("mouseover", enterNode)
+			.on("mouseout", exitNode)
 			.call(d3.drag()
 				.on("start", dragStarted)
 				.on("drag", dragged)
 				.on("end", dragEnded));
 		
-		// TEST -------------------------------------
+		// generate operator circles
 		var op = svg.append("g")
+			.attr("id", "operators")
 			.selectAll("circle")
 			.data(graph.connections)
 			.enter().append("circle")
 			.attr("id", function(d){ return "o" + d.source.id + "-" + d.operatorId + "-" + d.target.id; })
-			// .attr("class", "futureNode")
 			.attr("r", 3)
 			.style("fill", "lightgray")
-			.on("mouseover", bigOperator)
-			.on("mouseout", smallOperator);
-		// TEST -------------------------------------
+			.on("mouseover", enterOperatorCircle)
+			.on("mouseout", exitOperatorCircle);
 		
-		node.append("title")
-			.text(function(d) { return d.id; });
-		
-		path.append("title")
-			.text(function(d) { return d.source.id + "-" + d.operatorId + "-" + d.target.id; });
-		
+		// this function is responsible for updating the position of the svg elements
 		function ticked() {
 			
 			node
@@ -100,88 +132,82 @@ function initGraph(jsonUrl){
 			
 			op
 				.attr("cx", function(d){
-					var dist = Math.hypot(d.source.x - d.target.x, d.source.y - d.target.y);
-					var tmpPathId = "#c" + d.source.id + "-" + d.operatorId + "-" + d.target.id;
-					// console.log(document.getElementById("c" + d.source.id + "-" + d.operatorId + "-" + d.target.id));
-					// console.log(d3.select(tmpPathId));
+					// distance of the two endpoints of the actual connection
+					var dist;
+					if(d.target.id==d.source.id){
+						dist = 57;
+					}else{
+						dist = Math.hypot(d.source.x - d.target.x, d.source.y - d.target.y);
+					}
+					// return the midpoint's x coordinate
 					return document.getElementById("c" + d.source.id + "-" + d.operatorId + "-" + d.target.id).getPointAtLength(dist / 2).x;
-					// return d3.select(tmpPathId).getPointAtLength(dist / 2).x;
 				})
 				.attr("cy", function(d){
-					var dist = Math.hypot(d.source.x - d.target.x, d.source.y - d.target.y);
+					// distance of the two endpoints of the actual connection
+					var dist;
+					if(d.target.id==d.source.id){
+						dist = 57;
+					}else{
+						dist = Math.hypot(d.source.x - d.target.x, d.source.y - d.target.y);
+					}
+					// return the midpoint's y coordinate
 					return document.getElementById("c" + d.source.id + "-" + d.operatorId + "-" + d.target.id).getPointAtLength(dist / 2).y;
 				});
 			
+			// update solution path
+			for(i=0; i<solution.length-2; i+=2){
+				
+				var solutionPathId = "s" + solution[i] + "-" + solution[i+1] + "-" + solution[i+2];
+				var graphPathId = "c" + solution[i] + "-" + solution[i+1] + "-" + solution[i+2];
+				
+				document.getElementById(solutionPathId).setAttribute("d", document.getElementById(graphPathId).getAttribute("d"));
+				
+			}
+			
 		}
 		
-		// highlight the start node
-		var startNodeId = "#n" + graph.info.startNodeId;
-		d3.select(startNodeId)
-			// .attr("class", "activeNode");
-			.style("r", "7")
-			.style("fill", "orange")
-			.style("stroke", "black");
-		
-		d3.select("#stepButton")
-			.on("click", step);
-		
+		// initialize variables
 		steps = graph.steps;
 		nodes = graph.nodes;
 		operators = graph.operators;
-		activeNodeId = graph.info.startNodeId;
-		searchAlgorithmType = graph.info.searchAlgorithmType;
+		solution = graph.solution;
 		
-		if(searchAlgorithmType=="backtrack"){
-			for(i=0; i<nodes.length; i++){
-				nodes[i].counter = 0;
-			}
+		stepIndex = 0;
+		drag = false;
+		solutionVisible = false;
+		changeHistory = [];
+		statuses = [];
+		
+		// set default statuses for nodes and connections
+		var tmpNodes = simulation.nodes();
+		for(i in tmpNodes){
+			statuses[tmpNodes[i].id] = "inactivated";
 		}
+		
+		var tmpConnections = simulation.force("link").links();
+		for(i in tmpConnections){
+			var tmpConnectionId = tmpConnections[i].source.id + "-" + tmpConnections[i].operatorId + "-" + tmpConnections[i].target.id;
+			statuses[tmpConnectionId] = "inactivated";
+		}
+		
+		// apply functions to buttons
+		d3.select("#stepButton")
+			.on("click", step);
+			
+		d3.select("#backButton")
+			.on("click", back);
+		
+		d3.select("#solutionButton")
+			.on("click", showSolution);
 		
 	});
 
 }
 
-// TEST -------------------------
-function bigOperator(d){
-	// highlight the operator circle
-	d3.select(this)
-		.transition()
-		.duration(100)
-		.attr("r", 5);
-	
-	// search for the operator information
-	var information;
-	for(i in operators){
-		if(operators[i].id==d.operatorId){
-			information = operators[i].information;
-			break;
-		}
-	}
-	
-	// show the info box
-	// console.log(information);
-	d3.select("#operatorDescription")
-                        .style("left", (d3.event.pageX + 20) + "px")
-                        .style("top", (d3.event.pageY - 5) + "px")
-                        .html(d.source.id + "-->" + d.target.id + "<br/>" + d.operatorId + "<br/>" + information)
-                        .transition()
-                        .duration(100)
-                        .style("opacity", 0.8);
-}
-function smallOperator(d){
-	d3.select(this)
-		.transition()
-		.duration(100)
-		.attr("r", 3);
-	
-	d3.select("#operatorDescription")
-                        .transition()
-                        .duration(100)
-                        .style("opacity", 0);
-}
-// TEST -------------------------
-
 function dragStarted(d) {
+	drag = true;
+	hideNodeDescriptionBox(this);
+	
 	if (!d3.event.active) simulation.alphaTarget(0.3).restart();
 	d.fx = d.x;
 	d.fy = d.y;
@@ -193,208 +219,453 @@ function dragged(d) {
 }
 
 function dragEnded(d) {
+	drag = false;
+	
 	if (!d3.event.active) simulation.alphaTarget(0);
 	d.fx = null;
 	d.fy = null;
 }
 
 function linkArc(d) {
-	var dx = d.target.x - d.source.x,
-		dy = d.target.y - d.source.y,
-		dr = Math.sqrt(dx * dx + dy * dy);
-	return "M" + d.source.x + "," + d.source.y + "A" + dr + "," + dr + " 0 0,1 " + d.target.x + "," + d.target.y;
+	
+	if(d.target.id==d.source.id){
+		
+		// loop edge
+		
+		var drx = 10;
+		var dry = 10;
+		var xRotation = -45;
+		var largeArc = 1;
+		var sweep = 0;
+		var targetX = d.target.x + 1;
+		var targetY = d.target.y + 1;
+		
+		return "M" + d.source.x + "," + d.source.y + "A" + drx + "," + dry + " " + xRotation + "," + largeArc + "," + sweep + " " + targetX + "," + targetY;
+			
+	}else{
+		
+		// normal edge
+		
+		var dx = d.target.x - d.source.x,
+			dy = d.target.y - d.source.y,
+			dr = Math.sqrt(dx * dx + dy * dy);
+			
+		return "M" + d.source.x + "," + d.source.y + "A" + dr + "," + dr + " 0 0,1 " + d.target.x + "," + d.target.y;
+		
+	}
+	
+}
+
+function enterNode(d){
+
+	// if we dragging a node, we dont want to see the node information
+	if(!drag){
+		makeNodeBigger(this);
+		
+		showNodeDescriptionBox(d.information);
+	}
+	
+}
+
+function exitNode(d){
+
+	makeNodeSmaller(this);
+
+	hideNodeDescriptionBox();
+	
+}
+
+function enterOperatorCircle(d){
+
+	makeOperatorCircleBigger(this);
+	
+	var operatorInformation = getOperatorInformation(d.operatorId);
+	
+	showOperatorDescriptionBox(d, operatorInformation);
+	
+}
+
+function exitOperatorCircle(d){
+
+	makeOperatorCircleSmaller(this);
+
+	hideOperatorDescriptionBox();
+	
 }
 
 function step(){
 	
-	// console.log(document.getElementById("c0-OP0-1").getPointAtLength(10));
-	
 	if(stepIndex<steps.length){
-		if(searchAlgorithmType=="tree"){
-			treeStep();
-		}else if(searchAlgorithmType=="backtrack"){
-			backtrackStep();
+	
+		var currentStep = steps[stepIndex];
+		
+		saveStatuses(currentStep);
+		
+		// activated nodes
+		for(i in currentStep.activatedNodes){
+			statuses[currentStep.activatedNodes[i]] = "activated";
+			makeNodeOpened(currentStep.activatedNodes[i]);
 		}
+		
+		// inactivated nodes
+		for(i in currentStep.inactivatedNodes){
+			statuses[currentStep.inactivatedNodes[i]] = "inactivated";
+			makeNodeUnvisited(currentStep.inactivatedNodes[i]);
+		}
+		
+		// closed nodes
+		for(i in currentStep.closedNodes){
+			statuses[currentStep.closedNodes[i]] = "closed";
+			makeNodeClosed(currentStep.closedNodes[i]);
+		}
+		
+		// stepped on nodes
+		for(i in currentStep.steppedOnNodes){
+			statuses[currentStep.steppedOnNodes[i]] = "steppedOn";
+			makeNodeActive(currentStep.steppedOnNodes[i]);
+		}
+		
+		// activated connections
+		for(i in currentStep.activatedConnections){
+			statuses[currentStep.activatedConnections[i]] = "activated";
+			makeConnectionVisited(currentStep.activatedConnections[i]);
+			makeMarkerVisited(currentStep.activatedConnections[i]);
+			makeOperatorCircleVisited(currentStep.activatedConnections[i]);
+		}
+		
+		// inactivated connections
+		for(i in currentStep.inactivatedConnections){
+			statuses[currentStep.inactivatedConnections[i]] = "inactivated";
+			makeConnectionUnvisited(currentStep.inactivatedConnections[i]);
+			makeMarkerUnvisited(currentStep.inactivatedConnections[i]);
+			makeOperatorCircleUnvisited(currentStep.inactivatedConnections[i]);
+		}
+		
+		stepIndex++;
+	
 	}
 	
 }
 
-function treeStep(){
+function saveStatuses(step){
 	
-	// console.log("STEP");
+	var nodeSet = new Set();
+	for(i in step.activatedNodes) nodeSet.add(step.activatedNodes[i]);
+	for(i in step.inactivatedNodes) nodeSet.add(step.inactivatedNodes[i]);
+	for(i in step.steppedOnNodes) nodeSet.add(step.steppedOnNodes[i]);
+	for(i in step.closedNodes) nodeSet.add(step.closedNodes[i]);
 	
-	var currentStep = steps[stepIndex];
-	// console.log(currentStep);
-	var tmpNodeId;
+	var connectionSet = new Set();
+	for(i in step.activatedConnections) connectionSet.add(step.activatedConnections[i]);
+	for(i in step.inactivatedConnections) connectionSet.add(step.inactivatedConnections[i]);
 	
-	// open new nodes
-	for(i=0; i<currentStep.openedNodeIds.length; i++){
-		tmpNodeId = "#n" + currentStep.openedNodeIds[i];
-		d3.select(tmpNodeId)
-			.transition()
-			.duration(500)
-			.style("r", "5")
-			.style("stroke", "black");
+	var nodeStatuses = [];
+	for(let node of nodeSet){
+		var nodeStatus = {id: node, status: statuses[node]};
+		nodeStatuses.push(nodeStatus);
 	}
 	
-	// open new connections
-	// console.log("CONNECTIONS");
-	for(i=0; i<currentStep.openedOperatorIds.length; i++){
-		var tmpConnectionId = "#c" + activeNodeId + "-" + currentStep.openedOperatorIds[i] + "-" + currentStep.openedNodeIds[i];
-		// console.log(tmpConnectionId);
-		d3.select(tmpConnectionId)
-			.transition()
-			.duration(500)
-			.style("stroke", "black");
-		
-		var tmpMarkerId = "#m" + activeNodeId + "-" + currentStep.openedOperatorIds[i] + "-" + currentStep.openedNodeIds[i];
-		// console.log(tmpConnectionId);
-		d3.select(tmpMarkerId)
-			.transition()
-			.duration(500)
-			.style("fill", "black");
-		
-		var tmpOperatorId = "#o" + activeNodeId + "-" + currentStep.openedOperatorIds[i] + "-" + currentStep.openedNodeIds[i];
-		d3.select(tmpOperatorId)
-			.transition()
-			.duration(500)
-			.style("fill", "black");
+	var connectionStatuses = [];
+	for(let connection of connectionSet){
+		var connectionStatus = {id: connection, status: statuses[connection]};
+		connectionStatuses.push(connectionStatus);
 	}
 	
-	// highlight the new active node
-	// console.log(currentStep.nodeId);
-	tmpNodeId = "#n" + currentStep.nodeId;
-	// console.log(tmpNodeId);
-	d3.select(tmpNodeId)
+	var currentStatus = {nodeStatuses: nodeStatuses, connectionStatuses: connectionStatuses};
+	
+	changeHistory.push(currentStatus);
+	
+}
+
+function back(){
+	
+	if(changeHistory.length>0){
+		
+		var status = changeHistory.pop();
+		
+		// nodes
+		for(i in status.nodeStatuses){
+			
+			switch(status.nodeStatuses[i].status){
+				case "activated":
+					statuses[status.nodeStatuses[i].id] = "activated";
+					makeNodeOpened(status.nodeStatuses[i].id);
+				break;
+				case "inactivated":
+					statuses[status.nodeStatuses[i].id] = "inactivated";
+					makeNodeUnvisited(status.nodeStatuses[i].id);
+				break;
+				case "steppedOn":
+					statuses[status.nodeStatuses[i].id] = "steppedOn";
+					makeNodeActive(status.nodeStatuses[i].id);
+				break;
+				case "closed":
+					statuses[status.nodeStatuses[i].id] = "closed";
+					makeNodeClosed(status.nodeStatuses[i].id);
+				break;
+			}
+			
+		}
+		
+		// connections
+		for(i in status.connectionStatuses){
+			
+			switch(status.connectionStatuses[i].status){
+				case "activated":
+					statuses[status.connectionStatuses[i].id] = "activated";
+					makeConnectionVisited(status.connectionStatuses[i].id);
+					makeMarkerVisited(status.connectionStatuses[i].id);
+					makeOperatorCircleVisited(status.connectionStatuses[i].id);
+				break;
+				case "inactivated":
+					statuses[status.connectionStatuses[i].id] = "inactivated";
+					makeConnectionUnvisited(status.connectionStatuses[i].id);
+					makeMarkerUnvisited(status.connectionStatuses[i].id);
+					makeOperatorCircleUnvisited(status.connectionStatuses[i].id);
+				break;
+			}
+			
+		}
+		
+		stepIndex--;
+		
+	}
+	
+}
+
+function showSolution(){
+	
+	if(solutionVisible){
+		
+		d3.select("#solution")
+			.transition()
+			.duration(500)
+			.style("opacity", "0");
+			
+		solutionVisible = false;
+
+	}else{
+		
+		d3.select("#solution")
+			.transition()
+			.duration(500)
+			.style("opacity", "1");		
+		
+		solutionVisible = true;
+		
+	}
+	
+}
+
+// gui functions
+
+function makeOperatorCircleVisited(operatorCircleId){
+	
+	var operatorCircleSelector = "#o" + operatorCircleId;
+	
+	d3.select(operatorCircleSelector)
 		.transition()
 		.duration(500)
-		.style("r", "7")
+		.style("fill", "black");
+	
+}
+
+function makeOperatorCircleUnvisited(operatorCircleId){
+	
+	var operatorCircleSelector = "#o" + operatorCircleId;
+	
+	d3.select(operatorCircleSelector)
+		.transition()
+		.duration(500)
+		.style("fill", "lightgray");
+	
+}
+
+function makeOperatorCircleBigger(operatorCircle){
+	
+	d3.select(operatorCircle)
+		.transition()
+		.duration(100)
+		.attr("r", 5);
+	
+}
+
+function makeOperatorCircleSmaller(operatorCircle){
+	
+	d3.select(operatorCircle)
+		.transition()
+		.duration(100)
+		.attr("r", 3);
+	
+}
+
+function getOperatorInformation(operatorId){
+	
+	var information;
+	
+	for(i in operators){
+		if(operators[i].id==operatorId){
+			information = operators[i].information;
+			break;
+		}
+	}
+	
+	return information;
+	
+}
+
+function showOperatorDescriptionBox(connectionData, operatorInformation){
+	
+	d3.select("#operatorDescription")
+		.style("left", (d3.event.pageX + 20) + "px")
+		.style("top", (d3.event.pageY - 5) + "px")
+		.html(connectionData.source.id + "-->" + connectionData.target.id + "<br/>" + connectionData.operatorId + "<br/>" + operatorInformation)
+		.transition()
+		.duration(100)
+		.style("opacity", 0.8);
+	
+}
+
+function hideOperatorDescriptionBox(){
+	
+	d3.select("#operatorDescription")
+		.transition()
+		.duration(100)
+		.style("opacity", 0);
+	
+}
+
+function makeNodeActive(nodeId){
+	
+	var nodeSelector = "#n" + nodeId;
+	
+	d3.select(nodeSelector)
+		.transition()
+		.duration(500)
+		.attr("r", 5)
 		.style("fill", "orange")
 		.style("stroke", "black");
 	
-	// make the last active node closed
-	tmpNodeId = "#n" + activeNodeId;
-	d3.select(tmpNodeId)
+}
+
+function makeNodeOpened(nodeId){
+	
+	var nodeSelector = "#n" + nodeId;
+	
+	d3.select(nodeSelector)
 		.transition()
 		.duration(500)
-		.style("r", "5")
-		.style("fill", "gray")
+		.attr("r", 5)
+		.style("fill", "white")
 		.style("stroke", "black");
-	
-	stepIndex++;
-	activeNodeId = currentStep.nodeId;
 	
 }
 
-function backtrackStep(){
+function makeNodeClosed(nodeId){
 	
-	var currentStep = steps[stepIndex];
-	var tmpNodeId;
+	var nodeSelector = "#n" + nodeId;
 	
-	//console.log(currentStep);
+	d3.select(nodeSelector)
+		.transition()
+		.duration(500)
+		.attr("r", 5)
+		.style("fill", "gray")
+		.style("stroke", "black");
 	
-	if(currentStep.back==true){
-		
-		// console.log("BACK");
-		
-		// highlight the new active node
-		tmpNodeId = "#n" + currentStep.nodeId;
-		d3.select(tmpNodeId)
-			.transition()
-			.duration(500)
-			.style("r", "7")
-			.style("fill", "orange")
-			.style("stroke", "black");
-		
-		// make the last active node non-visited
-		tmpNodeId = "#n" + activeNodeId;
-		// update the counter
-		// console.log(d3.select(tmpNodeId).datum().counter);
-		d3.select(tmpNodeId).datum().counter--;
-		// console.log(d3.select(tmpNodeId).datum().counter);
-		if(d3.select(tmpNodeId).datum().counter==0){
-			d3.select(tmpNodeId)
-				.transition()
-				.duration(500)
-				.style("r", "5")
-				.style("fill", "white")
-				.style("stroke", "lightgray");
-		}else{
-			d3.select(tmpNodeId)
-				.transition()
-				.duration(500)
-				.style("r", "5")
-				.style("fill", "gray")
-				.style("stroke", "black");
-		}
-		
-		var tmpConnectionId = "#c" + connectionHistory[connectionHistory.length - 1];
-		// console.log(tmpConnectionId);
-		d3.select(tmpConnectionId)
-			.transition()
-			.duration(500)
-			.style("stroke", "lightgray");
-		
-		var tmpMarkerId = "#m" + connectionHistory[connectionHistory.length - 1];
-		// console.log(tmpConnectionId);
-		d3.select(tmpMarkerId)
-			.transition()
-			.duration(500)
-			.style("fill", "lightgray");
-		
-		connectionHistory.pop();
-		// console.log(connectionHistory);
-		
-	}else{
-		
-		// console.log("FORWARD");
-		
-		// upadte the counter
-		// console.log(d3.select("#n0").datum());
-		
-		// highlight the new active node
-		tmpNodeId = "#n" + currentStep.nodeId;
-		// console.log(d3.select(tmpNodeId).datum().counter);
-		d3.select(tmpNodeId)
-			.transition()
-			.duration(500)
-			.style("r", "7")
-			.style("fill", "orange")
-			.style("stroke", "black");
-		// update the counter
-		d3.select(tmpNodeId).datum().counter++;
-		// console.log(d3.select(tmpNodeId).datum().counter);
-		
-		// highlight connection
-		var tmpConnectionId = "#c" + activeNodeId + "-" + currentStep.operatorId + "-" + currentStep.nodeId;
-		d3.select(tmpConnectionId)
-			.transition()
-			.duration(500)
-			.style("stroke", "black");
-		
-		var tmpMarkerId = "#m" + activeNodeId + "-" + currentStep.operatorId + "-" + currentStep.nodeId;
-		// console.log(tmpConnectionId);
-		d3.select(tmpMarkerId)
-			.transition()
-			.duration(500)
-			.style("fill", "black");
-			
-		// push new element to connection history
-		connectionHistory.push(activeNodeId + "-" + currentStep.operatorId + "-" + currentStep.nodeId);
-		// console.log(connectionHistory);
-		
-		// make the last active node visited
-		tmpNodeId = "#n" + activeNodeId;
-		d3.select(tmpNodeId)
-			.transition()
-			.duration(500)
-			.style("r", "5")
-			.style("fill", "gray")
-			.style("stroke", "black");
-		
-	}
+}
+
+function makeNodeUnvisited(nodeId){
 	
-	stepIndex++;
-	activeNodeId = currentStep.nodeId;
+	var nodeSelector = "#n" + nodeId;
+	
+	d3.select(nodeSelector)
+		.transition()
+		.duration(500)
+		.attr("r", 5)
+		.style("fill", "white")
+		.style("stroke", "lightgray");
+	
+}
+
+function makeNodeBigger(operatorCircle){
+	
+	d3.select(operatorCircle)
+		.transition()
+		.duration(100)
+		.attr("r", 7);
+	
+}
+
+function makeNodeSmaller(operatorCircle){
+	
+	d3.select(operatorCircle)
+		.transition()
+		.duration(100)
+		.attr("r", 5);
+	
+}
+
+function showNodeDescriptionBox(nodeInformation){
+	
+	d3.select("#nodeDescription")
+		.style("left", (d3.event.pageX + 20) + "px")
+		.style("top", (d3.event.pageY - 5) + "px")
+		.html(nodeInformation)
+		.transition()
+		.duration(100)
+		.style("opacity", 0.8);
+	
+}
+
+function hideNodeDescriptionBox(){
+	
+	d3.select("#nodeDescription")
+		.transition()
+		.duration(100)
+		.style("opacity", 0);
+	
+}
+
+function makeConnectionVisited(connectionId){
+	
+	var connectionSelector = "#c" + connectionId;
+	
+	d3.select(connectionSelector)
+		.transition()
+		.duration(500)
+		.style("stroke", "black");
+	
+}
+
+function makeConnectionUnvisited(connectionId){
+	
+	var connectionSelector = "#c" + connectionId;
+	
+	d3.select(connectionSelector)
+		.transition()
+		.duration(500)
+		.style("stroke", "lightgray");
+	
+}
+
+function makeMarkerVisited(markerId){
+	
+	var markerSelector = "#m" + markerId;
+	
+	d3.select(markerSelector)
+		.transition()
+		.duration(500)
+		.style("fill", "black");
+	
+}
+
+function makeMarkerUnvisited(markerId){
+	
+	var markerSelector = "#m" + markerId;
+	
+	d3.select(markerSelector)
+		.transition()
+		.duration(500)
+		.style("fill", "lightgray");
 	
 }

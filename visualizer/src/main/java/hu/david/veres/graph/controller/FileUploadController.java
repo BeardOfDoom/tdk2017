@@ -1,8 +1,9 @@
 package hu.david.veres.graph.controller;
 
-import hu.david.veres.graph.entity.ProcessEntity;
+import hu.david.veres.graph.dto.ProcessDTO;
 import hu.david.veres.graph.exception.file.FileValidationException;
-import hu.david.veres.graph.repository.ProcessRepository;
+import hu.david.veres.graph.service.ProcessService;
+import hu.david.veres.graph.service.StorageService;
 import hu.david.veres.graph.thread.ProcessThread;
 import hu.david.veres.graph.util.ProcessUtils;
 import hu.david.veres.graph.validator.FileValidator;
@@ -16,11 +17,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.io.File;
+import java.io.IOException;
+
 @Controller
 public class FileUploadController {
 
     @Autowired
-    private ProcessRepository processRepository;
+    private ProcessService processService;
 
     @Autowired
     private ThreadPoolTaskExecutor threadPoolTaskExecutor;
@@ -31,9 +35,12 @@ public class FileUploadController {
     @Autowired
     private FileValidator fileValidator;
 
+    @Autowired
+    private StorageService storageService;
+
     @RequestMapping("/upload")
     public String loadPage() {
-        return "test";
+        return "upload";
     }
 
     @RequestMapping(path = "/upload", method = RequestMethod.POST)
@@ -44,26 +51,38 @@ public class FileUploadController {
         } catch (FileValidationException e) {
             e.printStackTrace();
 
-            ModelAndView modelAndView = new ModelAndView("test");
+            ModelAndView modelAndView = new ModelAndView("upload");
+            modelAndView.addObject("response", true);
             modelAndView.addObject("errorMessage", e.getErrorMessage());
             return modelAndView;
         }
 
-        ModelAndView modelAndView = new ModelAndView("test");
-
         String processIdentifier = ProcessUtils.generateProcessIdentifier();
 
-        // TODO: use service and dto instead of repository and entity
-        ProcessEntity processEntity = new ProcessEntity();
-        processEntity.setProcessIdentifier(processIdentifier);
-        processEntity.setDone(false);
-        processRepository.save(processEntity);
+        File savedFile = null;
+        try {
+            savedFile = storageService.storeUploadedFile(file, processIdentifier);
+        } catch (IOException e) {
+            e.printStackTrace();
+
+            ModelAndView modelAndView = new ModelAndView("upload");
+            modelAndView.addObject("response", true);
+            modelAndView.addObject("errorMessage", "error.file.save.error");
+            return modelAndView;
+        }
+
+        ProcessDTO processDTO = new ProcessDTO();
+        processDTO.setProcessIdentifier(processIdentifier);
+        processDTO.setDone(false);
+        processService.save(processDTO);
 
         ProcessThread processThread = applicationContext.getBean(ProcessThread.class);
-        processThread.setFile(file);
+        processThread.setAbsoluteFileName(savedFile.getAbsolutePath());
         processThread.setProcessIdentifier(processIdentifier);
         threadPoolTaskExecutor.execute(processThread);
 
+        ModelAndView modelAndView = new ModelAndView("upload");
+        modelAndView.addObject("response", true);
         modelAndView.addObject("processIdentifier", processIdentifier);
 
         return modelAndView;
