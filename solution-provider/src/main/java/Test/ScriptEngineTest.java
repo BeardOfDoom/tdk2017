@@ -67,6 +67,7 @@ public class ScriptEngineTest {
 		System.out.println(Arrays.asList(ScriptEngineTest.class.getDeclaredConstructors()));*/
 		System.out.println(Test.class.getClassLoader().getResource("interfaces/StateInterface.java").getPath());
 		System.out.println(Paths.get(Test.class.getClassLoader().getResource("interfaces/StateInterface.java").toURI()));
+		System.out.println(new File(Test.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()));
 	}
 	
 }

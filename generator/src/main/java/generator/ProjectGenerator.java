@@ -49,12 +49,12 @@ public class ProjectGenerator {
         generatedUtilsClassRepresentation
                 .setFilePath(CommonUtils.getFilePath(directoryName, packageName, "GeneratedUtils"));
 
-        operatorInterface.setFilePath(CommonUtils.getFilePath(directoryName, packageName, "OperatorInterface"));
-        stateInterface.setFilePath(CommonUtils.getFilePath(directoryName, packageName, "StateInterface"));
+        //operatorInterface.setFilePath(CommonUtils.getFilePath(directoryName, packageName, "OperatorInterface"));
+        //stateInterface.setFilePath(CommonUtils.getFilePath(directoryName, packageName, "StateInterface"));
 
         result.add(generatedUtilsClassRepresentation);
-        result.add(operatorInterface);
-        result.add(stateInterface);
+        //result.add(operatorInterface);
+        //result.add(stateInterface);
 
         return result;
     }

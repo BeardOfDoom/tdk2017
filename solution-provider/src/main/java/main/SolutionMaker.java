@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -65,7 +66,7 @@ public class SolutionMaker {
 		operatorClasses = new ArrayList<>();
 	}
 	
-	public void start() throws WrongFileExtensionException, CompilationException, IOException, ClassNotFoundException, StateNotFoundException, OperatorNotFoundException, StateInitializationException, OperatorInitializationException, TemporaryFolderDeletionException{
+	public void start() throws WrongFileExtensionException, CompilationException, IOException, ClassNotFoundException, StateNotFoundException, OperatorNotFoundException, StateInitializationException, OperatorInitializationException, TemporaryFolderDeletionException, URISyntaxException{
 		validateFilePaths();
 		compileFiles();
 		getLoadableClassesInFolder(classDestinationFile);
@@ -94,8 +95,8 @@ public class SolutionMaker {
 		}
 	}
 	
-	private void compileFiles() throws CompilationException, IOException{
-		List<String> processBuilderArgList = new ArrayList<>(Arrays.asList("javac", "-d", classDestinationURL.getPath(), "-nowarn"/*, getClass().getClassLoader().getResource("interfaces/StateInterface.java").getPath(), getClass().getClassLoader().getResource("interfaces/OperatorInterface.java").getPath()*/));
+	private void compileFiles() throws CompilationException, IOException, URISyntaxException{
+		List<String> processBuilderArgList = new ArrayList<>(Arrays.asList("javac", "-d", classDestinationURL.getPath(), "-nowarn", "-cp", getClass().getProtectionDomain().getCodeSource().getLocation().toURI().getPath()));
 		processBuilderArgList.addAll(filePaths);
 		
 		ProcessBuilder processBuilder = new ProcessBuilder(processBuilderArgList);
@@ -130,39 +131,23 @@ public class SolutionMaker {
 	}
 	
 	private void loadClasses() throws ClassNotFoundException, IOException, StateNotFoundException, OperatorNotFoundException{
-		// TODO interface not found exception
-		List<Class<?>> classList = new ArrayList<>();
-		Class<?> stateInterface = null;
-		Class<?> operatorInterface = null;
 		boolean isStateClassFound = false;
 		boolean isOperatorClassFound = false;
 		URLClassLoader loader = new URLClassLoader(new URL[] { classDestinationURL });
 		for (File classFile : loadableClasses) {
-			String className = classFile.getName().substring(0, classFile.getName().length() - 6);
 			String classNameAndPackage = classFile.getAbsolutePath()
 					.replace(classDestinationFile.getAbsolutePath() + "\\", "").replace("\\", ".");
 			
 			classNameAndPackage = classNameAndPackage.substring(0, classNameAndPackage.length() - 6);
 			Class<?> cls = loader.loadClass(classNameAndPackage);
-			classList.add(cls);
-			
-			if(className.equals("StateInterface")){
-				stateInterface = cls;
-			} else if(className.equals("OperatorInterface")){
-				operatorInterface = cls;
-			}
-		}
-		
-		for(Class<?> clazz : classList){
-			if (stateInterface.isAssignableFrom(clazz) && !stateInterface.equals(clazz)) {
-				stateClass = clazz;
+			if (StateInterface.class.isAssignableFrom(cls) && !StateInterface.class.equals(cls)) {
+				stateClass = cls;
 				isStateClassFound = true;
-			} else if (operatorInterface.isAssignableFrom(clazz) && !operatorInterface.equals(clazz)) {
-				operatorClasses.add(clazz);
+			} else if (OperatorInterface.class.isAssignableFrom(cls) && !OperatorInterface.class.equals(cls)) {
+				operatorClasses.add(cls);
 				isOperatorClassFound = true; 
 			}
 		}
-
 		loader.close();
 		
 		if(!isStateClassFound){
