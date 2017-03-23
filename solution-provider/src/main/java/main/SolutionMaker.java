@@ -6,7 +6,6 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -72,15 +71,16 @@ public class SolutionMaker {
 		}
 	}
 	
-	public void start() throws WrongFileExtensionException, CompilationException, IOException, ClassNotFoundException, StateNotFoundException, OperatorNotFoundException, StateInitializationException, OperatorInitializationException, TemporaryFolderDeletionException, URISyntaxException{
+	public List<String> start() throws WrongFileExtensionException, CompilationException, IOException, ClassNotFoundException, StateNotFoundException, OperatorNotFoundException, StateInitializationException, OperatorInitializationException, TemporaryFolderDeletionException, URISyntaxException{
 		validateFilePaths();
 		compileFiles();
 		getLoadableClassesInFolder(classDestinationFile);
 		loadClasses();
-		initAndStartChosenSolutionSearchers();
+		List<String> outputPaths = initAndStartChosenSolutionSearchers();
 		if(!deleteFolder(classDestinationFile)){
 			throw new TemporaryFolderDeletionException("Could not delete this folder: " + classDestinationFile.getAbsolutePath());
 		}
+		return outputPaths;
 	}
 	
 	private void validateFilePaths() throws WrongFileExtensionException{
