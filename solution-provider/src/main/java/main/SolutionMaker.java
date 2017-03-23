@@ -6,6 +6,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -56,6 +57,8 @@ public class SolutionMaker {
 	private Class<?> stateClass;
 	private List<Class<?>> operatorClasses;
 	
+	private static URLClassLoader loader;
+	
 	public SolutionMaker(List<String> filePaths, UserInput userInput) throws TemporaryFolderCreationException, MalformedURLException{
 		this.filePaths = filePaths;
 		this.userInput = userInput;
@@ -64,6 +67,9 @@ public class SolutionMaker {
 		classDestinationURL = classDestinationFile.toURI().toURL();
 		loadableClasses = new ArrayList<>();
 		operatorClasses = new ArrayList<>();
+		if(loader == null){
+			loader  = new URLClassLoader(new URL[] { classDestinationURL }, getClass().getClassLoader());
+		}
 	}
 	
 	public void start() throws WrongFileExtensionException, CompilationException, IOException, ClassNotFoundException, StateNotFoundException, OperatorNotFoundException, StateInitializationException, OperatorInitializationException, TemporaryFolderDeletionException, URISyntaxException{
@@ -72,9 +78,9 @@ public class SolutionMaker {
 		getLoadableClassesInFolder(classDestinationFile);
 		loadClasses();
 		initAndStartChosenSolutionSearchers();
-		/*if(!deleteFolder(classDestinationFile)){
+		if(!deleteFolder(classDestinationFile)){
 			throw new TemporaryFolderDeletionException("Could not delete this folder: " + classDestinationFile.getAbsolutePath());
-		}*/
+		}
 	}
 	
 	private void validateFilePaths() throws WrongFileExtensionException{
@@ -98,7 +104,6 @@ public class SolutionMaker {
 	private void compileFiles() throws CompilationException, IOException, URISyntaxException{
 		List<String> processBuilderArgList = new ArrayList<>(Arrays.asList("javac", "-d", classDestinationURL.getPath(), "-nowarn", "-cp", getClass().getProtectionDomain().getCodeSource().getLocation().toURI().getPath()));
 		processBuilderArgList.addAll(filePaths);
-		System.out.println(filePaths);
 		
 		ProcessBuilder processBuilder = new ProcessBuilder(processBuilderArgList);
 		Process process = processBuilder.start();
@@ -134,13 +139,12 @@ public class SolutionMaker {
 	private void loadClasses() throws ClassNotFoundException, IOException, StateNotFoundException, OperatorNotFoundException{
 		boolean isStateClassFound = false;
 		boolean isOperatorClassFound = false;
-		URLClassLoader loader = new URLClassLoader(new URL[] { classDestinationURL }, getClass().getClassLoader());
+		
 		for (File classFile : loadableClasses) {
 			String classNameAndPackage = classFile.getAbsolutePath()
 					.replace(classDestinationFile.getAbsolutePath() + "\\", "").replace("\\", ".");
-			
+
 			classNameAndPackage = classNameAndPackage.substring(0, classNameAndPackage.length() - 6);
-			System.out.println(classNameAndPackage);
 			Class<?> cls = loader.loadClass(classNameAndPackage);
 			if (StateInterface.class.isAssignableFrom(cls) && !StateInterface.class.equals(cls)) {
 				stateClass = cls;
@@ -150,7 +154,7 @@ public class SolutionMaker {
 				isOperatorClassFound = true;
 			}
 		}
-		loader.close();
+		//loader.close();
 		
 		if(!isStateClassFound){
 			throw new StateNotFoundException();

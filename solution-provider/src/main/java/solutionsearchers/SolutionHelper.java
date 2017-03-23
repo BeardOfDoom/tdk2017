@@ -4,10 +4,14 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import interfaces.OperatorInterface;
 import interfaces.StateInterface;
@@ -36,7 +40,7 @@ public class SolutionHelper {
 	
 	public static String writeOutputForGraphic(Class<?> solutionSearcher, List<Node> nodes, Node solution, String steps){
 		File outputFolder = new File("solutionOutputs");
-		File output = new File("solutionOutputs/" + solutionSearcher.getSimpleName() + ".txt");
+		File output = new File("solutionOutputs/" + solutionSearcher.getSimpleName() + LocalDateTime.now().format(DateTimeFormatter.ofPattern("YYYY-MM-dd-hh-mm-ss")) + UUID.randomUUID().toString() + ".txt");
 		if(!outputFolder.exists())
 			outputFolder.mkdirs();
 			

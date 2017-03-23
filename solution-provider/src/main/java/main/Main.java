@@ -22,6 +22,10 @@ public class Main {
 	// TODO érdekes részek kiemelése
 	
 	// TODO statisztika opció (külön szálakon elindul az összes keresés)
+	
+	// TODO classloading nem threadsafe
+	
+	// TODO kimeneti fájloknak egyedi azonositó generálása
 	public static void main(String[] args){
 		
 		String laciState = "C:\\Users\\Vécsi Ádám\\Desktop\\asdasdsaddas\\State.java";
