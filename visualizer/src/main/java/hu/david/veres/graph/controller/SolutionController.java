@@ -12,10 +12,12 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.util.List;
 
 @Controller
 public class SolutionController {
@@ -27,12 +29,14 @@ public class SolutionController {
     }
 
     @RequestMapping(path = "/solution", method = RequestMethod.POST)
-    public String smlPost(@ModelAttribute("solutionForm") SolutionForm solutionForm, Model model) {
+    public String smlPost(@ModelAttribute("solutionForm") SolutionForm solutionForm, Model model, RedirectAttributes redirectAttributes) {
 
         UserInput userInput = SolutionFormToUserInputConverter.convert(solutionForm);
         try {
             SolutionMaker solutionMaker = new SolutionMaker(ClassManager.getFilePaths(), userInput);
-            solutionMaker.start();
+            List<String> outputPaths = solutionMaker.start();
+            redirectAttributes.addFlashAttribute("outputPaths", outputPaths);
+            return "redirect:./graph/test";
         } catch (TemporaryFolderCreationException e) {
             e.printStackTrace();
         } catch (MalformedURLException e) {
