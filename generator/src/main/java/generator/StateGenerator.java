@@ -22,7 +22,6 @@ import representation.ClassRepresentation;
 import representation.ParameterRepresentation;
 import representation.state.AttributeRepresentation;
 import representation.state.StateRepresentation;
-import utils.CommonUtils;
 
 //TODO: Review set functions
 public class StateGenerator implements GeneratorInterface {
@@ -89,7 +88,7 @@ public class StateGenerator implements GeneratorInterface {
 
     javaFile.writeTo(path);
 
-    String filePath = CommonUtils.getFilePath(directoryName, packageName, fileName);
+    String filePath = GeneratorUtils.getFilePath(directoryName, packageName, fileName);
 
     return new ClassRepresentation(className, fields, filePath);
   }

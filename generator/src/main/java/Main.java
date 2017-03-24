@@ -1,12 +1,13 @@
+import antlr.impl.IncorrectInputException;
 import generator.OperatorGenerator;
 import generator.ProjectGenerator;
 import generator.StateGenerator;
 import java.io.IOException;
 import java.util.List;
 import misc.ClassManager;
+import misc.InputReader;
 import representation.ClassRepresentation;
 import representation.ProjectRepresentation;
-import utils.CommonUtils;
 
 public class Main {
 
@@ -21,17 +22,26 @@ public class Main {
 
     StateGenerator stateGenerator = new StateGenerator();
     OperatorGenerator operatorGenerator = new OperatorGenerator();
-    ProjectRepresentation projectRepresentation = CommonUtils.processInputFile(INPUT_FILE_NAME);
+    ProjectRepresentation projectRepresentation = null;
+    InputReader inputReader = new InputReader();
 
-    if (!projectRepresentation.getContainsError()) {
-      ProjectGenerator
-          projectGenerator = new ProjectGenerator(stateGenerator, operatorGenerator);
-      List<ClassRepresentation> generatedClasses = projectGenerator
-          .generate(projectRepresentation, OUTPUT_DIRECTORY_NAME, OUTPUT_PACKAGE_NAME);
-
-      ClassManager.clear();
-      ClassManager.addClasses(generatedClasses);
-      System.out.println("Files generated!");
+    try {
+      projectRepresentation = inputReader.processInputFile(INPUT_FILE_NAME);
+    } catch (IncorrectInputException e) {
+      System.out
+          .println("line " + e.getLine() + ":" + e.getCharPositionInLine() + " " + e.getMsg());
+      return;
     }
+
+    ProjectGenerator
+        projectGenerator = new ProjectGenerator(stateGenerator, operatorGenerator);
+    List<ClassRepresentation> generatedClasses = projectGenerator
+        .generate(projectRepresentation, OUTPUT_DIRECTORY_NAME, OUTPUT_PACKAGE_NAME);
+
+    ClassManager classManager = new ClassManager();
+
+    classManager.clear();
+    classManager.addClasses(generatedClasses);
+    System.out.println("Files generated!");
   }
 }

@@ -19,7 +19,6 @@ import representation.ClassRepresentation;
 import representation.ParameterRepresentation;
 import representation.operator.OperatorRepresentation;
 import representation.operator.VariableRepresentation;
-import utils.CommonUtils;
 
 public class OperatorGenerator implements GeneratorInterface {
 
@@ -127,7 +126,7 @@ public class OperatorGenerator implements GeneratorInterface {
 
     javaFile.writeTo(path);
 
-    String filePath = CommonUtils.getFilePath(directoryName, packageName, fileName);
+    String filePath = GeneratorUtils.getFilePath(directoryName, packageName, fileName);
 
     return new ClassRepresentation(className, fields, filePath);
   }

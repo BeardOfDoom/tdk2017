@@ -14,6 +14,7 @@ import antlr.SMLParser.State_goalContext;
 import antlr.SMLParser.State_startContext;
 import antlr.SMLParser.Var_defining_expressionContext;
 import com.squareup.javapoet.ClassName;
+import generator.GeneratorUtils;
 import java.util.ArrayList;
 import java.util.List;
 import misc.Dimension;
@@ -27,7 +28,6 @@ import representation.operator.OperatorRepresentation;
 import representation.operator.VariableRepresentation;
 import representation.state.AttributeRepresentation;
 import representation.state.StateRepresentation;
-import utils.CommonUtils;
 
 public class BaseVisitor extends SMLBaseVisitor {
 
@@ -90,7 +90,7 @@ public class BaseVisitor extends SMLBaseVisitor {
     for (Parameter_description_lineContext parameter : ctx
         .parameter_description_line()) {
       stateRepresentation
-          .addStateStartParameter(CommonUtils.getParameterRepresentationFromContext(parameter));
+          .addStateStartParameter(GeneratorUtils.getParameterRepresentationFromContext(parameter));
     }
 
     AssignExpressionsRepresentation assignRepresentation = getAssignFromContexts(
@@ -105,7 +105,7 @@ public class BaseVisitor extends SMLBaseVisitor {
   public Object visitState_goal(State_goalContext ctx) {
     for (Parameter_description_lineContext parameter : ctx.parameter_description_line()) {
       stateRepresentation
-          .addStateGoalParameter(CommonUtils.getParameterRepresentationFromContext(parameter));
+          .addStateGoalParameter(GeneratorUtils.getParameterRepresentationFromContext(parameter));
     }
 
     stateRepresentation.setStateGoal(stateExpressionVisitor.visit(ctx));
@@ -129,7 +129,7 @@ public class BaseVisitor extends SMLBaseVisitor {
 
     for (Parameter_description_lineContext parameter : ctx.parameter_description_line()) {
       operatorRepresentation
-          .addParameter(CommonUtils.getParameterRepresentationFromContext(parameter));
+          .addParameter(GeneratorUtils.getParameterRepresentationFromContext(parameter));
     }
 
     return super.visitOperation_description(ctx);
@@ -220,10 +220,10 @@ public class BaseVisitor extends SMLBaseVisitor {
             currentLine.matrix_reference().attr_reference().getText());
         matrixStart.setAttribute(attribute);
 
-        String dimensionN = CommonUtils
+        String dimensionN = GeneratorUtils
             .getDimensionsFromMatrixReferenceContext(currentLine.matrix_reference())
             .get(0);
-        String dimensionM = CommonUtils
+        String dimensionM = GeneratorUtils
             .getDimensionsFromMatrixReferenceContext(currentLine.matrix_reference())
             .get(1);
 

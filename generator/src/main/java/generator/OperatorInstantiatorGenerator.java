@@ -5,7 +5,6 @@ import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeSpec;
-import interfaces.ClassRepresentationInterface;
 import interfaces.GeneratorInterface;
 import interfaces.OperatorInstantiatorInterface;
 import interfaces.OperatorInterface;
@@ -16,7 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.lang.model.element.Modifier;
 import representation.ClassRepresentation;
-import utils.CommonUtils;
 
 public class OperatorInstantiatorGenerator implements GeneratorInterface {
 
@@ -55,7 +53,7 @@ public class OperatorInstantiatorGenerator implements GeneratorInterface {
 
     javaFile.writeTo(path);
 
-    String filePath = CommonUtils.getFilePath(directoryName, packageName, fileName);
+    String filePath = GeneratorUtils.getFilePath(directoryName, packageName, fileName);
 
     return new ClassRepresentation(className, null, filePath);
   }

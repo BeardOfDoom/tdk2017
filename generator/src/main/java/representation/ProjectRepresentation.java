@@ -7,24 +7,13 @@ import representation.state.StateRepresentation;
 
 public class ProjectRepresentation {
 
-  boolean containsError = false;
   StateRepresentation stateRepresentation;
   List<OperatorRepresentation> operatorRepresentation = new ArrayList<>();
 
-  public ProjectRepresentation(Boolean containsError,
-      StateRepresentation stateRepresentation,
+  public ProjectRepresentation(StateRepresentation stateRepresentation,
       List<OperatorRepresentation> operatorRepresentation) {
-    this.containsError = containsError;
     this.stateRepresentation = stateRepresentation;
     this.operatorRepresentation = operatorRepresentation;
-  }
-
-  public boolean getContainsError() {
-    return containsError;
-  }
-
-  public void setContainsError(boolean containsError) {
-    this.containsError = containsError;
   }
 
   public StateRepresentation getStateRepresentation() {
@@ -55,9 +44,6 @@ public class ProjectRepresentation {
 
     ProjectRepresentation that = (ProjectRepresentation) o;
 
-    if (containsError != that.containsError) {
-      return false;
-    }
     if (stateRepresentation != null ? !stateRepresentation.equals(that.stateRepresentation)
         : that.stateRepresentation != null) {
       return false;
@@ -68,8 +54,7 @@ public class ProjectRepresentation {
 
   @Override
   public int hashCode() {
-    int result = (containsError ? 1 : 0);
-    result = 31 * result + (stateRepresentation != null ? stateRepresentation.hashCode() : 0);
+    int result = stateRepresentation != null ? stateRepresentation.hashCode() : 0;
     result = 31 * result + (operatorRepresentation != null ? operatorRepresentation.hashCode() : 0);
     return result;
   }
@@ -77,8 +62,7 @@ public class ProjectRepresentation {
   @Override
   public String toString() {
     return "ProjectRepresentation{" +
-        "containsError=" + containsError +
-        ", stateRepresentation=" + stateRepresentation +
+        "stateRepresentation=" + stateRepresentation +
         ", operatorRepresentation=" + operatorRepresentation +
         '}';
   }

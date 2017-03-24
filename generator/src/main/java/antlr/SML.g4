@@ -132,5 +132,4 @@ number: SIGN? (INT | FLOAT);
 word: (SYMBOL_QUOTE .*? SYMBOL_QUOTE);
 name: CHAR+;
 CHAR: ('a'..'z' | 'A'..'Z');
-
 WS: [ \t\r\n]+ -> skip ;

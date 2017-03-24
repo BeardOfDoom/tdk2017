@@ -1,11 +1,15 @@
 package generator;
 
+import antlr.SMLParser.Dimension_partContext;
+import antlr.SMLParser.Matrix_referenceContext;
+import antlr.SMLParser.Parameter_description_lineContext;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -21,8 +25,7 @@ import representation.ParameterRepresentation;
 import representation.SetAssignRepresentation;
 import representation.state.AttributeRepresentation;
 
-public class GeneratorUtils {
-
+public final class GeneratorUtils {
 
   public static List<FieldSpec> generateFieldsFromAttributes(
       List<AttributeRepresentation> attributes) {
@@ -261,5 +264,46 @@ public class GeneratorUtils {
     }
 
     return builder.build();
+  }
+
+  public static ParameterRepresentation getParameterRepresentationFromContext(
+      Parameter_description_lineContext parameter) {
+
+    String paramName = parameter.name().getText();
+    Integer from = Integer.parseInt(parameter.INT(0).getText());
+    Integer to = Integer.parseInt(parameter.INT(1).getText());
+    Integer by = parameter.INT(2) == null ? 1 : Integer.parseInt(parameter.INT(2).getText());
+
+    ParameterRepresentation parameterRepresentation = new ParameterRepresentation();
+    parameterRepresentation.setParameterName(paramName);
+    parameterRepresentation.setFrom(from);
+    parameterRepresentation.setTo(to);
+    parameterRepresentation.setBy(by);
+
+    return parameterRepresentation;
+  }
+
+  public static List<String> getDimensionsFromMatrixReferenceContext(
+      Matrix_referenceContext matrix) {
+    Dimension_partContext dimensionPartN = matrix.dimension()
+        .dimension_part(0);
+    Dimension_partContext dimensionPartM = matrix.dimension()
+        .dimension_part(1);
+
+    String dimensionN =
+        dimensionPartN.INT() != null ? dimensionPartN.INT().getText()
+            : dimensionPartN.name().getText();
+
+    String dimensionM =
+        dimensionPartM.INT() != null ? dimensionPartM.INT().getText()
+            : dimensionPartM.name().getText();
+
+    return Arrays.asList(dimensionN, dimensionM);
+  }
+
+  public static String getFilePath(String directoryName, String packageName, String fileName) {
+    return new File(
+        directoryName + "\\" + packageName.replace(".", "\\") + "\\" + fileName + ".java")
+        .getAbsolutePath();
   }
 }
