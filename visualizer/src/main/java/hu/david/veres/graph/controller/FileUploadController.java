@@ -43,6 +43,7 @@ public class FileUploadController {
         return "upload";
     }
 
+    /*
     @RequestMapping(path = "/upload", method = RequestMethod.POST)
     public ModelAndView uploadFile(@RequestParam("file") MultipartFile file) {
 
@@ -88,5 +89,6 @@ public class FileUploadController {
         return modelAndView;
 
     }
+    */
 
 }

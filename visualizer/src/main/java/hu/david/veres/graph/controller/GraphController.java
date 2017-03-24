@@ -66,6 +66,7 @@ public class GraphController {
 
     }
 
+    /*
     @RequestMapping(path = "/test", method = RequestMethod.GET)
     public ModelAndView test(@ModelAttribute("outputPaths") List<String> outputPaths){
 
@@ -97,6 +98,7 @@ public class GraphController {
 
         return modelAndView;
     }
+    */
 
     @RequestMapping(path = "/view/{processIdentifier}", method = RequestMethod.GET)
     public ModelAndView getProcess(@PathVariable("processIdentifier") String processIdentifier) {

@@ -1,14 +1,8 @@
 package hu.david.veres.graph.thread;
 
-import antlr.impl.IncorrectInputException;
-import exceptions.*;
-import generator.OperatorGenerator;
-import generator.ProjectGenerator;
-import generator.StateGenerator;
 import hu.david.veres.graph.dto.ProcessDTO;
 import hu.david.veres.graph.exception.result.ResultValidationException;
 import hu.david.veres.graph.form.ProblemForm;
-import hu.david.veres.graph.form.ProblemFormUtil;
 import hu.david.veres.graph.generator.ResultGenerator;
 import hu.david.veres.graph.model.Result;
 import hu.david.veres.graph.service.ProcessService;
@@ -17,22 +11,13 @@ import hu.david.veres.graph.validator.ResultValidator;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import main.SolutionMaker;
-import misc.ClassManager;
-import misc.InputReader;
-import model.UserInput;
+import main.SolutionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import representation.ClassRepresentation;
-import representation.ProjectRepresentation;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
 
 @Component
 @Scope("prototype")
@@ -42,9 +27,11 @@ import java.util.List;
 public class ProcessThread implements Runnable {
 
     private String processIdentifier;
-    private String absoluteFileName;
     private String stateSpaceFileName;
     private ProblemForm problemForm;
+    private SolutionManager solutionManager;
+    private String algorithmName;
+    private String heuristicFunction;
 
     @Autowired
     private ProcessService processService;
@@ -61,66 +48,6 @@ public class ProcessThread implements Runnable {
     @Override
     public void run() {
 
-        // Laci
-        StateGenerator stateGenerator = new StateGenerator();
-        OperatorGenerator operatorGenerator = new OperatorGenerator();
-        InputReader inputReader = new InputReader();
-        ProjectRepresentation projectRepresentation = null;
-        try {
-            projectRepresentation = inputReader.processInputFile(stateSpaceFileName);
-        } catch (IOException e) {
-            e.printStackTrace();
-            // TODO
-        } catch (IncorrectInputException e) {
-            e.printStackTrace();
-            // TODO
-        }
-
-        ProjectGenerator projectGenerator = new ProjectGenerator(stateGenerator, operatorGenerator);
-        List<ClassRepresentation> classRepresentations = new ArrayList<>();
-        try {
-            classRepresentations = projectGenerator.generate(projectRepresentation, "generated", "com.prototype");
-        } catch (IOException e) {
-            e.printStackTrace();
-            // TODO
-        }
-
-        ClassManager classManager = new ClassManager();
-        classManager.addClasses(classRepresentations);
-
-        // Ádám
-        UserInput userInput = ProblemFormUtil.extractUserInput(problemForm);
-        SolutionMaker solutionMaker = null;
-        List<String> outputPaths = new ArrayList<>();
-        try {
-            solutionMaker = new SolutionMaker(classManager.getFilePaths(), userInput);
-            outputPaths = solutionMaker.start();
-        } catch (TemporaryFolderCreationException e) {
-            e.printStackTrace();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        } catch (WrongFileExtensionException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (TemporaryFolderDeletionException e) {
-            e.printStackTrace();
-        } catch (CompilationException e) {
-            e.printStackTrace();
-        } catch (OperatorNotFoundException e) {
-            e.printStackTrace();
-        } catch (OperatorInitializationException e) {
-            e.printStackTrace();
-        } catch (StateInitializationException e) {
-            e.printStackTrace();
-        } catch (StateNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
         // CHECK THE REQUIRED FIELDS
         /*
         if (processIdentifier == null || absoluteFileName == null) {
@@ -128,6 +55,39 @@ public class ProcessThread implements Runnable {
             return;
         }
         */
+
+        // GET OUTPUT FILE NAME
+        // TODO: default empty file name or null?
+        String absoluteFileName = "";
+        switch (algorithmName) {
+            case "BackTrackSimple":
+                absoluteFileName = solutionManager.doBackTrackSimple(heuristicFunction);
+                break;
+            case "BackTrackCircle":
+                absoluteFileName = solutionManager.doBackTrackCircle(heuristicFunction);
+                break;
+            case "BackTrackPathLengthLimitation":
+                absoluteFileName = solutionManager.doBackTrackPathLengthLimitation(heuristicFunction);
+                break;
+            case "BackTrackOptimal":
+                absoluteFileName = solutionManager.doBackTrackOptimal(heuristicFunction);
+                break;
+            case "BreadthFirst":
+                absoluteFileName = solutionManager.doBreadthFirst(heuristicFunction);
+                break;
+            case "DepthFirst":
+                absoluteFileName = solutionManager.doDepthFirst(heuristicFunction);
+                break;
+            case "Optimal":
+                absoluteFileName = solutionManager.doOptimal(heuristicFunction);
+                break;
+            case "BestFirst":
+                absoluteFileName = solutionManager.doBestFirst(heuristicFunction);
+                break;
+            case "A":
+                absoluteFileName = solutionManager.doA(heuristicFunction);
+                break;
+        }
 
         // CHECK IF FILE EXISTS
         File file = new File(absoluteFileName);

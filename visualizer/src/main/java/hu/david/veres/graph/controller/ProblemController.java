@@ -4,6 +4,7 @@ import hu.david.veres.graph.dto.ProcessDTO;
 import hu.david.veres.graph.form.ProblemForm;
 import hu.david.veres.graph.form.SmlForm;
 import hu.david.veres.graph.service.ProcessService;
+import hu.david.veres.graph.thread.BaseProcessThread;
 import hu.david.veres.graph.thread.ProcessThread;
 import hu.david.veres.graph.util.ProcessUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +39,7 @@ public class ProblemController {
     }
 
     @RequestMapping(path = "/problem", method = RequestMethod.POST)
-    public String problemPost(@ModelAttribute("problemForm") ProblemForm problemForm) {
+    public ModelAndView problemPost(@ModelAttribute("problemForm") ProblemForm problemForm) {
 
         List<String> processIdentifiers = new ArrayList<>();
 
@@ -50,15 +52,28 @@ public class ProblemController {
             processDTO.setDone(false);
             processService.save(processDTO);
 
+            /*
             ProcessThread processThread = applicationContext.getBean(ProcessThread.class);
             processThread.setProcessIdentifier(processIdentifier);
             threadPoolTaskExecutor.execute(processThread);
+            */
 
             processIdentifiers.add(processIdentifier);
 
         }
 
-        // TODO: return modelandview
+        BaseProcessThread baseProcessThread = applicationContext.getBean(BaseProcessThread.class);
+        baseProcessThread.setProblemForm(problemForm);
+        baseProcessThread.setProcessIdentifiers(processIdentifiers);
+        threadPoolTaskExecutor.execute(baseProcessThread);
+
+        // TODO: return ModelAndView
+
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.addObject("processIdentifiers", processIdentifiers);
+        modelAndView.setViewName("visualizer");
+
+        return modelAndView;
 
 //        File file = new File("sml_input.txt");
 //        try {
@@ -80,7 +95,14 @@ public class ProblemController {
 //            e.printStackTrace();
 //        }
 
-        return "redirect:./solution";
+        // return "redirect:./solution";
     }
+
+    /*
+    @RequestMapping(path = "/visualizer", method = RequestMethod.GET)
+    public String visualizer(){
+        return "visualizer";
+    }
+    */
 
 }
