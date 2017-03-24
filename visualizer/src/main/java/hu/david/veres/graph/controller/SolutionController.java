@@ -21,7 +21,7 @@ public class SolutionController {
     @RequestMapping(path = "/solution", method = RequestMethod.POST)
     public String smlPost(@ModelAttribute("solutionForm") SolutionForm solutionForm, Model model, RedirectAttributes redirectAttributes) {
 
-//        UserInput userInput = SolutionFormToUserInputConverter.convert(solutionForm);
+//        UserInput userInput = ProblemFormUtil.convert(solutionForm);
 //        try {
 //            SolutionMaker solutionMaker = new SolutionMaker(ClassManager.getFilePaths(), userInput);
 //            List<String> outputPaths = solutionMaker.start();

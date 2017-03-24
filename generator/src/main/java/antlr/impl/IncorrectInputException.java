@@ -1,6 +1,6 @@
 package antlr.impl;
 
-public class IncorrectInputException extends RuntimeException {
+public class IncorrectInputException extends Exception {
 
   private final int line;
 
