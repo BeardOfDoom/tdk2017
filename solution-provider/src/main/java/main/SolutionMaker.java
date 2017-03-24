@@ -49,7 +49,7 @@ import solutionsearchers.Optimal;
 public class SolutionMaker {
 	
 	private List<String> filePaths;
-	private UserInput userInput;
+	//private UserInput userInput;
 	private File classDestinationFile;
 	private URL classDestinationURL;
 	private List<File> loadableClasses;
@@ -58,9 +58,9 @@ public class SolutionMaker {
 	
 	private static URLClassLoader loader;
 	
-	public SolutionMaker(List<String> filePaths, UserInput userInput) throws TemporaryFolderCreationException, MalformedURLException{
+	public SolutionMaker(List<String> filePaths/*, UserInput userInput*/) throws TemporaryFolderCreationException, MalformedURLException{
 		this.filePaths = filePaths;
-		this.userInput = userInput;
+		//this.userInput = userInput;
 		classDestinationFile = new File("externalClasses/");
 		makeTemporaryFolderForClasses();
 		classDestinationURL = classDestinationFile.toURI().toURL();
@@ -71,16 +71,17 @@ public class SolutionMaker {
 		}
 	}
 	
-	public List<String> start() throws WrongFileExtensionException, CompilationException, IOException, ClassNotFoundException, StateNotFoundException, OperatorNotFoundException, StateInitializationException, OperatorInitializationException, TemporaryFolderDeletionException, URISyntaxException{
+	public SolutionManager start() throws WrongFileExtensionException, CompilationException, IOException, ClassNotFoundException, StateNotFoundException, OperatorNotFoundException, StateInitializationException, OperatorInitializationException, TemporaryFolderDeletionException, URISyntaxException{
 		validateFilePaths();
 		compileFiles();
 		getLoadableClassesInFolder(classDestinationFile);
 		loadClasses();
-		List<String> outputPaths = initAndStartChosenSolutionSearchers();
+		//List<String> outputPaths = initAndStartChosenSolutionSearchers();
 		if(!deleteFolder(classDestinationFile)){
 			throw new TemporaryFolderDeletionException("Could not delete this folder: " + classDestinationFile.getAbsolutePath());
 		}
-		return outputPaths;
+		//return outputPaths;
+		return new SolutionManager(stateClass, operatorClasses);
 	}
 	
 	private void validateFilePaths() throws WrongFileExtensionException{
@@ -163,7 +164,7 @@ public class SolutionMaker {
 		}
 	}
 	
-	private List<String> initAndStartChosenSolutionSearchers() throws StateInitializationException, OperatorInitializationException{
+	/*private List<String> initAndStartChosenSolutionSearchers() throws StateInitializationException, OperatorInitializationException{
 		List<String> outputFilePaths = new ArrayList<>();
 		OperatorInstantiator operatorInstantiator = new OperatorInstantiator();
 		List<OperatorInterface> OPERATORS = operatorInstantiator.getOperatorInstances(operatorClasses);
@@ -231,7 +232,7 @@ public class SolutionMaker {
 		}
 		
 		return outputFilePaths;
-	}
+	}*/
 	
 	public static boolean deleteFolder(File file) {
 		if (file.isDirectory()) {
