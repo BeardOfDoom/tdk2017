@@ -1,6 +1,7 @@
 package solutionsearchers;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import interfaces.OperatorInterface;
@@ -196,7 +197,7 @@ public class Optimal {
 		}
 		
 		if(!openNodes.isEmpty()){
-			return SolutionHelper.writeOutputForGraphic(getClass(), reachedOptimalNodes, listForTree, actual, steps.toString());
+			return SolutionHelper.writeOutputForGraphic(getClass(), reachedOptimalNodes, listForTree, Arrays.asList(actual, treeActual), steps.toString());
 		} else {
 			System.out.println("No solution.");
 			return null;

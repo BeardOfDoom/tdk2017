@@ -1,6 +1,7 @@
 package solutionsearchers;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -214,8 +215,7 @@ public class BackTrackPathLengthLimitation {
 		}
 		
 		if(actual != null){
-			//SolutionHelper.writeOutputForGraphic(getClass(), reachedBackTrackPathLengthLimitationNodes, actual, steps.toString());
-			return SolutionHelper.writeOutputForGraphic(getClass(), reachedBackTrackPathLengthLimitationNodes, listForTree, actual, steps.toString());
+			return SolutionHelper.writeOutputForGraphic(getClass(), reachedBackTrackPathLengthLimitationNodes, listForTree, Arrays.asList(actual, treeActual), steps.toString());
 		} else {
 			System.out.println("No solution.");
 			return null;

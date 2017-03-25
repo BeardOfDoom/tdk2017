@@ -1,6 +1,7 @@
 package solutionsearchers;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +29,7 @@ public class BackTrackOptimal {
 	private BackTrackOptimalNode actual;
 	private BackTrackOptimalNode treeActual;
 	private BackTrackOptimalNode solution;
+	private BackTrackOptimalNode treeSolution;
 	private boolean didFind;
 	private int pathLengthLimitation;
 	private int maxId;
@@ -107,6 +109,7 @@ public class BackTrackOptimal {
 			if(actual.getState().isGoal()){
 				didFind = true;
 				solution = actual;
+				treeSolution = treeActual;
 				pathLengthLimitation = actual.getDepth();
 			}
 			
@@ -221,7 +224,7 @@ public class BackTrackOptimal {
 		}
 		
 		if(didFind){
-			return SolutionHelper.writeOutputForGraphic(getClass(), reachedBackTrackOptimalNodes, listForTree, solution, steps.toString());
+			return SolutionHelper.writeOutputForGraphic(getClass(), reachedBackTrackOptimalNodes, listForTree, Arrays.asList(solution, treeSolution), steps.toString());
 		} else {
 			System.out.println("Unsuccessfull search.");
 			return null;

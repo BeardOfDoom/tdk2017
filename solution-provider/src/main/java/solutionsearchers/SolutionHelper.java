@@ -6,7 +6,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -19,26 +18,29 @@ import nodes.Node;
 
 public class SolutionHelper {
 	
-	public static String writeSolution(Node node){
+	public static String writeSolutions(List<Node> nodes){
 		StringBuilder builder = new StringBuilder();
-		LinkedList<Node> nodes = new LinkedList<>();
-		
-		while(node != null){
-			nodes.addFirst(node);
-			node = node.getParent();
-		}
-		
-		for(Node tmpNode : nodes){
-			if(tmpNode.getOperator() == null){
-				builder.append(tmpNode.getId() + " ");
-			} else {
-				builder.append("OP" + OperatorInterface.OPERATORS.indexOf(tmpNode.getOperator()) + " " + tmpNode.getId() + " ");
+		for(Node node : nodes){
+			LinkedList<Node> tmpNodes = new LinkedList<>();
+			
+			while(node != null){
+				tmpNodes.addFirst(node);
+				node = node.getParent();
 			}
+			
+			for(Node tmpNode : tmpNodes){
+				if(tmpNode.getParent() != null){
+					builder.append(tmpNode.getParent().getId() + "-OP" + OperatorInterface.OPERATORS.indexOf(tmpNode.getOperator()) + "-" + tmpNode.getId() + " ");
+				}
+			}
+			builder.setLength(builder.length() - 1);
+			builder.append("\n");
 		}
+		builder.setLength(builder.length() - 1);
 		return builder.toString();
 	}
 	
-	public static String writeOutputForGraphic(Class<?> solutionSearcher, List<Node> nodes, List<Node> treeNodes, Node solution, String steps){
+	public static String writeOutputForGraphic(Class<?> solutionSearcher, List<Node> nodes, List<Node> treeNodes, List<Node> solutions, String steps){
 		File outputFolder = new File("solutionOutputs");
 		File output = new File("solutionOutputs/" + solutionSearcher.getSimpleName() + LocalDateTime.now().format(DateTimeFormatter.ofPattern("YYYY-MM-dd-hh-mm-ss")) + UUID.randomUUID().toString() + ".txt");
 		if(!outputFolder.exists())
@@ -125,6 +127,7 @@ public class SolutionHelper {
 			for(StateWithId stateWithId : uniqueStatesWithId){
 				writer.write(stateWithId.toString() + "\n");
 			}
+			
 			for(Node node : treeNodes){
 				writer.write(node.getId() + "|" + node.getState() + "\n");
 			}
@@ -149,8 +152,8 @@ public class SolutionHelper {
 			writer.write("steps\n");
 			writer.write(steps + "\n");
 			
-			writer.write("solution\n");
-			writer.write(writeSolution(solution));
+			writer.write("solutions\n");
+			writer.write(writeSolutions(solutions));
 
 			writer.close();
 		} catch (IOException e) {

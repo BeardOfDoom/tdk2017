@@ -1,6 +1,7 @@
 package solutionsearchers;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -226,7 +227,7 @@ public class A {
 			extend(actual);
 		}
 		if(!openNodes.isEmpty()){
-			return SolutionHelper.writeOutputForGraphic(getClass(), reachedANodes, listForTree, actual, steps.toString());
+			return SolutionHelper.writeOutputForGraphic(getClass(), reachedANodes, listForTree, Arrays.asList(actual, treeActual), steps.toString());
 		} else {
 			System.out.println("No solution.");
 			// TODO

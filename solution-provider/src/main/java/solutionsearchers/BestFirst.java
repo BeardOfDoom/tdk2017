@@ -1,6 +1,7 @@
 package solutionsearchers;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -168,7 +169,7 @@ public class BestFirst {
 			extend(actual);
 		}
 		if(!openNodes.isEmpty()){
-			return SolutionHelper.writeOutputForGraphic(getClass(), reachedBestFirstNodes, listForTree, actual, steps.toString());
+			return SolutionHelper.writeOutputForGraphic(getClass(), reachedBestFirstNodes, listForTree, Arrays.asList(actual, treeActual), steps.toString());
 		} else {
 			System.out.println("No solution.");
 			return null;

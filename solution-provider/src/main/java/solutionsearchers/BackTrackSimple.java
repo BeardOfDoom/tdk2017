@@ -1,6 +1,7 @@
 package solutionsearchers;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -168,7 +169,7 @@ public class BackTrackSimple{
 		}
 		
 		if(actual != null){
-			return SolutionHelper.writeOutputForGraphic(getClass(), reachedBackTrackSimpleNodes, listForTree, actual, steps.toString());
+			return SolutionHelper.writeOutputForGraphic(getClass(), reachedBackTrackSimpleNodes, listForTree, Arrays.asList(actual, treeActual), steps.toString());
 		} else {
 			System.out.println("No solution.");
 			return null;

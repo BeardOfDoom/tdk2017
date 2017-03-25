@@ -1,6 +1,7 @@
 package solutionsearchers;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -135,7 +136,7 @@ public class DepthFirst {
 		}
 		
 		if(!openNodes.isEmpty()){
-			return SolutionHelper.writeOutputForGraphic(getClass(), reachedDepthFirstNodes, null, actual, steps.toString());
+			return SolutionHelper.writeOutputForGraphic(getClass(), reachedDepthFirstNodes, new ArrayList<>(), Arrays.asList(actual), steps.toString());
 		} else {
 			System.out.println("No solution.");
 			return null;
