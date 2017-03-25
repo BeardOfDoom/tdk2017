@@ -10,7 +10,8 @@ import nodes.OptimalNode;
 
 public class Optimal {
 	
-	private List<Node> reachedBackTrackCircleNodes;
+	private List<Node> reachedOptimalNodes;
+	private List<Node> listForTree;
 	private StringBuilder steps;
 	private List<String> activateNodes;
 	private List<String> inactivateNodes;
@@ -21,9 +22,11 @@ public class Optimal {
 	
 	private List<OperatorInterface> OPERATORS;
 	private OptimalNode actual;
+	private OptimalNode treeActual;
 	private List<OptimalNode> openNodes = new ArrayList<>();
 	private List<OptimalNode> closedNodes = new ArrayList<>();
 	private int maxId;
+	private int treeId;
 	
 	private void appendSteps(){
 		steps.append("Activated nodes: " + activateNodes);
@@ -41,7 +44,8 @@ public class Optimal {
 	}
 	
 	public Optimal(OptimalNode start, List<OperatorInterface> OPERATORS){
-		reachedBackTrackCircleNodes = new ArrayList<>();
+		reachedOptimalNodes = new ArrayList<>();
+		listForTree = new ArrayList<>();
 		steps = new StringBuilder();
 		activateNodes = new ArrayList<>();
 		inactivateNodes = new ArrayList<>();
@@ -49,9 +53,11 @@ public class Optimal {
 		closeNodes = new ArrayList<>();
 		activateEdges = new ArrayList<>();
 		inactivateEdges = new ArrayList<>();
+		treeId = -1;
 		this.OPERATORS = OPERATORS;
 		openNodes.add(start);
 		activateNodes.add(String.valueOf(start.getId()));
+		activateNodes.add(String.valueOf(treeId));
 		appendSteps();
 		maxId = start.getId();
 	}
@@ -77,7 +83,7 @@ public class Optimal {
 				OptimalNode closedNodesContains = isContains(closedNodes, newState);
 				
 				if(openNodesContains == null && closedNodesContains == null){
-					int nodeId = SolutionHelper.getNodeId(newState, maxId, reachedBackTrackCircleNodes);
+					int nodeId = SolutionHelper.getNodeId(newState, maxId, reachedOptimalNodes);
 					
 					if(maxId < nodeId)
 						maxId = nodeId;
@@ -85,28 +91,44 @@ public class Optimal {
 					OptimalNode newNode = new OptimalNode(newState, node, operator, nodeId, node.getPathCost() + operator.getCost());
 					openNodes.add(newNode);
 					
-					if(!reachedBackTrackCircleNodes.contains(newNode)){
-						reachedBackTrackCircleNodes.add(newNode);
+					OptimalNode newTreeNode = new OptimalNode(newNode.getState(), treeActual, operator, treeId, newNode.getPathCost());
+					listForTree.add(newTreeNode);
+					treeId--;
+					
+					if(!reachedOptimalNodes.contains(newNode)){
+						reachedOptimalNodes.add(newNode);
 					}
 					
 					activateNodes.add(String.valueOf(newNode.getId()));
+					activateNodes.add(String.valueOf(newTreeNode.getId()));
 					activateEdges.add(newNode.getParent().getId() + "-OP" + OPERATORS.indexOf(newNode.getOperator()) + "-" + newNode.getId());
+					activateEdges.add(newTreeNode.getParent().getId() + "-OP" + OPERATORS.indexOf(newTreeNode.getOperator()) + "-" + newTreeNode.getId());
 					//newOpenNodeIdList.add(newNode.getId());
 					//operatorIdList.add("OP" + OPERATORS.indexOf(operator));
 				} else if (openNodesContains != null){
 					double newPathCost = node.getPathCost() + operator.getCost();
 					if(newPathCost < openNodesContains.getPathCost()){
+						Node openNodeInTree = listForTree.get(listForTree.indexOf(openNodesContains));
+
 						inactivateEdges.add(openNodesContains.getParent().getId() + "-OP" + OPERATORS.indexOf(openNodesContains.getOperator()) + "-" + openNodesContains.getId());
+						inactivateEdges.add(openNodeInTree.getParent().getId() + "-OP" + OPERATORS.indexOf(openNodeInTree.getOperator()) + "-" + openNodeInTree.getId());
+						
 						openNodesContains.setParent(node);
 						openNodesContains.setOperator(operator);
 						openNodesContains.setPathCost(newPathCost);
 						
-						if(!reachedBackTrackCircleNodes.contains(openNodesContains)){
-							reachedBackTrackCircleNodes.add(openNodesContains);
+						OptimalNode newTreeNode = new OptimalNode(openNodesContains.getState(), treeActual, operator, treeId, openNodesContains.getPathCost());
+						listForTree.add(newTreeNode);
+						treeId--;
+						
+						if(!reachedOptimalNodes.contains(openNodesContains)){
+							reachedOptimalNodes.add(openNodesContains);
 						}
 						
 						// TODO ez lehet nem kell mert már eddig is nyitott volt
 						//activateNodes.add(String.valueOf(openNodesContains.getId()));
+						activateNodes.add(String.valueOf(newTreeNode.getId()));
+						activateEdges.add(newTreeNode.getParent().getId() + "-OP" + OPERATORS.indexOf(newTreeNode.getOperator()) + "-" + newTreeNode.getId());
 						activateEdges.add(openNodesContains.getParent().getId() + "-OP" + OPERATORS.indexOf(openNodesContains.getOperator()) + "-" + openNodesContains.getId());
 						//newOpenNodeIdList.add(openNodesContains.getId());
 						//operatorIdList.add("OP" + OPERATORS.indexOf(operator));
@@ -118,6 +140,7 @@ public class Optimal {
 		closedNodes.add(node);
 		appendSteps();
 		closeNodes.add(String.valueOf(node.getId()));
+		closeNodes.add(String.valueOf(treeActual.getId()));
 		//steps.append(operatorIdList + "|" + newOpenNodeIdList + "|");
 	}
 	
@@ -136,10 +159,24 @@ public class Optimal {
 					actual = openNode;
 				}
 			}
-			stepOnNodes.add(String.valueOf(actual.getId()));
 			
-			if(!reachedBackTrackCircleNodes.contains(actual)){
-				reachedBackTrackCircleNodes.add(actual);
+			if(!listForTree.contains(actual)){
+				treeActual = new OptimalNode(actual.getState(), (OptimalNode) actual.getParent(), actual.getOperator(), treeId, actual.getPathCost());
+				treeId--;
+				listForTree.add(treeActual);
+			} else {
+				treeActual = (OptimalNode) listForTree.get(listForTree.indexOf(actual));
+			}
+			
+			stepOnNodes.add(String.valueOf(actual.getId()));
+			stepOnNodes.add(String.valueOf(treeActual.getId()));
+			
+			if(!reachedOptimalNodes.contains(actual)){
+				reachedOptimalNodes.add(actual);
+			}
+			
+			if(!listForTree.contains(treeActual)){
+				listForTree.add(treeActual);
 			}
 			
 			/*if(actual.getOperator() != null){
@@ -159,7 +196,7 @@ public class Optimal {
 		}
 		
 		if(!openNodes.isEmpty()){
-			return SolutionHelper.writeOutputForGraphic(getClass(), reachedBackTrackCircleNodes, actual, steps.toString());
+			return SolutionHelper.writeOutputForGraphic(getClass(), reachedOptimalNodes, listForTree, actual, steps.toString());
 		} else {
 			System.out.println("No solution.");
 			return null;

@@ -14,6 +14,7 @@ public class BackTrackCircle {
 	
 	private Map<StateInterface, Integer> stepsOnStates;
 	private List<Node> reachedBackTrackCircleNodes;
+	private List<Node> listForTree;
 	private StringBuilder steps;
 	private List<String> activateNodes;
 	private List<String> inactivateNodes;
@@ -24,8 +25,10 @@ public class BackTrackCircle {
 	
 	private List<OperatorInterface> OPERATORS;
 	private BackTrackCircleNode actual;
+	private BackTrackCircleNode treeActual;
 	private List<BackTrackCircleNode> reachedNodes;
 	private int maxId;
+	private int treeId;
 	
 	private void appendSteps(){
 		steps.append("Activated nodes: " + activateNodes);
@@ -54,6 +57,7 @@ public class BackTrackCircle {
 	public BackTrackCircle(BackTrackCircleNode start, List<OperatorInterface> OPERATORS){
 		stepsOnStates = new HashMap<>();
 		reachedBackTrackCircleNodes = new ArrayList<>();
+		listForTree = new ArrayList<>();
 		steps = new StringBuilder();
 		activateNodes = new ArrayList<>();
 		inactivateNodes = new ArrayList<>();
@@ -63,9 +67,14 @@ public class BackTrackCircle {
 		inactivateEdges = new ArrayList<>();
 		actual = start;
 		actual.setNumOfNodeStepOns(1);
+		treeId = -1;
+		treeActual = new BackTrackCircleNode(actual.getState(), (BackTrackCircleNode) actual.getParent(), actual.getOperator(), treeId, actual.getTried());
+		treeId--;
 		this.OPERATORS = OPERATORS;
 		activateNodes.add(String.valueOf(actual.getId()));
+		activateNodes.add(String.valueOf(treeActual.getId()));
 		stepOnNodes.add(String.valueOf(actual.getId()));
+		stepOnNodes.add(String.valueOf(treeActual.getId()));
 		appendSteps();
 		//steps.append(actual.getId() + "\n");
 		reachedNodes = new ArrayList<>();
@@ -88,6 +97,10 @@ public class BackTrackCircle {
 				stepsOnStates.put(actual.getState(), actual.getNumOfNodeStepOns());
 			}
 			
+			if(!listForTree.contains(treeActual)){
+				listForTree.add(treeActual);
+			}
+			
 			if(actual.getState().isGoal()){
 				if(steps.charAt(steps.length() - 1) == '\n')
 					steps.setLength(steps.length() - 1);
@@ -97,14 +110,20 @@ public class BackTrackCircle {
 			if(isReached(actual)){
 				//OperatorInterface operator = actual.getOperator();
 				inactivateEdges.add(actual.getParent().getId() + "-OP" + OPERATORS.indexOf(actual.getOperator()) + "-" + actual.getId());
+				inactivateEdges.add(treeActual.getParent().getId() + "-OP" + OPERATORS.indexOf(treeActual.getOperator()) + "-" + treeActual.getId());
 				if(actual.getNumOfNodeStepOns() == 1){
 					inactivateNodes.add(String.valueOf(actual.getId()));
 				} else {
 					closeNodes.add(String.valueOf(actual.getId()));
 				}
+				inactivateNodes.add(String.valueOf(treeActual.getId()));
 				stepsOnStates.put(actual.getState(), actual.getNumOfNodeStepOns() - 1);
+				
 				actual = (BackTrackCircleNode) actual.getParent();
+				treeActual = (BackTrackCircleNode) treeActual.getParent();
+
 				stepOnNodes.add(String.valueOf(actual.getId()));
+				stepOnNodes.add(String.valueOf(treeActual.getId()));
 				appendSteps();
 				//steps.append("BACK OP" + OPERATORS.indexOf(operator) + " " + actual.getId() + "\n");
 			} else {
@@ -112,6 +131,7 @@ public class BackTrackCircle {
 			}
 			
 			boolean wasOperatorUsed = false;
+			
 			for (OperatorInterface operator : OPERATORS) {
 				if (operator.isApplicable(actual.getState()) && !actual.getTried().contains(operator)) {
 					actual.getTried().add(operator);
@@ -124,6 +144,11 @@ public class BackTrackCircle {
 					BackTrackCircleNode newNode = new BackTrackCircleNode(newState, actual, operator, nodeId, new ArrayList<>());
 					actual = newNode;
 					actual.setNumOfNodeStepOns(1);
+					
+					treeActual = new BackTrackCircleNode(actual.getState(), treeActual, operator, treeId, actual.getTried());
+					listForTree.add(treeActual);
+					treeId--;
+					
 					wasOperatorUsed = true;
 					break;
 
@@ -134,16 +159,23 @@ public class BackTrackCircle {
 				//OperatorInterface operator = actual.getOperator();
 				if(actual.getParent() != null){
 					inactivateEdges.add(actual.getParent().getId() + "-OP" + OPERATORS.indexOf(actual.getOperator()) + "-" + actual.getId());
+					inactivateEdges.add(treeActual.getParent().getId() + "-OP" + OPERATORS.indexOf(treeActual.getOperator()) + "-" + treeActual.getId());
 				}
+				
 				if(actual.getNumOfNodeStepOns() == 1){
 					inactivateNodes.add(String.valueOf(actual.getId()));
 				} else {
 					closeNodes.add(String.valueOf(actual.getId()));
 				}
+				inactivateNodes.add(String.valueOf(treeActual.getId()));
 				stepsOnStates.put(actual.getState(), actual.getNumOfNodeStepOns() - 1);
+				
 				actual = (BackTrackCircleNode) actual.getParent();
+				treeActual = (BackTrackCircleNode) treeActual.getParent();
+				
 				if(actual != null){
 					stepOnNodes.add(String.valueOf(actual.getId()));
+					stepOnNodes.add(String.valueOf(treeActual.getId()));
 					//steps.append("BACK OP" + OPERATORS.indexOf(operator) + " " + actual.getId() + "\n");
 				}
 			} else {
@@ -153,16 +185,20 @@ public class BackTrackCircle {
 				}
 				
 				activateEdges.add(actual.getParent().getId() + "-OP" + OPERATORS.indexOf(actual.getOperator()) + "-" + actual.getId());
+				activateEdges.add(treeActual.getParent().getId() + "-OP" + OPERATORS.indexOf(treeActual.getOperator()) + "-" + treeActual.getId());
 				activateNodes.add(String.valueOf(actual.getId()));
+				activateNodes.add(String.valueOf(treeActual.getId()));
 				stepOnNodes.add(String.valueOf(actual.getId()));
+				stepOnNodes.add(String.valueOf(treeActual.getId()));
 				closeNodes.add(String.valueOf(actual.getParent().getId()));
+				closeNodes.add(String.valueOf(treeActual.getParent().getId()));
 				//steps.append("OP" + OPERATORS.indexOf(actual.getOperator()) + " " + actual.getId() + "\n");
 			}
 			appendSteps();
 		}
 		
 		if(actual != null){
-			return SolutionHelper.writeOutputForGraphic(getClass(), reachedBackTrackCircleNodes, actual, steps.toString());
+			return SolutionHelper.writeOutputForGraphic(getClass(), reachedBackTrackCircleNodes, listForTree, actual, steps.toString());
 		} else {
 			System.out.println("No solution.");
 			return null;

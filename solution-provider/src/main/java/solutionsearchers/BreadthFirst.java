@@ -135,7 +135,7 @@ public class BreadthFirst {
 			extend(actual);
 		}
 		if(!openNodes.isEmpty()){
-			return SolutionHelper.writeOutputForGraphic(getClass(), reachedBreadthFirstNodes, actual, steps.toString());
+			return SolutionHelper.writeOutputForGraphic(getClass(), reachedBreadthFirstNodes, null, actual, steps.toString());
 		} else {
 			System.out.println("No solution.");
 			return null;

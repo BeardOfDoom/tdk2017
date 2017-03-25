@@ -38,7 +38,7 @@ public class SolutionHelper {
 		return builder.toString();
 	}
 	
-	public static String writeOutputForGraphic(Class<?> solutionSearcher, List<Node> nodes, Node solution, String steps){
+	public static String writeOutputForGraphic(Class<?> solutionSearcher, List<Node> nodes, List<Node> treeNodes, Node solution, String steps){
 		File outputFolder = new File("solutionOutputs");
 		File output = new File("solutionOutputs/" + solutionSearcher.getSimpleName() + LocalDateTime.now().format(DateTimeFormatter.ofPattern("YYYY-MM-dd-hh-mm-ss")) + UUID.randomUUID().toString() + ".txt");
 		if(!outputFolder.exists())
@@ -125,6 +125,9 @@ public class SolutionHelper {
 			for(StateWithId stateWithId : uniqueStatesWithId){
 				writer.write(stateWithId.toString() + "\n");
 			}
+			for(Node node : treeNodes){
+				writer.write(node.getId() + "|" + node.getState() + "\n");
+			}
 			
 			writer.write("operators\n");
 			for(int i = 0; i < OperatorInterface.OPERATORS.size(); i++){
@@ -133,6 +136,11 @@ public class SolutionHelper {
 
 			writer.write("connections\n");
 			for(Node node : nodes){
+				if(node.getParent() != null){
+					writer.write(node.getParent().getId() + "|" + node.getId() + "|" + "OP" + OperatorInterface.OPERATORS.indexOf(node.getOperator()) + "\n");
+				}
+			}
+			for(Node node : treeNodes){
 				if(node.getParent() != null){
 					writer.write(node.getParent().getId() + "|" + node.getId() + "|" + "OP" + OperatorInterface.OPERATORS.indexOf(node.getOperator()) + "\n");
 				}

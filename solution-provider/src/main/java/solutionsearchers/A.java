@@ -11,7 +11,8 @@ import nodes.Node;
 
 public class A {
 
-	private List<Node> reachedBackTrackCircleNodes;
+	private List<Node> reachedANodes;
+	private List<Node> listForTree;
 	private StringBuilder steps;
 	private List<String> activateNodes;
 	private List<String> inactivateNodes;
@@ -22,11 +23,13 @@ public class A {
 	
 	private List<OperatorInterface> OPERATORS;
 	private ANode actual;
+	private ANode treeActual;
 	private String heuristicFunction;
 	private Set<String> variablesInHeuristicFunction;
 	private List<ANode> openNodes = new ArrayList<>();
 	private List<ANode> closedNodes = new ArrayList<>();
 	private int maxId;
+	private int treeId;
 	
 	private void appendSteps(){
 		steps.append("Activated nodes: " + activateNodes);
@@ -44,7 +47,8 @@ public class A {
 	}
 	
 	public A(ANode start, String heuristicFunction, Set<String> variablesInHeuristicFunction, List<OperatorInterface> OPERATORS){
-		reachedBackTrackCircleNodes = new ArrayList<>();
+		reachedANodes = new ArrayList<>();
+		listForTree = new ArrayList<>();
 		steps = new StringBuilder();
 		activateNodes = new ArrayList<>();
 		inactivateNodes = new ArrayList<>();
@@ -52,11 +56,13 @@ public class A {
 		closeNodes = new ArrayList<>();
 		activateEdges = new ArrayList<>();
 		inactivateEdges = new ArrayList<>();
+		treeId = -1;
 		this.heuristicFunction = heuristicFunction;
 		this.variablesInHeuristicFunction = variablesInHeuristicFunction;
 		this.OPERATORS = OPERATORS;
 		openNodes.add(start);
 		activateNodes.add(String.valueOf(start.getId()));
+		activateNodes.add(String.valueOf(treeId));
 		appendSteps();
 		maxId = start.getId();
 	}
@@ -82,7 +88,7 @@ public class A {
 				ANode closedNodesContains = isContains(closedNodes, newState);
 				
 				if(openNodesContains == null && closedNodesContains == null){
-					int nodeId = SolutionHelper.getNodeId(newState, maxId, reachedBackTrackCircleNodes);
+					int nodeId = SolutionHelper.getNodeId(newState, maxId, reachedANodes);
 					
 					if(maxId < nodeId)
 						maxId = nodeId;
@@ -90,12 +96,18 @@ public class A {
 					ANode newNode = new ANode(newState, node, operator, nodeId, node.getPathCost() + operator.getCost(), heuristicFunction, variablesInHeuristicFunction);
 					openNodes.add(newNode);
 					
-					if(!reachedBackTrackCircleNodes.contains(newNode)){
-						reachedBackTrackCircleNodes.add(newNode);
+					ANode newTreeNode = new ANode(newNode.getState(), treeActual, operator, treeId, newNode.getPathCost(), heuristicFunction, variablesInHeuristicFunction);
+					listForTree.add(newTreeNode);
+					treeId--;
+					
+					if(!reachedANodes.contains(newNode)){
+						reachedANodes.add(newNode);
 					}
 					
 					activateNodes.add(String.valueOf(newNode.getId()));
+					activateNodes.add(String.valueOf(newTreeNode.getId()));
 					activateEdges.add(newNode.getParent().getId() + "-OP" + OPERATORS.indexOf(newNode.getOperator()) + "-" + newNode.getId());
+					activateEdges.add(newTreeNode.getParent().getId() + "-OP" + OPERATORS.indexOf(newTreeNode.getOperator()) + "-" + newTreeNode.getId());
 					//newOpenNodeIdList.add(newNode.getId());
 					//operatorIdList.add("OP" + OPERATORS.indexOf(operator));
 				} else {
@@ -103,35 +115,55 @@ public class A {
 					
 					if (openNodesContains != null){
 						if(newPathCost < openNodesContains.getPathCost()){
+							Node openNodeInTree = listForTree.get(listForTree.indexOf(openNodesContains));
+							
 							inactivateEdges.add(openNodesContains.getParent().getId() + "-OP" + OPERATORS.indexOf(openNodesContains.getOperator()) + "-" + openNodesContains.getId());
+							inactivateEdges.add(openNodeInTree.getParent().getId() + "-OP" + OPERATORS.indexOf(openNodeInTree.getOperator()) + "-" + openNodeInTree.getId());
+							
 							openNodesContains.setParent(node);
 							openNodesContains.setOperator(operator);
 							openNodesContains.setPathCost(newPathCost);
 							
-							if(!reachedBackTrackCircleNodes.contains(openNodesContains)){
-								reachedBackTrackCircleNodes.add(openNodesContains);
+							ANode newTreeNode = new ANode(openNodesContains.getState(), treeActual, operator, treeId, openNodesContains.getPathCost(), heuristicFunction, variablesInHeuristicFunction);
+							listForTree.add(newTreeNode);
+							treeId--;
+							
+							if(!reachedANodes.contains(openNodesContains)){
+								reachedANodes.add(openNodesContains);
 							}
 							
 							//activateNodes.add(String.valueOf(openNodesContains.getId()));
+							activateNodes.add(String.valueOf(newTreeNode.getId()));
 							activateEdges.add(openNodesContains.getParent().getId() + "-OP" + OPERATORS.indexOf(openNodesContains.getOperator()) + "-" + openNodesContains.getId());
+							activateEdges.add(newTreeNode.getParent().getId() + "-OP" + OPERATORS.indexOf(newTreeNode.getOperator()) + "-" + newTreeNode.getId());
 							//newOpenNodeIdList.add(openNodesContains.getId());
 							//operatorIdList.add("OP" + OPERATORS.indexOf(operator));
 						}
 					} else {
 						if(newPathCost < closedNodesContains.getPathCost()){
+							Node openNodeInTree = listForTree.get(listForTree.indexOf(closedNodesContains));
+							
 							inactivateEdges.add(closedNodesContains.getParent().getId() + "-OP" + OPERATORS.indexOf(closedNodesContains.getOperator()) + "-" + closedNodesContains.getId());
+							inactivateEdges.add(openNodeInTree.getParent().getId() + "-OP" + OPERATORS.indexOf(openNodeInTree.getOperator()) + "-" + openNodeInTree.getId());
+							
 							closedNodesContains.setParent(node);
 							closedNodesContains.setOperator(operator);
 							closedNodesContains.setPathCost(newPathCost);
 							closedNodes.remove(closedNodesContains);
 							openNodes.add(closedNodesContains);
 							
-							if(!reachedBackTrackCircleNodes.contains(closedNodesContains)){
-								reachedBackTrackCircleNodes.add(closedNodesContains);
+							ANode newTreeNode = new ANode(closedNodesContains.getState(), treeActual, operator, treeId, closedNodesContains.getPathCost(), heuristicFunction, variablesInHeuristicFunction);
+							listForTree.add(newTreeNode);
+							treeId--;
+							
+							if(!reachedANodes.contains(closedNodesContains)){
+								reachedANodes.add(closedNodesContains);
 							}
 							
 							activateNodes.add(String.valueOf(closedNodesContains.getId()));
+							activateNodes.add(String.valueOf(newTreeNode.getId()));
 							activateEdges.add(closedNodesContains.getParent().getId() + "-OP" + OPERATORS.indexOf(closedNodesContains.getOperator()) + "-" + closedNodesContains.getId());
+							activateEdges.add(newTreeNode.getParent().getId() + "-OP" + OPERATORS.indexOf(newTreeNode.getOperator()) + "-" + newTreeNode.getId());
 							//newOpenNodeIdList.add(closedNodesContains.getId());
 							//operatorIdList.add("OP" + OPERATORS.indexOf(operator));
 						}
@@ -143,6 +175,7 @@ public class A {
 		closedNodes.add(node);
 		appendSteps();
 		closeNodes.add(String.valueOf(node.getId()));
+		closeNodes.add(String.valueOf(treeActual.getId()));
 		//steps.append(operatorIdList + "|" + newOpenNodeIdList + "|");
 	}
 	
@@ -162,9 +195,19 @@ public class A {
 				}
 			}
 			
+			if(!listForTree.contains(actual)){
+				treeActual = new ANode(actual.getState(), (ANode) actual.getParent(), actual.getOperator(), treeId, actual.getPathCost(), heuristicFunction, variablesInHeuristicFunction);
+				treeId--;
+				listForTree.add(treeActual);
+			} else {
+				treeActual = (ANode) listForTree.get(listForTree.indexOf(actual));
+			}
+			
 			stepOnNodes.add(String.valueOf(actual.getId()));
-			if(!reachedBackTrackCircleNodes.contains(actual)){
-				reachedBackTrackCircleNodes.add(actual);
+			stepOnNodes.add(String.valueOf(treeActual.getId()));
+			
+			if(!reachedANodes.contains(actual)){
+				reachedANodes.add(actual);
 			}
 			
 			/*if(actual.getOperator() != null){
@@ -183,7 +226,7 @@ public class A {
 			extend(actual);
 		}
 		if(!openNodes.isEmpty()){
-			return SolutionHelper.writeOutputForGraphic(getClass(), reachedBackTrackCircleNodes, actual, steps.toString());
+			return SolutionHelper.writeOutputForGraphic(getClass(), reachedANodes, listForTree, actual, steps.toString());
 		} else {
 			System.out.println("No solution.");
 			// TODO
