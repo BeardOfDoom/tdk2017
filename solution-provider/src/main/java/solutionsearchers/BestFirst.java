@@ -1,6 +1,7 @@
 package solutionsearchers;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -11,7 +12,8 @@ import nodes.Node;
 
 public class BestFirst {
 
-	private List<Node> reachedBackTrackCircleNodes;
+	private List<Node> reachedBestFirstNodes;
+	private List<Node> listForTree;
 	private StringBuilder steps;
 	private List<String> activateNodes;
 	private List<String> inactivateNodes;
@@ -22,11 +24,13 @@ public class BestFirst {
 	
 	private List<OperatorInterface> OPERATORS;
 	private BestFirstNode actual;
+	private BestFirstNode treeActual;
 	private String heuristicFunction;
 	private Set<String> variablesInHeuristicFunction;
 	private List<BestFirstNode> openNodes = new ArrayList<>();
 	private List<BestFirstNode> closedNodes = new ArrayList<>();
 	private int maxId;
+	private int treeId;
 	
 	private void appendSteps(){
 		steps.append("Activated nodes: " + activateNodes);
@@ -44,7 +48,8 @@ public class BestFirst {
 	}
 	
 	public BestFirst(BestFirstNode start, String heuristicFunction, Set<String> variablesInHeuristicFunction, List<OperatorInterface> OPERATORS){
-		reachedBackTrackCircleNodes = new ArrayList<>();
+		reachedBestFirstNodes = new ArrayList<>();
+		listForTree = new ArrayList<>();
 		steps = new StringBuilder();
 		activateNodes = new ArrayList<>();
 		inactivateNodes = new ArrayList<>();
@@ -52,11 +57,13 @@ public class BestFirst {
 		closeNodes = new ArrayList<>();
 		activateEdges = new ArrayList<>();
 		inactivateEdges = new ArrayList<>();
+		treeId = -1;
 		this.heuristicFunction = heuristicFunction;
 		this.variablesInHeuristicFunction = variablesInHeuristicFunction;
 		this.OPERATORS = OPERATORS;
 		openNodes.add(start);
 		activateNodes.add(String.valueOf(start.getId()));
+		activateNodes.add(String.valueOf(treeId));
 		appendSteps();
 		maxId = start.getId();
 	}
@@ -82,7 +89,7 @@ public class BestFirst {
 				BestFirstNode closedNodesContains = isContains(closedNodes, newState);
 				
 				if(openNodesContains == null && closedNodesContains == null){
-					int nodeId = SolutionHelper.getNodeId(newState, maxId, reachedBackTrackCircleNodes);
+					int nodeId = SolutionHelper.getNodeId(newState, maxId, reachedBestFirstNodes);
 					
 					if(maxId < nodeId)
 						maxId = nodeId;
@@ -90,12 +97,18 @@ public class BestFirst {
 					BestFirstNode newNode = new BestFirstNode(newState, node, operator, nodeId, heuristicFunction, variablesInHeuristicFunction);
 					openNodes.add(newNode);
 					
-					if(!reachedBackTrackCircleNodes.contains(newNode)){
-						reachedBackTrackCircleNodes.add(newNode);
+					BestFirstNode newTreeNode = new BestFirstNode(newNode.getState(), treeActual, operator, treeId, heuristicFunction, variablesInHeuristicFunction);
+					listForTree.add(newTreeNode);
+					treeId--;
+					
+					if(!reachedBestFirstNodes.contains(newNode)){
+						reachedBestFirstNodes.add(newNode);
 					}
 					
 					activateNodes.add(String.valueOf(newNode.getId()));
+					activateNodes.add(String.valueOf(newTreeNode.getId()));
 					activateEdges.add(newNode.getParent().getId() + "-OP" + OPERATORS.indexOf(newNode.getOperator()) + "-" + newNode.getId());
+					activateEdges.add(newTreeNode.getParent().getId() + "-OP" + OPERATORS.indexOf(newTreeNode.getOperator()) + "-" + newTreeNode.getId());
 					//newOpenNodeIdList.add(newNode.getId());
 					//operatorIdList.add("OP" + OPERATORS.indexOf(operator));
 				}
@@ -105,6 +118,7 @@ public class BestFirst {
 		closedNodes.add(node);
 		appendSteps();
 		closeNodes.add(String.valueOf(node.getId()));
+		closeNodes.add(String.valueOf(treeActual.getId()));
 		//steps.append(operatorIdList + "|" + newOpenNodeIdList + "|");
 	}
 	
@@ -124,9 +138,19 @@ public class BestFirst {
 				}
 			}
 			
+			if(!listForTree.contains(actual)){
+				treeActual = new BestFirstNode(actual.getState(), (BestFirstNode) actual.getParent(), actual.getOperator(), treeId, heuristicFunction, variablesInHeuristicFunction);
+				treeId--;
+				listForTree.add(treeActual);
+			} else {
+				treeActual = (BestFirstNode) listForTree.get(listForTree.indexOf(actual));
+			}
+			
 			stepOnNodes.add(String.valueOf(actual.getId()));
-			if(!reachedBackTrackCircleNodes.contains(actual)){
-				reachedBackTrackCircleNodes.add(actual);
+			stepOnNodes.add(String.valueOf(treeActual.getId()));
+			
+			if(!reachedBestFirstNodes.contains(actual)){
+				reachedBestFirstNodes.add(actual);
 			}
 			
 			/*if(actual.getOperator() != null){
@@ -145,7 +169,7 @@ public class BestFirst {
 			extend(actual);
 		}
 		if(!openNodes.isEmpty()){
-			return SolutionHelper.writeOutputForGraphic(getClass(), reachedBackTrackCircleNodes, actual, steps.toString());
+			return SolutionHelper.writeOutputForGraphic(getClass(), reachedBestFirstNodes, listForTree, Arrays.asList(actual, treeActual), steps.toString());
 		} else {
 			System.out.println("No solution.");
 			return null;

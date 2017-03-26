@@ -1,6 +1,7 @@
 package solutionsearchers;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -11,7 +12,7 @@ import nodes.Node;
 
 public class DepthFirst {
 	
-	private List<Node> reachedBackTrackCircleNodes;
+	private List<Node> reachedDepthFirstNodes;
 	private StringBuilder steps;
 	private List<String> activateNodes;
 	private List<String> inactivateNodes;
@@ -42,7 +43,7 @@ public class DepthFirst {
 	}
 	
 	public DepthFirst(DepthFirstNode start, List<OperatorInterface> OPERATORS){
-		reachedBackTrackCircleNodes = new ArrayList<>();
+		reachedDepthFirstNodes = new ArrayList<>();
 		steps = new StringBuilder();
 		activateNodes = new ArrayList<>();
 		inactivateNodes = new ArrayList<>();
@@ -78,7 +79,7 @@ public class DepthFirst {
 				boolean isClosedNodesContains = isContains(closedNodes, newState);
 				
 				if(!(isOpenNodesContains || isClosedNodesContains)){
-					int nodeId = SolutionHelper.getNodeId(newState, maxId, reachedBackTrackCircleNodes);
+					int nodeId = SolutionHelper.getNodeId(newState, maxId, reachedDepthFirstNodes);
 					
 					if(maxId < nodeId)
 						maxId = nodeId;
@@ -86,8 +87,8 @@ public class DepthFirst {
 					DepthFirstNode newNode = new DepthFirstNode(newState, node, operator, nodeId, node.getDepth() + 1);
 					openNodes.addFirst(newNode);
 					
-					if(!reachedBackTrackCircleNodes.contains(newNode)){
-						reachedBackTrackCircleNodes.add(newNode);
+					if(!reachedDepthFirstNodes.contains(newNode)){
+						reachedDepthFirstNodes.add(newNode);
 					}
 					
 					activateNodes.add(String.valueOf(newNode.getId()));
@@ -114,8 +115,8 @@ public class DepthFirst {
 			
 			actual = openNodes.getFirst();
 			stepOnNodes.add(String.valueOf(actual.getId()));
-			if(!reachedBackTrackCircleNodes.contains(actual)){
-				reachedBackTrackCircleNodes.add(actual);
+			if(!reachedDepthFirstNodes.contains(actual)){
+				reachedDepthFirstNodes.add(actual);
 			}
 			
 			/*if(actual.getOperator() != null){
@@ -135,7 +136,7 @@ public class DepthFirst {
 		}
 		
 		if(!openNodes.isEmpty()){
-			return SolutionHelper.writeOutputForGraphic(getClass(), reachedBackTrackCircleNodes, actual, steps.toString());
+			return SolutionHelper.writeOutputForGraphic(getClass(), reachedDepthFirstNodes, new ArrayList<>(), Arrays.asList(actual), steps.toString());
 		} else {
 			System.out.println("No solution.");
 			return null;

@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -26,25 +25,6 @@ import exceptions.TemporaryFolderDeletionException;
 import exceptions.WrongFileExtensionException;
 import interfaces.OperatorInterface;
 import interfaces.StateInterface;
-import model.UserInput;
-import nodes.ANode;
-import nodes.BackTrackCircleNode;
-import nodes.BackTrackOptimalNode;
-import nodes.BackTrackPathLengthLimitationNode;
-import nodes.BackTrackSimpleNode;
-import nodes.BestFirstNode;
-import nodes.BreadthFirstNode;
-import nodes.DepthFirstNode;
-import nodes.OptimalNode;
-import solutionsearchers.A;
-import solutionsearchers.BackTrackCircle;
-import solutionsearchers.BackTrackOptimal;
-import solutionsearchers.BackTrackPathLengthLimitation;
-import solutionsearchers.BackTrackSimple;
-import solutionsearchers.BestFirst;
-import solutionsearchers.BreadthFirst;
-import solutionsearchers.DepthFirst;
-import solutionsearchers.Optimal;
 
 public class SolutionMaker {
 	

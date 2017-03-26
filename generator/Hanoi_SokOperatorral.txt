@@ -1,0 +1,82 @@
+﻿STATE:
+
+STATE_ATTRIBUTES:
+Attr1 is set of number
+Attr2 is set of number
+Attr3 is set of number
+Attr4 is set of number
+
+STATE_START:
+$0 = {1, 2, 3}
+$3 = {1, 2, 3}
+
+STATE_GOAL:
+$2 == $3
+
+OPERATORS:
+
+OPERATOR_DESCRIPTION:
+cost 1
+
+OPERATOR_PRECONDITION:
+card($0) != 0 and
+min($0)<min($1)
+
+OPERATOR_EFFECT:
+$1 = add($1, min($0))
+$0 = remove($0, min($0))
+
+OPERATOR_DESCRIPTION:
+cost 1
+
+OPERATOR_PRECONDITION:
+card($0) != 0 and
+min($0)<min($2)
+
+OPERATOR_EFFECT:
+$2 = add($2, min($0))
+$0 = remove($0, min($0))
+
+OPERATOR_DESCRIPTION:
+cost 1
+
+OPERATOR_PRECONDITION:
+card($1) != 0 and
+min($1)<min($0)
+
+OPERATOR_EFFECT:
+$0 = add($0, min($1))
+$1 = remove($1, min($1))
+
+OPERATOR_DESCRIPTION:
+cost 1
+
+OPERATOR_PRECONDITION:
+card($1) != 0 and
+min($1)<min($2)
+
+OPERATOR_EFFECT:
+$2 = add($2, min($1))
+$1 = remove($1, min($1))
+
+OPERATOR_DESCRIPTION:
+cost 1
+
+OPERATOR_PRECONDITION:
+card($2) != 0 and
+min($2)<min($0)
+
+OPERATOR_EFFECT:
+$0 = add($0, min($2))
+$2 = remove($2, min($2))
+
+OPERATOR_DESCRIPTION:
+cost 1
+
+OPERATOR_PRECONDITION:
+card($2) != 0 and
+min($2)<min($1)
+
+OPERATOR_EFFECT:
+$1 = add($1, min($2))
+$2 = remove($2, min($2))

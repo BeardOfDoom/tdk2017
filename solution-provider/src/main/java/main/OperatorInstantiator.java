@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import exceptions.OperatorInitializationException;
-import exceptions.StateInitializationException;
 import interfaces.OperatorInterface;
 
 @SuppressWarnings("unchecked")
