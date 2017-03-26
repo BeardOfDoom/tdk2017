@@ -80,3 +80,27 @@ svg{
 	opacity: 0;
 	pointer-events: none;
 }
+
+.problemTable{
+	width: 60%;
+	margin: 30px auto;
+}
+
+.problemTable tbody tr td{
+	vertical-align: middle;
+	padding: auto;
+}
+
+.problem-textarea{
+	resize: none;
+}
+
+.problem-submit-button{
+	display: block;
+	margin: auto;
+	width: 100px;
+}
+
+.problemTable tbody tr td input[type="checkbox"]{
+	margin-right: 5px;
+}

@@ -24,10 +24,14 @@ public class ApplicationConfiguration {
     @Value("${file.json.folder}")
     private String jsonFolderName;
 
+    @Value("${file.state.space.folder}")
+    private String stateSpaceFolderName;
+
     @PostConstruct
     private void init() {
         createFileUploadFolder();
         createJsonFolder();
+        createStateSpaceFolder();
     }
 
     private void createFileUploadFolder() {
@@ -39,6 +43,13 @@ public class ApplicationConfiguration {
 
     private void createJsonFolder() {
         File fileUploadFolder = new File(jsonFolderName);
+        if (!fileUploadFolder.exists()) {
+            fileUploadFolder.mkdir();
+        }
+    }
+
+    private void createStateSpaceFolder() {
+        File fileUploadFolder = new File(stateSpaceFolderName);
         if (!fileUploadFolder.exists()) {
             fileUploadFolder.mkdir();
         }

@@ -1,3 +1,4 @@
+<%@page contentType="text/html; charset=UTF-8" language="java"%>
 <nav class="navbar navbar-inverse myNavbar">
 	<div class="container">
 		<!-- Brand and toggle get grouped for better mobile display -->
@@ -18,9 +19,14 @@
 						<spring:message code="title.home" />
 					</a>
 				</li>
-				<li>
+				<!-- <li>
 					<a href="${pageContext.request.contextPath}/upload">
 						<spring:message code="title.new.graph" />
+					</a>
+				</li> -->
+				<li>
+					<a href="${pageContext.request.contextPath}/problem">
+						Új probléma
 					</a>
 				</li>
 				<li>

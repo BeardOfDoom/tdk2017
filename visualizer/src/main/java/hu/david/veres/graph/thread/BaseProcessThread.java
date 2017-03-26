@@ -6,6 +6,8 @@ import generator.OperatorGenerator;
 import generator.ProjectGenerator;
 import generator.StateGenerator;
 import hu.david.veres.graph.form.ProblemForm;
+import hu.david.veres.graph.service.StorageService;
+import hu.david.veres.graph.util.ProcessUtils;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -45,6 +47,9 @@ public class BaseProcessThread implements Runnable {
     @Autowired
     private ApplicationContext applicationContext;
 
+    @Autowired
+    private StorageService storageService;
+
     @Override
     public void run() {
 
@@ -54,22 +59,26 @@ public class BaseProcessThread implements Runnable {
         InputReader inputReader = new InputReader();
         ProjectRepresentation projectRepresentation = null;
 
-        File file = new File("sml_input.txt");
+        File file = null;
+        // TODO: temporary file name!!!
+        String fileName = ProcessUtils.generateStateSpaceFileName();
         try {
-            FileWriter fileWriter = new FileWriter(file);
-            fileWriter.write(problemForm.getStateSpace());
-            fileWriter.close();
+            file = storageService.storeStateSpace(problemForm.getStateSpace(), fileName);
         } catch (IOException e) {
+            // TODO
             e.printStackTrace();
+            return;
         }
 
         try {
             projectRepresentation = inputReader.processInputFile(file.getAbsolutePath());
         } catch (IOException e) {
             e.printStackTrace();
+            return;
             // TODO
         } catch (IncorrectInputException e) {
             e.printStackTrace();
+            return;
             // TODO
         }
 
@@ -80,6 +89,7 @@ public class BaseProcessThread implements Runnable {
             classRepresentations = projectGenerator.generate(projectRepresentation, "generated", "com.prototype");
         } catch (IOException e) {
             e.printStackTrace();
+            return;
             // TODO
         }
 
@@ -106,29 +116,42 @@ public class BaseProcessThread implements Runnable {
 
         } catch (TemporaryFolderCreationException e) {
             e.printStackTrace();
+            return;
         } catch (MalformedURLException e) {
             e.printStackTrace();
+            return;
         } catch (URISyntaxException e) {
             e.printStackTrace();
+            return;
         } catch (WrongFileExtensionException e) {
             e.printStackTrace();
+            return;
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
+            return;
         } catch (TemporaryFolderDeletionException e) {
             e.printStackTrace();
+            return;
         } catch (CompilationException e) {
             e.printStackTrace();
+            return;
         } catch (OperatorNotFoundException e) {
             e.printStackTrace();
+            return;
         } catch (OperatorInitializationException e) {
             e.printStackTrace();
+            return;
         } catch (StateInitializationException e) {
             e.printStackTrace();
+            return;
         } catch (StateNotFoundException e) {
             e.printStackTrace();
+            return;
         } catch (IOException e) {
             e.printStackTrace();
+            return;
         }
+        // TODO: handle exceptions
 
     }
 

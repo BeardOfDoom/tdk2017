@@ -1,12 +1,14 @@
 .idea/
 *.iml
 
+.settings/
+.classpath
+.project
+
 target/
 
 upload/
 json/
-
-.settings/
-.classpath
-.project
 solutionOutputs/
+generated/
+statespace/

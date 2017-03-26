@@ -19,4 +19,6 @@ public interface StorageService {
 
     File getJsonFile(String fileName) throws FileNotFoundException;
 
+    File storeStateSpace(String stateSpace, String fileName) throws IOException;
+
 }

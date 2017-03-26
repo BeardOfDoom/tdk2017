@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 
 @Service
@@ -23,6 +24,9 @@ public class StorageServiceImpl implements StorageService {
 
     @Value("${file.json.folder}")
     private String jsonFolderName;
+
+    @Value("${file.state.space.folder}")
+    private String stateSpaceFolderName;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -81,6 +85,21 @@ public class StorageServiceImpl implements StorageService {
         if(!file.exists()){
             throw new FileNotFoundException();
         }
+
+        return file;
+
+    }
+
+    @Override
+    public File storeStateSpace(String stateSpace, String fileName) throws IOException {
+
+        File file = new File(stateSpaceFolderName + SLASH + fileName + EXTENSION_TXT);
+
+        FileWriter fileWriter = new FileWriter(file);
+
+        fileWriter.write(stateSpace);
+
+        fileWriter.close();
 
         return file;
 

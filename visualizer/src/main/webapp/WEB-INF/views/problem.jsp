@@ -33,28 +33,31 @@
 		<h1>Ládzi és áDÁM része</h1>
 		
 		<form:form method="POST" modelAttribute="problemForm" action="">
-		<table>
+		<table class="table table-responsive problemTable">
 			<tr>
 				<td>Állapottér :</td>
-				<td><form:textarea path="stateSpace" rows="5" cols="30" /></td>
+				<td><form:textarea path="stateSpace" rows="10" cols="60" class="form-control problem-textarea" resizeable="false" /></td>
 			</tr>
 			<tr>
-				<form:checkbox path="algorithms" value="BackTrackSimple" />Backtrack<br/>
-				<form:checkbox path="algorithms" value="BackTrackCircle" />Backtrack with cycle detection<br/>
-				<form:checkbox path="algorithms" value="BackTrackPathLengthLimitation" />Backtrack with pathlength limitation<br/>
-				<form:checkbox path="algorithms" value="BackTrackOptimal" />Backtrack branch and bound<br/>
-				<form:checkbox path="algorithms" value="BreadthFirst" />Breadth-first<br/>
-				<form:checkbox path="algorithms" value="DepthFirst" />Depth-first<br/>
-				<form:checkbox path="algorithms" value="Optimal" />Optimal<br/>
-				<form:checkbox path="algorithms" value="BestFirst" />Best-first<br/>
-				<form:checkbox path="algorithms" value="A" />A<br/>
+				<td>Keresők :</td>
+				<td>
+					<form:checkbox path="algorithms" value="BackTrackSimple" />Backtrack<br/>
+					<form:checkbox path="algorithms" value="BackTrackCircle" />Backtrack with cycle detection<br/>
+					<form:checkbox path="algorithms" value="BackTrackPathLengthLimitation" />Backtrack with pathlength limitation<br/>
+					<form:checkbox path="algorithms" value="BackTrackOptimal" />Backtrack branch and bound<br/>
+					<form:checkbox path="algorithms" value="BreadthFirst" />Breadth-first<br/>
+					<form:checkbox path="algorithms" value="DepthFirst" />Depth-first<br/>
+					<form:checkbox path="algorithms" value="Optimal" />Optimal<br/>
+					<form:checkbox path="algorithms" value="BestFirst" />Best-first<br/>
+					<form:checkbox path="algorithms" value="A" />A<br/>
+				</td>
 			</tr>
 			<tr>
 				<td>Heurisztika :</td>
-				<td><form:textarea path="heuristic" rows="5" cols="30" /></td>
+				<td><form:textarea path="heuristic" rows="10" cols="60" class="form-control problem-textarea" /></td>
 			</tr>
 			<tr>
-				<td colspan="3"><input type="submit" /></td>
+				<td colspan="2"><button type="submit" class="btn btn-primary problem-submit-button">Küldés</button></td>
 			</tr>
 		</table>
 		</form:form>

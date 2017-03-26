@@ -43,7 +43,7 @@ public class ProblemController {
 
         List<String> processIdentifiers = new ArrayList<>();
 
-        for(String algorithm : problemForm.getAlgorithms()){
+        for (String algorithm : problemForm.getAlgorithms()) {
 
             String processIdentifier = ProcessUtils.generateProcessIdentifier();
 
@@ -51,12 +51,6 @@ public class ProblemController {
             processDTO.setProcessIdentifier(processIdentifier);
             processDTO.setDone(false);
             processService.save(processDTO);
-
-            /*
-            ProcessThread processThread = applicationContext.getBean(ProcessThread.class);
-            processThread.setProcessIdentifier(processIdentifier);
-            threadPoolTaskExecutor.execute(processThread);
-            */
 
             processIdentifiers.add(processIdentifier);
 
@@ -67,42 +61,12 @@ public class ProblemController {
         baseProcessThread.setProcessIdentifiers(processIdentifiers);
         threadPoolTaskExecutor.execute(baseProcessThread);
 
-        // TODO: return ModelAndView
-
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.addObject("processIdentifiers", processIdentifiers);
         modelAndView.setViewName("visualizer");
 
         return modelAndView;
 
-//        File file = new File("sml_input.txt");
-//        try {
-//            FileWriter fileWriter = new FileWriter(file);
-//            fileWriter.write(smlForm.getText());
-//            fileWriter.close();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//
-//        try {
-//            ProjectRepresentation projectRepresentation = CommonUtils.processInputFile(file.getAbsolutePath());
-//            ProjectGenerator projectGenerator = new ProjectGenerator(new StateGenerator(), new OperatorGenerator());
-//            System.out.println("TESZT - " + projectRepresentation);
-//            List<ClassRepresentation> classRepresentationList = projectGenerator.generate(projectRepresentation, "kaka", "something");
-//            ClassManager.clear();
-//            ClassManager.addClasses(classRepresentationList);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-
-        // return "redirect:./solution";
     }
-
-    /*
-    @RequestMapping(path = "/visualizer", method = RequestMethod.GET)
-    public String visualizer(){
-        return "visualizer";
-    }
-    */
 
 }

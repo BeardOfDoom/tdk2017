@@ -1,13 +1,11 @@
 package hu.david.veres.graph.thread;
 
 import hu.david.veres.graph.dto.ProcessDTO;
-import hu.david.veres.graph.exception.result.ResultValidationException;
 import hu.david.veres.graph.form.ProblemForm;
 import hu.david.veres.graph.generator.ResultGenerator;
 import hu.david.veres.graph.model.Result;
 import hu.david.veres.graph.service.ProcessService;
 import hu.david.veres.graph.service.StorageService;
-import hu.david.veres.graph.validator.ResultValidator;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -27,8 +25,6 @@ import java.io.IOException;
 public class ProcessThread implements Runnable {
 
     private String processIdentifier;
-    private String stateSpaceFileName;
-    private ProblemForm problemForm;
     private SolutionManager solutionManager;
     private String algorithmName;
     private String heuristicFunction;
@@ -42,19 +38,8 @@ public class ProcessThread implements Runnable {
     @Autowired
     private ResultGenerator resultGenerator;
 
-    @Autowired
-    private ResultValidator resultValidator;
-
     @Override
     public void run() {
-
-        // CHECK THE REQUIRED FIELDS
-        /*
-        if (processIdentifier == null || absoluteFileName == null) {
-            finishAndUpdateProcess(processIdentifier, true, "error.unexpected.error");
-            return;
-        }
-        */
 
         // GET OUTPUT FILE NAME
         // TODO: default empty file name or null?
@@ -101,17 +86,7 @@ public class ProcessThread implements Runnable {
         try {
             result = resultGenerator.generate(file);
         } catch (IOException e) {
-            storageService.deleteUploadedFile(processIdentifier);
-            finishAndUpdateProcess(processIdentifier, true, null);
-            e.printStackTrace();
-            return;
-        }
-
-        // VALIDATE RESULT
-        try {
-            resultValidator.validate(result);
-        } catch (ResultValidationException e) {
-            storageService.deleteUploadedFile(processIdentifier);
+            // storageService.deleteUploadedFile(processIdentifier);
             finishAndUpdateProcess(processIdentifier, true, null);
             e.printStackTrace();
             return;
@@ -121,7 +96,7 @@ public class ProcessThread implements Runnable {
         try {
             storageService.storeResultInJsonFile(result, processIdentifier);
         } catch (IOException e) {
-            storageService.deleteUploadedFile(processIdentifier);
+            // storageService.deleteUploadedFile(processIdentifier);
             finishAndUpdateProcess(processIdentifier, true, null);
             e.printStackTrace();
             return;

@@ -21,4 +21,15 @@ public final class ProcessUtils {
 
     }
 
+    public static String generateStateSpaceFileName() {
+
+        // TODO
+
+        String timeStamp = DateTimeFormatter.ofPattern(DATE_AND_TIME_FORMAT).format(LocalDateTime.now());
+        String randomString = RandomStringUtils.randomAlphanumeric(20);
+
+        return timeStamp + "_" + randomString;
+
+    }
+
 }
