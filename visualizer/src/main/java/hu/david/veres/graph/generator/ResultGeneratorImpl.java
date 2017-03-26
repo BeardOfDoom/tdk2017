@@ -28,7 +28,7 @@ public class ResultGeneratorImpl implements ResultGenerator {
     private static final String LABEL_OPERATORS = "operators";
     private static final String LABEL_CONNECTIONS = "connections";
     private static final String LABEL_STEPS = "steps";
-    private static final String LABEL_SOLUTION = "solution";
+    private static final String LABEL_SOLUTIONS = "solutions";
 
     private static final int STATE_EMPTY = 0;
     private static final int STATE_INFO = 1;
@@ -68,7 +68,7 @@ public class ResultGeneratorImpl implements ResultGenerator {
                 case LABEL_STEPS:
                     state = STATE_STEPS;
                     break;
-                case LABEL_SOLUTION:
+                case LABEL_SOLUTIONS:
                     state = STATE_SOLUTION;
                     break;
                 case EMPTY_LINE:
@@ -189,7 +189,7 @@ public class ResultGeneratorImpl implements ResultGenerator {
 
         String[] parts = line.split(DELIMITER_SPACE);
 
-        result.setSolution(Arrays.asList(parts));
+        result.getSolutions().add(Arrays.asList(parts));
 
     }
 

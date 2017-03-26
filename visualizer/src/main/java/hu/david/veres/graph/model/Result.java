@@ -17,7 +17,7 @@ public class Result {
     private List<Operator> operators;
     private List<Connection> connections;
     private List<Step> steps;
-    private List<String> solution;
+    private List<List<String>> solutions;
 
     public Result() {
         info = new Info();
@@ -25,7 +25,7 @@ public class Result {
         operators = new ArrayList<>();
         connections = new ArrayList<>();
         steps = new ArrayList<>();
-        solution = new ArrayList<>();
+        solutions = new ArrayList<>();
     }
 
 }

@@ -27,7 +27,7 @@ var simulation = d3.forceSimulation()
 var steps;
 var nodes;
 var operators;
-var solution;
+var solutions;
 
 var stepIndex;
 var drag;
@@ -82,14 +82,20 @@ function initGraph(jsonUrl){
 		var solutionPathsGroup = svg.append("g")
 			.attr("id", "solution")
 			.style("opacity", "0");
+		
+		for(i=0; i<graph.solutions.length; i++){
+			
+			for(j=0; j<graph.solutions[i].length; j++){
+				
+				var solutionPathId = "s" + graph.solutions[i][j];
+				solutionPathsGroup.append("path")
+					.attr("id", solutionPathId)
+					.style("fill", "none")
+					.style("stroke", "red")
+					.style("stroke-width", "2");
+				
+			}
 
-		for(i=0; i<graph.solution.length-2; i+=2){
-			var solutionPathId = "s" + graph.solution[i] + "-" + graph.solution[i+1] + "-" + graph.solution[i+2];
-			solutionPathsGroup.append("path")
-				.attr("id", solutionPathId)
-				.style("fill", "none")
-				.style("stroke", "red")
-				.style("stroke-width", "2");
 		}
 		
 		// generate nodes
@@ -155,12 +161,16 @@ function initGraph(jsonUrl){
 				});
 			
 			// update solution path
-			for(i=0; i<solution.length-2; i+=2){
+			for(i=0; i<solutions.length; i++){
 				
-				var solutionPathId = "s" + solution[i] + "-" + solution[i+1] + "-" + solution[i+2];
-				var graphPathId = "c" + solution[i] + "-" + solution[i+1] + "-" + solution[i+2];
+				for(j=0; j<solutions[i].length; j++){
+				
+				var solutionPathId = "s" + solutions[i][j];
+				var graphPathId = "c" + solutions[i][j];
 				
 				document.getElementById(solutionPathId).setAttribute("d", document.getElementById(graphPathId).getAttribute("d"));
+				
+				}
 				
 			}
 			
@@ -170,7 +180,7 @@ function initGraph(jsonUrl){
 		steps = graph.steps;
 		nodes = graph.nodes;
 		operators = graph.operators;
-		solution = graph.solution;
+		solutions = graph.solutions;
 		
 		stepIndex = 0;
 		drag = false;
