@@ -24,6 +24,9 @@ import java.io.IOException;
 @NoArgsConstructor
 public class ProcessThread implements Runnable {
 
+    private static final String ERROR_MESSAGE_IOEXCEPTION = "IOException";
+    private static final String ERROR_MESSAGE_FILE_NOT_EXISTS = "File not exists";
+
     private String processIdentifier;
     private SolutionManager solutionManager;
     private String algorithmName;
@@ -77,7 +80,7 @@ public class ProcessThread implements Runnable {
         // CHECK IF FILE EXISTS
         File file = new File(absoluteFileName);
         if (!file.exists()) {
-            finishAndUpdateProcess(processIdentifier, true, "error.file.file.not.exists");
+            finishAndUpdateProcess(processIdentifier, true, ERROR_MESSAGE_FILE_NOT_EXISTS);
             return;
         }
 
@@ -87,7 +90,7 @@ public class ProcessThread implements Runnable {
             result = resultGenerator.generate(file);
         } catch (IOException e) {
             // storageService.deleteUploadedFile(processIdentifier);
-            finishAndUpdateProcess(processIdentifier, true, null);
+            finishAndUpdateProcess(processIdentifier, true, ERROR_MESSAGE_IOEXCEPTION);
             e.printStackTrace();
             return;
         }
@@ -97,7 +100,7 @@ public class ProcessThread implements Runnable {
             storageService.storeResultInJsonFile(result, processIdentifier);
         } catch (IOException e) {
             // storageService.deleteUploadedFile(processIdentifier);
-            finishAndUpdateProcess(processIdentifier, true, null);
+            finishAndUpdateProcess(processIdentifier, true, ERROR_MESSAGE_IOEXCEPTION);
             e.printStackTrace();
             return;
         }

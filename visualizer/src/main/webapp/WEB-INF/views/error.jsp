@@ -20,7 +20,7 @@
 	<script src="${d3js}"></script>
 
 	<meta charset="UTF-8">
-	<title><spring:message code="title.graphs" /></title>
+	<title>Error</title>
 
 </head>
 
@@ -31,25 +31,7 @@
 <div class="container myContainer">
 	<div class="row">
 		
-		<h1>Déjv része</h1>
-		
-		<c:if test="${processIdentifiers != null}">
-
-		<!--
-		<ul>
-			<c:forEach var="processIdentifier" items="${processIdentifiers}">
-				<li><a href="${pageContext.request.contextPath}/graph/view/${processIdentifier}">${processIdentifier}</a></li>
-			</c:forEach>
-		</ul>
-		-->
-		
-		<ul>
-			<c:forEach var="processIdentifier" items="${processIdentifiers}" varStatus="status">
-				<li>${algorithms[status.index]} : <a href="${pageContext.request.contextPath}/graph/view/${processIdentifier}">${processIdentifier}</a></li>
-			</c:forEach>
-		</ul>
-
-		</c:if>
+		<h1>Error!</h1>
 		
 	</div>
 </div>

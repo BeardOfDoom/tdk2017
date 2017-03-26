@@ -54,7 +54,7 @@ public class GraphController {
 
         ProcessDTO processDTO = processService.getProcessByIdentifier(processIdentifier);
 
-        modelAndView.addObject("processEntity", processDTO);
+        modelAndView.addObject("processDTO", processDTO);
 
         modelAndView.setViewName("view");
 

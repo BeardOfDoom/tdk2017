@@ -63,6 +63,7 @@ public class ProblemController {
 
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.addObject("processIdentifiers", processIdentifiers);
+        modelAndView.addObject("algorithms", problemForm.getAlgorithms());
         modelAndView.setViewName("visualizer");
 
         return modelAndView;

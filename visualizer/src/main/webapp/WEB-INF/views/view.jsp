@@ -34,7 +34,7 @@
 		<h1>Gráf megtekintő</h1>
 		
 		<c:choose>
-		<c:when test="${processEntity.done == true && processEntity.error == false}">
+		<c:when test="${processDTO.done == true && processDTO.error == false}">
 
 		<p>
 		<button id="stepButton">STEP</button>
@@ -50,11 +50,15 @@
 		<c:url value="/resources/js/graph.js" var="graphJs" />
 		<script src="${graphJs}"></script>
 		<script>
-			initGraph("${pageContext.request.contextPath}/file/json/${processEntity.processIdentifier}");
+			initGraph("${pageContext.request.contextPath}/file/json/${processDTO.processIdentifier}");
 		</script>
 		</c:when>
-		<c:when test="${processEntity.done == true && processEntity.error == true}">
-			<p><spring:message code="${processEntity.errorMessage}" /></p>
+		<c:when test="${processDTO.done == true && processDTO.error == true}">
+			<!-- <p><spring:message code="${processDTO.errorMessage}" /></p> -->
+			<div class="panel panel-danger response">
+				<div class="panel-heading">Hiba!</div>
+				<div class="panel-body">${processDTO.errorMessage}</div>
+			</div>
 		</c:when>
 
 		</c:choose>

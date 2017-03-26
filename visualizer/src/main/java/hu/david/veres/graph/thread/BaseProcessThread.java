@@ -5,7 +5,9 @@ import exceptions.*;
 import generator.OperatorGenerator;
 import generator.ProjectGenerator;
 import generator.StateGenerator;
+import hu.david.veres.graph.dto.ProcessDTO;
 import hu.david.veres.graph.form.ProblemForm;
+import hu.david.veres.graph.service.ProcessService;
 import hu.david.veres.graph.service.StorageService;
 import hu.david.veres.graph.util.ProcessUtils;
 import lombok.Getter;
@@ -24,7 +26,6 @@ import representation.ClassRepresentation;
 import representation.ProjectRepresentation;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
@@ -38,6 +39,8 @@ import java.util.List;
 @Setter
 public class BaseProcessThread implements Runnable {
 
+    private static final String ERROR_MESSAGE_IOEXCEPTION = "IOException";
+
     private List<String> processIdentifiers;
     private ProblemForm problemForm;
 
@@ -49,6 +52,9 @@ public class BaseProcessThread implements Runnable {
 
     @Autowired
     private StorageService storageService;
+
+    @Autowired
+    private ProcessService processService;
 
     @Override
     public void run() {
@@ -66,6 +72,7 @@ public class BaseProcessThread implements Runnable {
             file = storageService.storeStateSpace(problemForm.getStateSpace(), fileName);
         } catch (IOException e) {
             // TODO
+            failAllProcesses(processIdentifiers, ERROR_MESSAGE_IOEXCEPTION);
             e.printStackTrace();
             return;
         }
@@ -73,10 +80,12 @@ public class BaseProcessThread implements Runnable {
         try {
             projectRepresentation = inputReader.processInputFile(file.getAbsolutePath());
         } catch (IOException e) {
+            failAllProcesses(processIdentifiers, ERROR_MESSAGE_IOEXCEPTION);
             e.printStackTrace();
             return;
             // TODO
         } catch (IncorrectInputException e) {
+            failAllProcesses(processIdentifiers, e.getMsg());
             e.printStackTrace();
             return;
             // TODO
@@ -88,6 +97,7 @@ public class BaseProcessThread implements Runnable {
             // TODO: name?
             classRepresentations = projectGenerator.generate(projectRepresentation, "generated", "com.prototype");
         } catch (IOException e) {
+            failAllProcesses(processIdentifiers, ERROR_MESSAGE_IOEXCEPTION);
             e.printStackTrace();
             return;
             // TODO
@@ -103,7 +113,7 @@ public class BaseProcessThread implements Runnable {
             SolutionManager solutionManager = solutionMaker.start();
 
             // Dávid
-            for(int i=0; i<processIdentifiers.size(); i++) {
+            for (int i = 0; i < processIdentifiers.size(); i++) {
 
                 ProcessThread processThread = applicationContext.getBean(ProcessThread.class);
                 processThread.setProcessIdentifier(processIdentifiers.get(i));
@@ -115,6 +125,7 @@ public class BaseProcessThread implements Runnable {
             }
 
         } catch (TemporaryFolderCreationException e) {
+            failAllProcesses(processIdentifiers, e.getMessage());
             e.printStackTrace();
             return;
         } catch (MalformedURLException e) {
@@ -148,10 +159,26 @@ public class BaseProcessThread implements Runnable {
             e.printStackTrace();
             return;
         } catch (IOException e) {
+            failAllProcesses(processIdentifiers, ERROR_MESSAGE_IOEXCEPTION);
             e.printStackTrace();
             return;
         }
         // TODO: handle exceptions
+
+    }
+
+    // TODO: we have to fail all processes there
+    private void failAllProcesses(List<String> processIdentifiers, String errorMessage) {
+
+        for (String processIdentifier : processIdentifiers) {
+
+            ProcessDTO processDTO = processService.getProcessByIdentifier(processIdentifier);
+            processDTO.setDone(true);
+            processDTO.setError(true);
+            processDTO.setErrorMessage(errorMessage);
+            processService.save(processDTO);
+
+        }
 
     }
 
