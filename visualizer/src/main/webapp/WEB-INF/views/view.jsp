@@ -28,7 +28,7 @@
 
 <%@include file="header.jsp" %>
 
-<div class="container myContainer">
+<div class="container pageContainer">
 	<div class="row">
 		
 		<h1>Gráf megtekintő</h1>
@@ -54,7 +54,6 @@
 		</script>
 		</c:when>
 		<c:when test="${processDTO.done == true && processDTO.error == true}">
-			<!-- <p><spring:message code="${processDTO.errorMessage}" /></p> -->
 			<div class="panel panel-danger response">
 				<div class="panel-heading">Hiba!</div>
 				<div class="panel-body">${processDTO.errorMessage}</div>

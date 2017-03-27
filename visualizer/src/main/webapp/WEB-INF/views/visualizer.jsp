@@ -28,10 +28,10 @@
 
 <%@include file="header.jsp" %>
 
-<div class="container myContainer">
+<div class="container pageContainer">
 	<div class="row">
 		
-		<h1>Déjv része</h1>
+		<h1>Eredmények</h1>
 		
 		<c:if test="${processIdentifiers != null}">
 

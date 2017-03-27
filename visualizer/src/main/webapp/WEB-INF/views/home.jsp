@@ -26,7 +26,7 @@
 
 <%@include file="header.jsp" %>
 
-<div class="container myContainer">
+<div class="container pageContainer">
 	<div class="row">
 		<h1>TODO</h1>
 		<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed rutrum dignissim felis et luctus. Vivamus ac sollicitudin orci. Maecenas finibus vehicula lacus. Aliquam erat volutpat. Fusce congue velit in tellus cursus tincidunt. Maecenas quis tellus vitae ligula ornare varius. Donec a purus ex.</p>

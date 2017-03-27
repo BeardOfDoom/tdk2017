@@ -1,7 +1,6 @@
 package hu.david.veres.graph.thread;
 
 import hu.david.veres.graph.dto.ProcessDTO;
-import hu.david.veres.graph.form.ProblemForm;
 import hu.david.veres.graph.generator.ResultGenerator;
 import hu.david.veres.graph.model.Result;
 import hu.david.veres.graph.service.ProcessService;
@@ -38,14 +37,12 @@ public class ProcessThread implements Runnable {
     @Autowired
     private StorageService storageService;
 
-    @Autowired
-    private ResultGenerator resultGenerator;
-
     @Override
     public void run() {
 
-        // GET OUTPUT FILE NAME
-        // TODO: default empty file name or null?
+        // SOLVE PROBLEM
+
+        // Generate and get solution output file name
         String absoluteFileName = "";
         switch (algorithmName) {
             case "BackTrackSimple":
@@ -77,35 +74,36 @@ public class ProcessThread implements Runnable {
                 break;
         }
 
-        // CHECK IF FILE EXISTS
+        // GENERATE JSON
+
+        // Check if file exists
         File file = new File(absoluteFileName);
         if (!file.exists()) {
             finishAndUpdateProcess(processIdentifier, true, ERROR_MESSAGE_FILE_NOT_EXISTS);
             return;
         }
 
-        // GENERATE RESULT
-        Result result = null;
+        // Generate result
+        Result result;
         try {
+            ResultGenerator resultGenerator = new ResultGenerator();
             result = resultGenerator.generate(file);
         } catch (IOException e) {
-            // storageService.deleteUploadedFile(processIdentifier);
             finishAndUpdateProcess(processIdentifier, true, ERROR_MESSAGE_IOEXCEPTION);
             e.printStackTrace();
             return;
         }
 
-        // STORE FILES
+        // Store JSON file
         try {
             storageService.storeResultInJsonFile(result, processIdentifier);
         } catch (IOException e) {
-            // storageService.deleteUploadedFile(processIdentifier);
             finishAndUpdateProcess(processIdentifier, true, ERROR_MESSAGE_IOEXCEPTION);
             e.printStackTrace();
             return;
         }
 
-        // UPDATE DATABASE
+        // Update database
         finishAndUpdateProcess(processIdentifier, false, null);
 
     }

@@ -1,18 +1,18 @@
 <%@page contentType="text/html; charset=UTF-8" language="java"%>
-<nav class="navbar navbar-inverse myNavbar">
+<nav class="navbar navbar-inverse headerNavbar">
 	<div class="container">
 		<!-- Brand and toggle get grouped for better mobile display -->
 		<div class="navbar-header">
-			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="false">
 			<span class="sr-only">Toggle navigation</span>
 			<span class="icon-bar"></span>
 			<span class="icon-bar"></span>
 			<span class="icon-bar"></span>
 			</button>
-			<a class="navbar-brand myBrand" href="./">TDK 2017</a>
+			<a class="navbar-brand headerBrand" href="${pageContext.request.contextPath}">TDK 2017</a>
 		</div>
 		<!-- Collect the nav links, forms, and other content for toggling -->
-		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+		<div class="collapse navbar-collapse" id="navbar-collapse">
 			<ul class="nav navbar-nav">
 				<li>
 					<a href="${pageContext.request.contextPath}">
@@ -50,12 +50,12 @@
 	<!-- /.container-fluid -->
 </nav>
 
-<div id="myCarousel" class="carousel slide" data-ride="carousel">
+<div id="headerCarousel" class="carousel slide" data-ride="carousel">
 	<!-- Indicators -->
 	<ol class="carousel-indicators">
-		<li data-target="#myCarousel" data-slide-to="0" class="active"></li>
-		<li data-target="#myCarousel" data-slide-to="1"></li>
-		<li data-target="#myCarousel" data-slide-to="2"></li>
+		<li data-target="#headerCarousel" data-slide-to="0" class="active"></li>
+		<li data-target="#headerCarousel" data-slide-to="1"></li>
+		<li data-target="#headerCarousel" data-slide-to="2"></li>
 	</ol>
 	<!-- Wrapper for slides -->
 	<div class="carousel-inner" role="listbox">
@@ -82,11 +82,11 @@
 		</div>
 	</div>
 	<!-- Left and right controls -->
-	<a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+	<a class="left carousel-control" href="#headerCarousel" role="button" data-slide="prev">
 	<span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
 	<span class="sr-only">Previous</span>
 	</a>
-	<a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+	<a class="right carousel-control" href="#headerCarousel" role="button" data-slide="next">
 	<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
 	<span class="sr-only">Next</span>
 	</a>

@@ -27,16 +27,25 @@
 
 <%@include file="header.jsp" %>
 
-<div class="container myContainer">
+<div class="container pageContainer">
 	<div class="row">
 	
-		<h1>Ládzi és áDÁM része</h1>
+		<h1>Új probléma</h1>
+		
+		<c:choose>
+			<c:when test="${errorMessage != null}">
+				<div class="panel panel-danger response">
+					<div class="panel-heading">Hiba!</div>
+					<div class="panel-body">${errorMessage}</div>
+				</div>
+			</c:when>
+		</c:choose>
 		
 		<form:form method="POST" modelAttribute="problemForm" action="">
 		<table class="table table-responsive problemTable">
 			<tr>
 				<td>Állapottér :</td>
-				<td><form:textarea path="stateSpace" rows="10" cols="60" class="form-control problem-textarea" resizeable="false" /></td>
+				<td><form:textarea path="stateSpace" rows="10" cols="60" class="form-control problemTextarea" resizeable="false" /></td>
 			</tr>
 			<tr>
 				<td>Keresők :</td>
@@ -54,10 +63,10 @@
 			</tr>
 			<tr>
 				<td>Heurisztika :</td>
-				<td><form:textarea path="heuristic" rows="10" cols="60" class="form-control problem-textarea" /></td>
+				<td><form:textarea path="heuristic" rows="10" cols="60" class="form-control problemTextarea" /></td>
 			</tr>
 			<tr>
-				<td colspan="2"><button type="submit" class="btn btn-primary problem-submit-button">Küldés</button></td>
+				<td colspan="2"><button type="submit" class="btn btn-primary problemSubmitButton">Küldés</button></td>
 			</tr>
 		</table>
 		</form:form>

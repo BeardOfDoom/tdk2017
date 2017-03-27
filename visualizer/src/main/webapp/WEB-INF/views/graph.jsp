@@ -26,7 +26,7 @@
 
 <%@include file="header.jsp" %>
 
-<div class="container myContainer">
+<div class="container pageContainer">
 	<div class="row">
 		
 		<h1>Gráf keresése</h1>
@@ -42,7 +42,7 @@
 		</c:when>
 		</c:choose>
 		
-		<div class="form-div">
+		<div class="formDiv">
 			<form method="GET" action="">
 				<div class="row">
 					<div class="col-sm-10">

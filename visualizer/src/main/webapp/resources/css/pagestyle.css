@@ -1,32 +1,38 @@
+/** BODY */
+
 body{
 	background: #fff;
 }
 
-.myNavbar{
+/** HEADER */
+
+.headerNavbar{
 	border: none;
 	border-radius: 0;
 	margin-bottom: 0;
 }
 
-#myCarousel{
+#headerCarousel{
 	margin-top: 0;
 }
 
-.myBrand{
+.headerBrand{
 	font-size: 25px;
 }
 
-.carousel .item img{
+#headerCarousel .item img{
 	max-height: 200px;
 	width: 100%;
 	object-fit: cover;
 }
 
-.carousel .item h3{
+#headerCarousel .item h3{
 	font-size: 40px;
 }
 
-.myContainer .row{
+/** PAGE CONTAINER */
+
+.pageContainer .row{
 	margin-top: 30px;
 	margin-bottom: 30px;
 	padding: 20px;
@@ -34,19 +40,20 @@ body{
 	/*border: 2px solid black;*/
 }
 
+/** GRAPH PAGE */
+
 .response{
 	margin-top: 30px;
 }
 
-.form-div{
+/** UPLOAD PAGE (maybe not) */
+
+.formDiv{
 	margin-top: 30px;
 	margin-bottom: 30px;
 }
 
-.process-identifier{
-	margin-left: 10px;
-	margin-right: 10px;
-}
+/** VIEW PAGE */
 
 svg{
 	background-color: white;
@@ -81,6 +88,8 @@ svg{
 	pointer-events: none;
 }
 
+/** PROBLEM PAGE */
+
 .problemTable{
 	width: 60%;
 	margin: 30px auto;
@@ -91,11 +100,11 @@ svg{
 	padding: auto;
 }
 
-.problem-textarea{
+.problemTextarea{
 	resize: none;
 }
 
-.problem-submit-button{
+.problemSubmitButton{
 	display: block;
 	margin: auto;
 	width: 100px;
