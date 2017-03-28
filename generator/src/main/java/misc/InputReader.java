@@ -4,7 +4,7 @@ import antlr.SMLLexer;
 import antlr.SMLParser;
 import antlr.impl.BaseVisitor;
 import antlr.impl.ErrorListener;
-import antlr.impl.IncorrectInputException;
+import exceptions.IncorrectInputException;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;

@@ -52,6 +52,13 @@ public class SMLBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements SM
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitState_start_line(SMLParser.State_start_lineContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitState_goal(SMLParser.State_goalContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
@@ -59,14 +66,14 @@ public class SMLBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements SM
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitOperation_expr(SMLParser.Operation_exprContext ctx) { return visitChildren(ctx); }
+	@Override public T visitOperator_expr(SMLParser.Operator_exprContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitOperation_description(SMLParser.Operation_descriptionContext ctx) { return visitChildren(ctx); }
+	@Override public T visitOperator_description(SMLParser.Operator_descriptionContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -88,6 +95,13 @@ public class SMLBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements SM
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitOperator_effect(SMLParser.Operator_effectContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitOperator_effect_line(SMLParser.Operator_effect_lineContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -220,13 +234,6 @@ public class SMLBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements SM
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitAssign_expression(SMLParser.Assign_expressionContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
 	@Override public T visitInit_statement(SMLParser.Init_statementContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
@@ -255,6 +262,13 @@ public class SMLBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements SM
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitParameterized_attr_reference(SMLParser.Parameterized_attr_referenceContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitMatrix_reference(SMLParser.Matrix_referenceContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
@@ -262,14 +276,7 @@ public class SMLBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements SM
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitReference(SMLParser.ReferenceContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override public T visitDimension_part(SMLParser.Dimension_partContext ctx) { return visitChildren(ctx); }
+	@Override public T visitParameterized_matrix_reference(SMLParser.Parameterized_matrix_referenceContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -277,6 +284,27 @@ public class SMLBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements SM
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitDimension(SMLParser.DimensionContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitNormal_reference(SMLParser.Normal_referenceContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitParameterized_reference(SMLParser.Parameterized_referenceContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitReference(SMLParser.ReferenceContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *

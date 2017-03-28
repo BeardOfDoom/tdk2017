@@ -1,15 +1,17 @@
 ﻿STATE:
 
 STATE_ATTRIBUTES:
+Attr0 is set of number
 Attr1 is set of number
 Attr2 is set of number
 Attr3 is set of number
 
 STATE_START:
-$1 = {1, 2, 3}
+$0 = {1, 2, 3}
+$3 = {1, 2, 3}
 
 STATE_GOAL:
-$3 == {1, 2, 3}
+$2 == $3
 
 OPERATORS:
 

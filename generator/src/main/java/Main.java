@@ -1,4 +1,4 @@
-import antlr.impl.IncorrectInputException;
+import exceptions.IncorrectInputException;
 import generator.OperatorGenerator;
 import generator.ProjectGenerator;
 import generator.StateGenerator;
@@ -43,5 +43,7 @@ public class Main {
     classManager.clear();
     classManager.addClasses(generatedClasses);
     System.out.println("Files generated!");
+
+    /* ---------------------------------------- */
   }
 }

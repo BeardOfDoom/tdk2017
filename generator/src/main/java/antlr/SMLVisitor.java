@@ -41,23 +41,29 @@ public interface SMLVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitState_start(SMLParser.State_startContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link SMLParser#state_start_line}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitState_start_line(SMLParser.State_start_lineContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link SMLParser#state_goal}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitState_goal(SMLParser.State_goalContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link SMLParser#operation_expr}.
+	 * Visit a parse tree produced by {@link SMLParser#operator_expr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitOperation_expr(SMLParser.Operation_exprContext ctx);
+	T visitOperator_expr(SMLParser.Operator_exprContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link SMLParser#operation_description}.
+	 * Visit a parse tree produced by {@link SMLParser#operator_description}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitOperation_description(SMLParser.Operation_descriptionContext ctx);
+	T visitOperator_description(SMLParser.Operator_descriptionContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link SMLParser#operator_cost}.
 	 * @param ctx the parse tree
@@ -76,6 +82,12 @@ public interface SMLVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitOperator_effect(SMLParser.Operator_effectContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link SMLParser#operator_effect_line}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitOperator_effect_line(SMLParser.Operator_effect_lineContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link SMLParser#attr_struct}.
 	 * @param ctx the parse tree
@@ -195,12 +207,6 @@ public interface SMLVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitNumber_expr(SMLParser.Number_exprContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link SMLParser#assign_expression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitAssign_expression(SMLParser.Assign_expressionContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link SMLParser#init_statement}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -225,29 +231,47 @@ public interface SMLVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitAttr_reference(SMLParser.Attr_referenceContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link SMLParser#parameterized_attr_reference}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitParameterized_attr_reference(SMLParser.Parameterized_attr_referenceContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link SMLParser#matrix_reference}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitMatrix_reference(SMLParser.Matrix_referenceContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link SMLParser#reference}.
+	 * Visit a parse tree produced by {@link SMLParser#parameterized_matrix_reference}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitReference(SMLParser.ReferenceContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link SMLParser#dimension_part}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitDimension_part(SMLParser.Dimension_partContext ctx);
+	T visitParameterized_matrix_reference(SMLParser.Parameterized_matrix_referenceContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link SMLParser#dimension}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitDimension(SMLParser.DimensionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link SMLParser#normal_reference}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitNormal_reference(SMLParser.Normal_referenceContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link SMLParser#parameterized_reference}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitParameterized_reference(SMLParser.Parameterized_referenceContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link SMLParser#reference}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitReference(SMLParser.ReferenceContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link SMLParser#number}.
 	 * @param ctx the parse tree

@@ -1,44 +1,38 @@
 package antlr.impl;
 
 import antlr.SMLBaseVisitor;
-import antlr.SMLParser.Assign_expressionContext;
 import antlr.SMLParser.ExprContext;
 import antlr.SMLParser.ExpressionContext;
-import antlr.SMLParser.Operation_descriptionContext;
+import antlr.SMLParser.Operator_descriptionContext;
 import antlr.SMLParser.Operator_effectContext;
+import antlr.SMLParser.Operator_effect_lineContext;
 import antlr.SMLParser.Operator_preconditionContext;
 import antlr.SMLParser.Parameter_description_lineContext;
 import antlr.SMLParser.State_descriptionContext;
 import antlr.SMLParser.State_description_lineContext;
 import antlr.SMLParser.State_goalContext;
 import antlr.SMLParser.State_startContext;
+import antlr.SMLParser.State_start_lineContext;
 import antlr.SMLParser.Var_defining_expressionContext;
-import com.squareup.javapoet.ClassName;
-import generator.GeneratorUtils;
+import enums.AssignType;
+import enums.VarStruct;
+import enums.VarType;
 import java.util.ArrayList;
 import java.util.List;
 import misc.Dimension;
-import misc.ExpressionType;
-import misc.VarStruct;
-import misc.VarType;
-import representation.AssignExpressionsRepresentation;
-import representation.MatrixAssignRepresentation;
-import representation.SetAssignRepresentation;
+import representation.AssignRepresentation;
 import representation.operator.OperatorRepresentation;
 import representation.operator.VariableRepresentation;
 import representation.state.AttributeRepresentation;
 import representation.state.StateRepresentation;
+import utils.GeneratorUtils;
+import utils.InputProcessUtils;
 
 public class BaseVisitor extends SMLBaseVisitor {
-
-  //TODO: What should happen with integers
 
   private StateRepresentation stateRepresentation = new StateRepresentation();
   private OperatorRepresentation operatorRepresentation = new OperatorRepresentation();
   private List<OperatorRepresentation> operatorRepresentations = new ArrayList<>();
-
-  private StateExpressionVisitor stateExpressionVisitor = new StateExpressionVisitor();
-  private OperatorExpressionVisitor operatorExpressionVisitor = new OperatorExpressionVisitor();
 
   public StateRepresentation getStateRepresentation() {
     return stateRepresentation;
@@ -68,12 +62,12 @@ public class BaseVisitor extends SMLBaseVisitor {
       // TODO: Handle error!
       if (isAvailableVariable(varName)) {
         if (currentLine.attr_struct().KEYWORD_MATRIX() != null) {
-          Integer n = Integer
-              .parseInt(currentLine.attr_struct().dimension().dimension_part(0).INT().getText());
-          Integer m = Integer
-              .parseInt(currentLine.attr_struct().dimension().dimension_part(1).INT().getText());
+
+          Dimension dimension = InputProcessUtils.getDimensionsFromDimensionContext(
+              currentLine.attr_struct().dimension());
+
           AttributeRepresentation attribute = new AttributeRepresentation(varName, VarStruct.MATRIX,
-              VarType.valueOf(VarType.class, varType.toUpperCase()), new Dimension(n, m));
+              VarType.valueOf(VarType.class, varType.toUpperCase()), dimension);
           stateRepresentation.addAttribute(attribute);
         } else {
           AttributeRepresentation attribute = new AttributeRepresentation(varName, VarStruct.SET,
@@ -81,6 +75,8 @@ public class BaseVisitor extends SMLBaseVisitor {
           stateRepresentation.addAttribute(attribute);
         }
       }
+
+      //TODO: Handle error
     }
     return super.visitState_description(ctx);
   }
@@ -93,10 +89,9 @@ public class BaseVisitor extends SMLBaseVisitor {
           .addStateStartParameter(GeneratorUtils.getParameterRepresentationFromContext(parameter));
     }
 
-    AssignExpressionsRepresentation assignRepresentation = getAssignFromContexts(
-        ctx.assign_expression(), ExpressionType.STATE);
-
-    stateRepresentation.setAssigns(assignRepresentation);
+    for (State_start_lineContext currentLine : ctx.state_start_line()) {
+      stateRepresentation.addAssignStatement(getAssignRepresentationFromContext(currentLine));
+    }
 
     return super.visitState_start(ctx);
   }
@@ -108,13 +103,15 @@ public class BaseVisitor extends SMLBaseVisitor {
           .addStateGoalParameter(GeneratorUtils.getParameterRepresentationFromContext(parameter));
     }
 
-    stateRepresentation.setStateGoal(stateExpressionVisitor.visit(ctx));
+    stateRepresentation
+        .setStateGoal(
+            InputProcessUtils.getStateExpressionValue(ctx.expression()));
 
     return super.visitState_goal(ctx);
   }
 
   @Override
-  public Object visitOperation_description(Operation_descriptionContext ctx) {
+  public Object visitOperator_description(Operator_descriptionContext ctx) {
     if (ctx.name_defining_expression() != null) {
       operatorRepresentation.setName(ctx.name_defining_expression().name().getText());
     } else {
@@ -132,13 +129,20 @@ public class BaseVisitor extends SMLBaseVisitor {
           .addParameter(GeneratorUtils.getParameterRepresentationFromContext(parameter));
     }
 
-    return super.visitOperation_description(ctx);
+    return super.visitOperator_description(ctx);
   }
 
   @Override
   public Object visitOperator_precondition(Operator_preconditionContext ctx) {
-    operatorRepresentation
-        .setOperatorPrecondition(operatorExpressionVisitor.visit(ctx.expression()));
+    if (ctx.expression() != null) {
+      String operatorPrecondition = InputProcessUtils
+          .getOperatorExpressionValue(ctx.expression());
+
+      operatorRepresentation
+          .setOperatorPrecondition(operatorPrecondition);
+    }
+    //TODO: Handle error
+
     return super.visitOperator_precondition(ctx);
   }
 
@@ -147,14 +151,15 @@ public class BaseVisitor extends SMLBaseVisitor {
     List<VariableRepresentation> variables = new ArrayList<>();
 
     for (Var_defining_expressionContext variable : ctx.var_defining_expression()) {
-      variables.add(getVarRepresentationFromContext(variable));
+      variables.add(InputProcessUtils
+          .getVarRepresentationFromContext(variable));
     }
     operatorRepresentation.setVariables(variables);
 
-    AssignExpressionsRepresentation assignRepresentation = getAssignFromContexts(
-        ctx.assign_expression(), ExpressionType.OPERATOR);
-
-    operatorRepresentation.setAssigns(assignRepresentation);
+    for (Operator_effect_lineContext currentLine : ctx.operator_effect_line()) {
+      operatorRepresentation
+          .addOperatorEffect(InputProcessUtils.getOperatorExpressionValue(currentLine));
+    }
 
     operatorRepresentations.add(operatorRepresentation);
 
@@ -168,9 +173,8 @@ public class BaseVisitor extends SMLBaseVisitor {
         .noneMatch(attribute -> attribute.getAttributeName().equals(varName));
   }
 
-
   //TODO: Handle error
-  private AttributeRepresentation getAttributeFromReference(String reference) {
+  public AttributeRepresentation getAttributeFromReference(String reference) {
     String attrName = "Attr" + reference.substring(1);
 
     for (AttributeRepresentation currentAttr : stateRepresentation.getAttributes()) {
@@ -181,66 +185,45 @@ public class BaseVisitor extends SMLBaseVisitor {
     return null;
   }
 
-  private VariableRepresentation getVarRepresentationFromContext(
-      Var_defining_expressionContext variable) {
+  public AssignRepresentation getAssignRepresentationFromContext(
+      State_start_lineContext assignExpression) {
+    AssignRepresentation assignStatement = new AssignRepresentation();
 
-    String varName = variable.name().getText();
-    ClassName className =
-        variable.attr_type().KEYWORD_NUMBER() != null ? ClassName.get(Double.class)
-            : ClassName.get(String.class);
-    String value = operatorExpressionVisitor.visit(variable.expression());
+    if (assignExpression.attr_reference() != null && assignExpression.matrix_reference() == null) {
+      AttributeRepresentation attribute = getAttributeFromReference(
+          assignExpression.attr_reference().getText());
+      assignStatement.setAttributeRepresentation(attribute);
 
-    VariableRepresentation variableRepresentation = new VariableRepresentation();
-    variableRepresentation.setName(varName);
-    variableRepresentation.setClassName(className);
-    variableRepresentation.setValue(value);
-
-    return variableRepresentation;
-  }
-
-  private AssignExpressionsRepresentation getAssignFromContexts(
-      List<Assign_expressionContext> expressions, ExpressionType type) {
-    AssignExpressionsRepresentation result = new AssignExpressionsRepresentation();
-
-    for (Assign_expressionContext currentLine : expressions) {
-      if (currentLine.attr_reference() != null && currentLine.matrix_reference() == null) {
-        SetAssignRepresentation setAssign = new SetAssignRepresentation();
-        AttributeRepresentation attribute = getAttributeFromReference(
-            currentLine.attr_reference().getText());
-        setAssign.setAttribute(attribute);
-
-        for (ExpressionContext expression : currentLine.init_statement().expression()) {
-          setAssign.addValue(getExpressionValue(expression, type));
+      if (assignExpression.init_statement() != null && assignExpression.expression() == null) {
+        assignStatement.setType(AssignType.SET_INIT);
+        for (ExpressionContext currentExpression : assignExpression.init_statement().expression()) {
+          assignStatement.addValue(
+              InputProcessUtils.getStateExpressionValue(currentExpression));
         }
 
-        result.addSetAssignment(setAssign);
-      } else if (currentLine.attr_reference() == null && currentLine.matrix_reference() != null) {
-        MatrixAssignRepresentation matrixStart = new MatrixAssignRepresentation();
-        AttributeRepresentation attribute = getAttributeFromReference(
-            currentLine.matrix_reference().attr_reference().getText());
-        matrixStart.setAttribute(attribute);
-
-        String dimensionN = GeneratorUtils
-            .getDimensionsFromMatrixReferenceContext(currentLine.matrix_reference())
-            .get(0);
-        String dimensionM = GeneratorUtils
-            .getDimensionsFromMatrixReferenceContext(currentLine.matrix_reference())
-            .get(1);
-
-        matrixStart.setDimensionN(dimensionN);
-        matrixStart.setDimensionM(dimensionM);
-
-        matrixStart.setValue(getExpressionValue(currentLine.expression(), type));
-
-        result.addMatrixAssignment(matrixStart);
+      } else {
+        assignStatement.setType(AssignType.SET_NORMAL);
+        assignStatement
+            .setValue(InputProcessUtils
+                .getStateExpressionValue(assignExpression.expression()));
       }
+    } else {
+      assignStatement.setType(AssignType.MATRIX_NORMAL);
+      AttributeRepresentation attribute = getAttributeFromReference(
+          assignExpression.matrix_reference().attr_reference().getText());
+      assignStatement.setAttributeRepresentation(attribute);
+
+      Dimension dimension = InputProcessUtils.getDimensionsFromDimensionContext(
+          assignExpression.matrix_reference().dimension());
+
+      assignStatement.setDimension(dimension);
+
+      assignStatement
+          .setValue(InputProcessUtils
+              .getStateExpressionValue(assignExpression.expression()));
+
     }
 
-    return result;
-  }
-
-  private String getExpressionValue(ExpressionContext expression, ExpressionType type) {
-    return type.equals(ExpressionType.STATE) ? stateExpressionVisitor.visit(expression)
-        : operatorExpressionVisitor.visit(expression);
+    return assignStatement;
   }
 }

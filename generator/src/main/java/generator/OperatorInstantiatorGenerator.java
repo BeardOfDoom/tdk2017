@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.lang.model.element.Modifier;
 import representation.ClassRepresentation;
+import utils.GeneratorUtils;
 
 public class OperatorInstantiatorGenerator implements GeneratorInterface {
 

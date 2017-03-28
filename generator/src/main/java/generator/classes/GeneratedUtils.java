@@ -15,7 +15,7 @@ public class GeneratedUtils {
   }
 
   public static Double min(Set<Double> set) {
-    return Collections.min(set);
+    return set.isEmpty() ? 0d : Collections.min(set);
   }
 
   public static Double min(Double numberA, Double numberB) {

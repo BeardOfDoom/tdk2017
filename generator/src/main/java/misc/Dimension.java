@@ -1,30 +1,30 @@
 package misc;
 
 public class Dimension {
-  Integer dimensionN;
-  Integer dimensionM;
+  String dimensionN;
+  String dimensionM;
 
   public Dimension() {
   }
 
-  public Dimension(Integer dimensionN, Integer dimensionM) {
+  public Dimension(String dimensionN, String dimensionM) {
     this.dimensionN = dimensionN;
     this.dimensionM = dimensionM;
   }
 
-  public Integer getDimensionN() {
+  public String getDimensionN() {
     return dimensionN;
   }
 
-  public void setDimensionN(Integer dimensionN) {
+  public void setDimensionN(String dimensionN) {
     this.dimensionN = dimensionN;
   }
 
-  public Integer getDimensionM() {
+  public String getDimensionM() {
     return dimensionM;
   }
 
-  public void setDimensionM(Integer dimensionM) {
+  public void setDimensionM(String dimensionM) {
     this.dimensionM = dimensionM;
   }
 
@@ -57,8 +57,8 @@ public class Dimension {
   @Override
   public String toString() {
     return "Dimension{" +
-        "dimensionN=" + dimensionN +
-        ", dimensionM=" + dimensionM +
+        "dimensionN='" + dimensionN + '\'' +
+        ", dimensionM='" + dimensionM + '\'' +
         '}';
   }
 }

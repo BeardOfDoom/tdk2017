@@ -1,31 +1,26 @@
-package generator;
+package utils;
 
-import antlr.SMLParser.Dimension_partContext;
-import antlr.SMLParser.Matrix_referenceContext;
 import antlr.SMLParser.Parameter_description_lineContext;
 import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
+import enums.VarStruct;
+import enums.VarType;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.lang.model.element.Modifier;
-import misc.VarStruct;
-import misc.VarType;
-import representation.AssignExpressionsRepresentation;
-import representation.MatrixAssignRepresentation;
+import representation.AssignRepresentation;
 import representation.ParameterRepresentation;
-import representation.SetAssignRepresentation;
 import representation.state.AttributeRepresentation;
 
 public final class GeneratorUtils {
+
+  //TODO: Refactor set assign method
 
   public static List<FieldSpec> generateFieldsFromAttributes(
       List<AttributeRepresentation> attributes) {
@@ -233,7 +228,7 @@ public final class GeneratorUtils {
     }
   }
 
-  public static String getSetStartValuesAsString(SetAssignRepresentation stateStart) {
+  public static String getSetInitValuesAsString(AssignRepresentation stateStart) {
     return stateStart.getValues().stream().collect(Collectors.joining(", "));
   }
 
@@ -242,29 +237,30 @@ public final class GeneratorUtils {
         .collect(Collectors.joining(", "));
   }
 
-  public static CodeBlock getAssignStatements(
-      AssignExpressionsRepresentation assignsRepresentation) {
-    CodeBlock.Builder builder = CodeBlock.builder();
-
-    for (SetAssignRepresentation setStart : assignsRepresentation.getSetAssigns()) {
-      String attributeName = setStart.getAttribute().getAttributeName();
-      builder
-          .addStatement("state.set" + attributeName + "(new $1T<>($2T.asList($3L)))",
-              HashSet.class, Arrays.class, GeneratorUtils.getSetStartValuesAsString(setStart));
-    }
-
-    for (MatrixAssignRepresentation matrixStart : assignsRepresentation.getMatrixAssigns()) {
-      String attributeName = matrixStart.getAttribute().getAttributeName();
-      String dimensionN = matrixStart.getDimensionN();
-      String dimensionM = matrixStart.getDimensionM();
-      String value = matrixStart.getValue();
-      builder.addStatement("state.get" + attributeName + "().get($L).set($L, $L)",
-          dimensionN,
-          dimensionM, value);
-    }
-
-    return builder.build();
-  }
+  //TODO: implement getAssignStatements
+//  public static CodeBlock getAssignStatements(
+//      AssignExpressionsRepresentation assignsRepresentation) {
+//    CodeBlock.Builder builder = CodeBlock.builder();
+//
+//    for (SetAssignRepresentation setStart : assignsRepresentation.getSetAssigns()) {
+//      String attributeName = setStart.getAttribute().getAttributeName();
+//      builder
+//          .addStatement("state.set" + attributeName + "(new $1T<>($2T.asList($3L)))",
+//              HashSet.class, Arrays.class, GeneratorUtils.getSetStartValuesAsString(setStart));
+//    }
+//
+//    for (MatrixAssignRepresentation matrixStart : assignsRepresentation.getMatrixAssigns()) {
+//      String attributeName = matrixStart.getAttribute().getAttributeName();
+//      String dimensionN = matrixStart.getDimensionN();
+//      String dimensionM = matrixStart.getDimensionM();
+//      String value = matrixStart.getValue();
+//      builder.addStatement("state.get" + attributeName + "().get($L).set($L, $L)",
+//          dimensionN,
+//          dimensionM, value);
+//    }
+//
+//    return builder.build();
+//  }
 
   public static ParameterRepresentation getParameterRepresentationFromContext(
       Parameter_description_lineContext parameter) {
@@ -281,24 +277,6 @@ public final class GeneratorUtils {
     parameterRepresentation.setBy(by);
 
     return parameterRepresentation;
-  }
-
-  public static List<String> getDimensionsFromMatrixReferenceContext(
-      Matrix_referenceContext matrix) {
-    Dimension_partContext dimensionPartN = matrix.dimension()
-        .dimension_part(0);
-    Dimension_partContext dimensionPartM = matrix.dimension()
-        .dimension_part(1);
-
-    String dimensionN =
-        dimensionPartN.INT() != null ? dimensionPartN.INT().getText()
-            : dimensionPartN.name().getText();
-
-    String dimensionM =
-        dimensionPartM.INT() != null ? dimensionPartM.INT().getText()
-            : dimensionPartM.name().getText();
-
-    return Arrays.asList(dimensionN, dimensionM);
   }
 
   public static String getFilePath(String directoryName, String packageName, String fileName) {

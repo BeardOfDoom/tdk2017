@@ -76,6 +76,18 @@ public class SMLBaseListener implements SMLListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterState_start_line(SMLParser.State_start_lineContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitState_start_line(SMLParser.State_start_lineContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterState_goal(SMLParser.State_goalContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -88,25 +100,25 @@ public class SMLBaseListener implements SMLListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterOperation_expr(SMLParser.Operation_exprContext ctx) { }
+	@Override public void enterOperator_expr(SMLParser.Operator_exprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitOperation_expr(SMLParser.Operation_exprContext ctx) { }
+	@Override public void exitOperator_expr(SMLParser.Operator_exprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterOperation_description(SMLParser.Operation_descriptionContext ctx) { }
+	@Override public void enterOperator_description(SMLParser.Operator_descriptionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitOperation_description(SMLParser.Operation_descriptionContext ctx) { }
+	@Override public void exitOperator_description(SMLParser.Operator_descriptionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -143,6 +155,18 @@ public class SMLBaseListener implements SMLListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitOperator_effect(SMLParser.Operator_effectContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterOperator_effect_line(SMLParser.Operator_effect_lineContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitOperator_effect_line(SMLParser.Operator_effect_lineContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -364,18 +388,6 @@ public class SMLBaseListener implements SMLListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterAssign_expression(SMLParser.Assign_expressionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitAssign_expression(SMLParser.Assign_expressionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterInit_statement(SMLParser.Init_statementContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -424,6 +436,18 @@ public class SMLBaseListener implements SMLListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterParameterized_attr_reference(SMLParser.Parameterized_attr_referenceContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitParameterized_attr_reference(SMLParser.Parameterized_attr_referenceContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterMatrix_reference(SMLParser.Matrix_referenceContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -436,25 +460,13 @@ public class SMLBaseListener implements SMLListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterReference(SMLParser.ReferenceContext ctx) { }
+	@Override public void enterParameterized_matrix_reference(SMLParser.Parameterized_matrix_referenceContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitReference(SMLParser.ReferenceContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterDimension_part(SMLParser.Dimension_partContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitDimension_part(SMLParser.Dimension_partContext ctx) { }
+	@Override public void exitParameterized_matrix_reference(SMLParser.Parameterized_matrix_referenceContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -467,6 +479,42 @@ public class SMLBaseListener implements SMLListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitDimension(SMLParser.DimensionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterNormal_reference(SMLParser.Normal_referenceContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitNormal_reference(SMLParser.Normal_referenceContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterParameterized_reference(SMLParser.Parameterized_referenceContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitParameterized_reference(SMLParser.Parameterized_referenceContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterReference(SMLParser.ReferenceContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitReference(SMLParser.ReferenceContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

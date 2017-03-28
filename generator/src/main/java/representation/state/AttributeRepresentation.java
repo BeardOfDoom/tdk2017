@@ -1,8 +1,8 @@
 package representation.state;
 
 import misc.Dimension;
-import misc.VarStruct;
-import misc.VarType;
+import enums.VarStruct;
+import enums.VarType;
 
 public class AttributeRepresentation {
 

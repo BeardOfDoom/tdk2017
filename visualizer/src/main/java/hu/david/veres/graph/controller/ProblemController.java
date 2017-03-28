@@ -1,7 +1,14 @@
 package hu.david.veres.graph.controller;
 
-import antlr.impl.IncorrectInputException;
-import exceptions.*;
+import exceptions.CompilationException;
+import exceptions.IncorrectInputException;
+import exceptions.OperatorInitializationException;
+import exceptions.OperatorNotFoundException;
+import exceptions.StateInitializationException;
+import exceptions.StateNotFoundException;
+import exceptions.TemporaryFolderCreationException;
+import exceptions.TemporaryFolderDeletionException;
+import exceptions.WrongFileExtensionException;
 import generator.OperatorGenerator;
 import generator.ProjectGenerator;
 import generator.StateGenerator;
@@ -11,6 +18,13 @@ import hu.david.veres.graph.service.ProcessService;
 import hu.david.veres.graph.service.StorageService;
 import hu.david.veres.graph.thread.ProcessThread;
 import hu.david.veres.graph.util.ProcessUtils;
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
+import javax.validation.Valid;
 import main.SolutionMaker;
 import main.SolutionManager;
 import misc.ClassManager;
@@ -28,183 +42,179 @@ import org.springframework.web.servlet.ModelAndView;
 import representation.ClassRepresentation;
 import representation.ProjectRepresentation;
 
-import javax.validation.Valid;
-import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
-
 @Controller
 public class ProblemController {
 
-    private static final String GENERATED_FOLDER_NAME = "generated";
-    private static final String ERROR_MESSAGE_IOEXCEPTION = "IOException";
-    private static final String ERROR_MESSAGE_TMP = "Temporary error message!";
+  private static final String GENERATED_FOLDER_NAME = "generated";
+  private static final String ERROR_MESSAGE_IOEXCEPTION = "IOException";
+  private static final String ERROR_MESSAGE_TMP = "Temporary error message!";
 
-    @Autowired
-    private ProcessService processService;
+  @Autowired
+  private ProcessService processService;
 
-    @Autowired
-    private ThreadPoolTaskExecutor threadPoolTaskExecutor;
+  @Autowired
+  private ThreadPoolTaskExecutor threadPoolTaskExecutor;
 
-    @Autowired
-    private ApplicationContext applicationContext;
+  @Autowired
+  private ApplicationContext applicationContext;
 
-    @Autowired
-    private StorageService storageService;
+  @Autowired
+  private StorageService storageService;
 
-    @RequestMapping(path = "/problem", method = RequestMethod.GET)
-    public String problemPage(Model model) {
-        model.addAttribute("problemForm", new ProblemForm());
-        return "problem";
+  @RequestMapping(path = "/problem", method = RequestMethod.GET)
+  public String problemPage(Model model) {
+    model.addAttribute("problemForm", new ProblemForm());
+    return "problem";
+  }
+
+  @RequestMapping(path = "/problem", method = RequestMethod.POST)
+  public ModelAndView problemPost(@Valid @ModelAttribute("problemForm") ProblemForm problemForm,
+      BindingResult bindingResult) {
+
+    // FORM VALIDATION
+
+    // If form has errors, return
+    if (bindingResult.hasErrors()) {
+      return errorModelAndView(ERROR_MESSAGE_TMP);
     }
 
-    @RequestMapping(path = "/problem", method = RequestMethod.POST)
-    public ModelAndView problemPost(@Valid @ModelAttribute("problemForm") ProblemForm problemForm, BindingResult bindingResult) {
+    // SML
 
-        // FORM VALIDATION
+    // Objects for Java file generation
+    StateGenerator stateGenerator = new StateGenerator();
+    OperatorGenerator operatorGenerator = new OperatorGenerator();
+    InputReader inputReader = new InputReader();
+    ProjectRepresentation projectRepresentation;
 
-        // If form has errors, return
-        if (bindingResult.hasErrors()) {
-            return errorModelAndView(ERROR_MESSAGE_TMP);
-        }
+    // Store state-space description to a file
+    File file;
+    String fileName = ProcessUtils.generateStateSpaceFileName();
+    try {
+      file = storageService.storeStateSpace(problemForm.getStateSpace(), fileName);
+    } catch (IOException e) {
+      e.printStackTrace();
+      return errorModelAndView(ERROR_MESSAGE_IOEXCEPTION);
+    }
 
-        // SML
+    // Process the file
+    try {
+      projectRepresentation = inputReader.processInputFile(file.getAbsolutePath());
+    } catch (IOException e) {
+      e.printStackTrace();
+      return errorModelAndView(ERROR_MESSAGE_IOEXCEPTION);
+    } catch (IncorrectInputException e) {
+      e.printStackTrace();
+      return errorModelAndView(ERROR_MESSAGE_TMP);
+    }
 
-        // Objects for Java file generation
-        StateGenerator stateGenerator = new StateGenerator();
-        OperatorGenerator operatorGenerator = new OperatorGenerator();
-        InputReader inputReader = new InputReader();
-        ProjectRepresentation projectRepresentation;
+    // Generate .java files to a folder with generated package name
+    ProjectGenerator projectGenerator = new ProjectGenerator(stateGenerator, operatorGenerator);
+    List<ClassRepresentation> classRepresentations;
+    try {
+      classRepresentations = projectGenerator.generate(projectRepresentation, GENERATED_FOLDER_NAME,
+          ProcessUtils.generatePackageName());
+    } catch (IOException e) {
+      e.printStackTrace();
+      return errorModelAndView(ERROR_MESSAGE_IOEXCEPTION);
+    }
 
-        // Store state-space description to a file
-        File file;
-        String fileName = ProcessUtils.generateStateSpaceFileName();
-        try {
-            file = storageService.storeStateSpace(problemForm.getStateSpace(), fileName);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return errorModelAndView(ERROR_MESSAGE_IOEXCEPTION);
-        }
+    // Object wrapping the created .java files information
+    ClassManager classManager = new ClassManager();
+    classManager.addClasses(classRepresentations);
 
-        // Process the file
-        try {
-            projectRepresentation = inputReader.processInputFile(file.getAbsolutePath());
-        } catch (IOException e) {
-            e.printStackTrace();
-            return errorModelAndView(ERROR_MESSAGE_IOEXCEPTION);
-        } catch (IncorrectInputException e) {
-            e.printStackTrace();
-            return errorModelAndView(ERROR_MESSAGE_TMP);
-        }
+    System.out.println(classManager.getFilePaths());
 
-        // Generate .java files to a folder with generated package name
-        ProjectGenerator projectGenerator = new ProjectGenerator(stateGenerator, operatorGenerator);
-        List<ClassRepresentation> classRepresentations;
-        try {
-            classRepresentations = projectGenerator.generate(projectRepresentation, GENERATED_FOLDER_NAME, ProcessUtils.generatePackageName());
-        } catch (IOException e) {
-            e.printStackTrace();
-            return errorModelAndView(ERROR_MESSAGE_IOEXCEPTION);
-        }
+    // SOLUTION
 
-        // Object wrapping the created .java files information
-        ClassManager classManager = new ClassManager();
-        classManager.addClasses(classRepresentations);
+    // Create object that can solve problems with different type of algorithms
+    SolutionManager solutionManager;
+    try {
 
-        // SOLUTION
+      SolutionMaker solutionMaker = new SolutionMaker(classManager.getFilePaths());
+      solutionManager = solutionMaker.start();
 
-        // Create object that can solve problems with different type of algorithms
-        SolutionManager solutionManager;
-        try {
+    } catch (TemporaryFolderCreationException e) {
+      e.printStackTrace();
+      return errorModelAndView(ERROR_MESSAGE_TMP);
+    } catch (MalformedURLException e) {
+      e.printStackTrace();
+      return errorModelAndView(ERROR_MESSAGE_TMP);
+    } catch (URISyntaxException e) {
+      e.printStackTrace();
+      return errorModelAndView(ERROR_MESSAGE_TMP);
+    } catch (WrongFileExtensionException e) {
+      e.printStackTrace();
+      return errorModelAndView(ERROR_MESSAGE_TMP);
+    } catch (ClassNotFoundException e) {
+      e.printStackTrace();
+      return errorModelAndView(ERROR_MESSAGE_TMP);
+    } catch (TemporaryFolderDeletionException e) {
+      e.printStackTrace();
+      return errorModelAndView(ERROR_MESSAGE_TMP);
+    } catch (CompilationException e) {
+      e.printStackTrace();
+      return errorModelAndView(ERROR_MESSAGE_TMP);
+    } catch (OperatorNotFoundException e) {
+      e.printStackTrace();
+      return errorModelAndView(ERROR_MESSAGE_TMP);
+    } catch (OperatorInitializationException e) {
+      e.printStackTrace();
+      return errorModelAndView(ERROR_MESSAGE_TMP);
+    } catch (StateInitializationException e) {
+      e.printStackTrace();
+      return errorModelAndView(ERROR_MESSAGE_TMP);
+    } catch (StateNotFoundException e) {
+      e.printStackTrace();
+      return errorModelAndView(ERROR_MESSAGE_TMP);
+    } catch (IOException e) {
+      e.printStackTrace();
+      return errorModelAndView(ERROR_MESSAGE_IOEXCEPTION);
+    }
 
-            SolutionMaker solutionMaker = new SolutionMaker(classManager.getFilePaths());
-            solutionManager = solutionMaker.start();
+    // START PROCESSES
 
-        } catch (TemporaryFolderCreationException e) {
-            e.printStackTrace();
-            return errorModelAndView(ERROR_MESSAGE_TMP);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-            return errorModelAndView(ERROR_MESSAGE_TMP);
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-            return errorModelAndView(ERROR_MESSAGE_TMP);
-        } catch (WrongFileExtensionException e) {
-            e.printStackTrace();
-            return errorModelAndView(ERROR_MESSAGE_TMP);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            return errorModelAndView(ERROR_MESSAGE_TMP);
-        } catch (TemporaryFolderDeletionException e) {
-            e.printStackTrace();
-            return errorModelAndView(ERROR_MESSAGE_TMP);
-        } catch (CompilationException e) {
-            e.printStackTrace();
-            return errorModelAndView(ERROR_MESSAGE_TMP);
-        } catch (OperatorNotFoundException e) {
-            e.printStackTrace();
-            return errorModelAndView(ERROR_MESSAGE_TMP);
-        } catch (OperatorInitializationException e) {
-            e.printStackTrace();
-            return errorModelAndView(ERROR_MESSAGE_TMP);
-        } catch (StateInitializationException e) {
-            e.printStackTrace();
-            return errorModelAndView(ERROR_MESSAGE_TMP);
-        } catch (StateNotFoundException e) {
-            e.printStackTrace();
-            return errorModelAndView(ERROR_MESSAGE_TMP);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return errorModelAndView(ERROR_MESSAGE_IOEXCEPTION);
-        }
+    List<String> processIdentifiers = new ArrayList<>();
 
-        // START PROCESSES
+    for (int i = 0; i < problemForm.getAlgorithms().size(); i++) {
 
-        List<String> processIdentifiers = new ArrayList<>();
+      // Generate identifier for process
+      String processIdentifier = ProcessUtils.generateProcessIdentifier();
+      processIdentifiers.add(processIdentifier);
 
-        for (int i = 0; i < problemForm.getAlgorithms().size(); i++) {
+      // Create and store new process in database
+      ProcessDTO processDTO = new ProcessDTO();
+      processDTO.setProcessIdentifier(processIdentifier);
+      processDTO.setDone(false);
+      processService.save(processDTO);
 
-            // Generate identifier for process
-            String processIdentifier = ProcessUtils.generateProcessIdentifier();
-            processIdentifiers.add(processIdentifier);
-
-            // Create and store new process in database
-            ProcessDTO processDTO = new ProcessDTO();
-            processDTO.setProcessIdentifier(processIdentifier);
-            processDTO.setDone(false);
-            processService.save(processDTO);
-
-            // Start the process
-            ProcessThread processThread = applicationContext.getBean(ProcessThread.class);
-            processThread.setProcessIdentifier(processIdentifier);
-            processThread.setSolutionManager(solutionManager);
-            processThread.setAlgorithmName(problemForm.getAlgorithms().get(i));
-            processThread.setHeuristicFunction(problemForm.getHeuristic());
-            threadPoolTaskExecutor.execute(processThread);
-
-        }
-
-        // Create and return ModelAndView
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.addObject("processIdentifiers", processIdentifiers);
-        modelAndView.addObject("algorithms", problemForm.getAlgorithms());
-        modelAndView.setViewName("visualizer");
-
-        return modelAndView;
+      // Start the process
+      ProcessThread processThread = applicationContext.getBean(ProcessThread.class);
+      processThread.setProcessIdentifier(processIdentifier);
+      processThread.setSolutionManager(solutionManager);
+      processThread.setAlgorithmName(problemForm.getAlgorithms().get(i));
+      processThread.setHeuristicFunction(problemForm.getHeuristic());
+      threadPoolTaskExecutor.execute(processThread);
 
     }
 
-    private ModelAndView errorModelAndView(String errorMessage) {
+    // Create and return ModelAndView
+    ModelAndView modelAndView = new ModelAndView();
+    modelAndView.addObject("processIdentifiers", processIdentifiers);
+    modelAndView.addObject("algorithms", problemForm.getAlgorithms());
+    modelAndView.setViewName("visualizer");
 
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("problem");
-        modelAndView.addObject("errorMessage", errorMessage);
+    return modelAndView;
 
-        return modelAndView;
+  }
 
-    }
+  private ModelAndView errorModelAndView(String errorMessage) {
+
+    ModelAndView modelAndView = new ModelAndView();
+    modelAndView.setViewName("problem");
+    modelAndView.addObject("errorMessage", errorMessage);
+
+    return modelAndView;
+
+  }
 
 }

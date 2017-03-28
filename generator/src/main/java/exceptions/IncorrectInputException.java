@@ -1,4 +1,4 @@
-package antlr.impl;
+package exceptions;
 
 public class IncorrectInputException extends RuntimeException {
 

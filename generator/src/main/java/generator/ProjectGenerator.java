@@ -12,6 +12,7 @@ import java.util.List;
 import representation.ClassRepresentation;
 import representation.ProjectRepresentation;
 import representation.operator.OperatorRepresentation;
+import utils.GeneratorUtils;
 
 public class ProjectGenerator {
 

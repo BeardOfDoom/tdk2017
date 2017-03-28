@@ -1,4 +1,4 @@
-package misc;
+package enums;
 
 public enum VarStruct {
   SET, MATRIX

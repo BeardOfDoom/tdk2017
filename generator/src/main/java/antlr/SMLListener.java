@@ -58,6 +58,16 @@ public interface SMLListener extends ParseTreeListener {
 	 */
 	void exitState_start(SMLParser.State_startContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link SMLParser#state_start_line}.
+	 * @param ctx the parse tree
+	 */
+	void enterState_start_line(SMLParser.State_start_lineContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SMLParser#state_start_line}.
+	 * @param ctx the parse tree
+	 */
+	void exitState_start_line(SMLParser.State_start_lineContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link SMLParser#state_goal}.
 	 * @param ctx the parse tree
 	 */
@@ -68,25 +78,25 @@ public interface SMLListener extends ParseTreeListener {
 	 */
 	void exitState_goal(SMLParser.State_goalContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link SMLParser#operation_expr}.
+	 * Enter a parse tree produced by {@link SMLParser#operator_expr}.
 	 * @param ctx the parse tree
 	 */
-	void enterOperation_expr(SMLParser.Operation_exprContext ctx);
+	void enterOperator_expr(SMLParser.Operator_exprContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link SMLParser#operation_expr}.
+	 * Exit a parse tree produced by {@link SMLParser#operator_expr}.
 	 * @param ctx the parse tree
 	 */
-	void exitOperation_expr(SMLParser.Operation_exprContext ctx);
+	void exitOperator_expr(SMLParser.Operator_exprContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link SMLParser#operation_description}.
+	 * Enter a parse tree produced by {@link SMLParser#operator_description}.
 	 * @param ctx the parse tree
 	 */
-	void enterOperation_description(SMLParser.Operation_descriptionContext ctx);
+	void enterOperator_description(SMLParser.Operator_descriptionContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link SMLParser#operation_description}.
+	 * Exit a parse tree produced by {@link SMLParser#operator_description}.
 	 * @param ctx the parse tree
 	 */
-	void exitOperation_description(SMLParser.Operation_descriptionContext ctx);
+	void exitOperator_description(SMLParser.Operator_descriptionContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link SMLParser#operator_cost}.
 	 * @param ctx the parse tree
@@ -117,6 +127,16 @@ public interface SMLListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitOperator_effect(SMLParser.Operator_effectContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link SMLParser#operator_effect_line}.
+	 * @param ctx the parse tree
+	 */
+	void enterOperator_effect_line(SMLParser.Operator_effect_lineContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SMLParser#operator_effect_line}.
+	 * @param ctx the parse tree
+	 */
+	void exitOperator_effect_line(SMLParser.Operator_effect_lineContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link SMLParser#attr_struct}.
 	 * @param ctx the parse tree
@@ -318,16 +338,6 @@ public interface SMLListener extends ParseTreeListener {
 	 */
 	void exitNumber_expr(SMLParser.Number_exprContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link SMLParser#assign_expression}.
-	 * @param ctx the parse tree
-	 */
-	void enterAssign_expression(SMLParser.Assign_expressionContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link SMLParser#assign_expression}.
-	 * @param ctx the parse tree
-	 */
-	void exitAssign_expression(SMLParser.Assign_expressionContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link SMLParser#init_statement}.
 	 * @param ctx the parse tree
 	 */
@@ -368,6 +378,16 @@ public interface SMLListener extends ParseTreeListener {
 	 */
 	void exitAttr_reference(SMLParser.Attr_referenceContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link SMLParser#parameterized_attr_reference}.
+	 * @param ctx the parse tree
+	 */
+	void enterParameterized_attr_reference(SMLParser.Parameterized_attr_referenceContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SMLParser#parameterized_attr_reference}.
+	 * @param ctx the parse tree
+	 */
+	void exitParameterized_attr_reference(SMLParser.Parameterized_attr_referenceContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link SMLParser#matrix_reference}.
 	 * @param ctx the parse tree
 	 */
@@ -378,25 +398,15 @@ public interface SMLListener extends ParseTreeListener {
 	 */
 	void exitMatrix_reference(SMLParser.Matrix_referenceContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link SMLParser#reference}.
+	 * Enter a parse tree produced by {@link SMLParser#parameterized_matrix_reference}.
 	 * @param ctx the parse tree
 	 */
-	void enterReference(SMLParser.ReferenceContext ctx);
+	void enterParameterized_matrix_reference(SMLParser.Parameterized_matrix_referenceContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link SMLParser#reference}.
+	 * Exit a parse tree produced by {@link SMLParser#parameterized_matrix_reference}.
 	 * @param ctx the parse tree
 	 */
-	void exitReference(SMLParser.ReferenceContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link SMLParser#dimension_part}.
-	 * @param ctx the parse tree
-	 */
-	void enterDimension_part(SMLParser.Dimension_partContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link SMLParser#dimension_part}.
-	 * @param ctx the parse tree
-	 */
-	void exitDimension_part(SMLParser.Dimension_partContext ctx);
+	void exitParameterized_matrix_reference(SMLParser.Parameterized_matrix_referenceContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link SMLParser#dimension}.
 	 * @param ctx the parse tree
@@ -407,6 +417,36 @@ public interface SMLListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitDimension(SMLParser.DimensionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link SMLParser#normal_reference}.
+	 * @param ctx the parse tree
+	 */
+	void enterNormal_reference(SMLParser.Normal_referenceContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SMLParser#normal_reference}.
+	 * @param ctx the parse tree
+	 */
+	void exitNormal_reference(SMLParser.Normal_referenceContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link SMLParser#parameterized_reference}.
+	 * @param ctx the parse tree
+	 */
+	void enterParameterized_reference(SMLParser.Parameterized_referenceContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SMLParser#parameterized_reference}.
+	 * @param ctx the parse tree
+	 */
+	void exitParameterized_reference(SMLParser.Parameterized_referenceContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link SMLParser#reference}.
+	 * @param ctx the parse tree
+	 */
+	void enterReference(SMLParser.ReferenceContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SMLParser#reference}.
+	 * @param ctx the parse tree
+	 */
+	void exitReference(SMLParser.ReferenceContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link SMLParser#number}.
 	 * @param ctx the parse tree

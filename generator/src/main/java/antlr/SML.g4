@@ -1,6 +1,6 @@
 grammar SML;
 
-expr: STATE_DELIMITER name_defining_expression? state_expr OPERATOR_DELIMITER operation_expr+ EOF;
+expr: STATE_DELIMITER name_defining_expression? state_expr OPERATOR_DELIMITER operator_expr+ EOF;
 
 state_expr: state_description state_start state_goal;
 
@@ -8,20 +8,22 @@ state_description: STATE_ATTRIBUTES_DELIMITER state_description_line+;
 
 state_description_line: attr_name KEYWORD_IS attr_struct KEYWORD_OF attr_type;
 
-state_start: STATE_START_DELIMITER parameter_description_line* assign_expression+;
+state_start: STATE_START_DELIMITER parameter_description_line* state_start_line+;
+state_start_line: ((attr_reference SYMBOL_ASSIGN (init_statement | expression)) | (matrix_reference SYMBOL_ASSIGN expression));
 
 state_goal: STATE_GOAL_DELIMITER parameter_description_line* expression;
 
 /*-----------------------------------------------------------------------------------------------*/
 
-operation_expr: operation_description operator_precondition operator_effect;
+operator_expr: operator_description operator_precondition operator_effect;
 
-operation_description: OPERATOR_DESCRIPTION_DELIMITER name_defining_expression? operator_cost? parameter_description_line*;
+operator_description: OPERATOR_DESCRIPTION_DELIMITER name_defining_expression? operator_cost? parameter_description_line*;
 operator_cost: KEYWORD_COST number;
 
 operator_precondition: OPERATOR_PRECONDITION_DELIMITER expression?;
 
-operator_effect: OPERATOR_EFFECT_DELIMITER var_defining_expression* assign_expression+;
+operator_effect: OPERATOR_EFFECT_DELIMITER var_defining_expression* operator_effect_line+;
+operator_effect_line: reference SYMBOL_ASSIGN expression;
 
 /*-----------------------------------------------------------------------------------------------*/
 
@@ -49,19 +51,20 @@ expression
   | name #name_expr
   ;
 
-assign_expression: ((attr_reference SYMBOL_ASSIGN init_statement) | (matrix_reference SYMBOL_ASSIGN expression));
 init_statement: SYMBOL_LBRACE (expression (SYMBOL_COMMA  expression)*) SYMBOL_RBRACE;
-
 parameter_description_line: KEYWORD_PARAM name ((KEYWORD_FROM INT KEYWORD_TO INT (KEYWORD_BY INT)?));
 
 /*-----------------------------------------------------------------------------------------------*/
 
 attr_name: KEYWORD_ATTRIBUTE INT;
-attr_reference: SYMBOL_REFERENCE (INT | name);
+attr_reference: SYMBOL_REFERENCE INT;
+parameterized_attr_reference: SYMBOL_REFERENCE name;
 matrix_reference: attr_reference dimension;
-reference: (attr_reference | matrix_reference);
-dimension_part: SYMBOL_LBRACK (INT | name) SYMOBL_RBRACK;
-dimension: dimension_part dimension_part;
+parameterized_matrix_reference: parameterized_attr_reference dimension;
+dimension: SYMBOL_LBRACK dimensionN=expression SYMOBL_RBRACK SYMBOL_LBRACK dimensionM=expression SYMOBL_RBRACK;
+normal_reference: (attr_reference | matrix_reference);
+parameterized_reference: (parameterized_attr_reference | parameterized_matrix_reference);
+reference: (normal_reference | parameterized_reference);
 
 KEYWORD_PARAM: 'param';
 KEYWORD_FROM: 'from';
@@ -132,7 +135,7 @@ FLOAT: (('0' | '1'..'9') '0'..'9'*)'.'('0'..'9'*);
 SIGN: ('+' | '-');
 
 number: SIGN? (INT | FLOAT);
-word: (SYMBOL_QUOTE .*? SYMBOL_QUOTE);
+word: SYMBOL_QUOTE (~(SYMBOL_REFERENCE | SYMBOL_QUOTE))* SYMBOL_QUOTE;
 name: CHAR+;
 CHAR: ('a'..'z' | 'A'..'Z');
 WS: [ \t\r\n]+ -> skip ;

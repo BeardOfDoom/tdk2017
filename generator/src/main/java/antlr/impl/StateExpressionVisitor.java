@@ -1,22 +1,26 @@
 package antlr.impl;
 
-import antlr.SMLParser.Reference_exprContext;
-import generator.GeneratorUtils;
+import antlr.SMLParser.ReferenceContext;
+import misc.Dimension;
+import utils.InputProcessUtils;
 
 public class StateExpressionVisitor extends ExpressionVisitor {
-  
-  @Override
-  public String visitReference_expr(Reference_exprContext ctx) {
-    if (ctx.reference().matrix_reference() != null && ctx.reference().attr_reference() == null) {
-      String dimensionN = GeneratorUtils
-          .getDimensionsFromMatrixReferenceContext(ctx.reference().matrix_reference()).get(0);
-      String dimensionM = GeneratorUtils
-          .getDimensionsFromMatrixReferenceContext(ctx.reference().matrix_reference()).get(1);
 
-      return "attr" + ctx.reference().matrix_reference().attr_reference().INT().getText() + ".get("
-          + dimensionN + ").get(" + dimensionM + ")";
+  @Override
+  public String visitReference(ReferenceContext ctx) {
+    if (ctx.normal_reference().matrix_reference() != null
+        && ctx.normal_reference().attr_reference() == null) {
+
+      Dimension dimension = InputProcessUtils
+          .getDimensionsFromDimensionContext(
+              ctx.normal_reference().matrix_reference().dimension());
+
+      return "$attr" + ctx.normal_reference().matrix_reference().attr_reference().INT()
+          .getText()
+          + ":L.get("
+          + dimension.getDimensionN() + ").get(" + dimension.getDimensionM() + ")";
     } else {
-      return "attr" + ctx.reference().attr_reference().INT().getText();
+      return "$attr" + ctx.normal_reference().attr_reference().INT().getText() + ":L";
     }
   }
 }
