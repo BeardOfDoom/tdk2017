@@ -15,8 +15,8 @@ public class GeneratedUtils {
   }
 
   public static Double min(Set<Double> set) {
-      return set.isEmpty() ? 0d : Collections.min(set);
-    }
+    return Collections.min(set);
+  }
 
   public static Double min(Double numberA, Double numberB) {
     return Math.min(numberA, numberB);
@@ -81,14 +81,14 @@ public class GeneratedUtils {
   public static <T extends Object> Set<T> add(Set<T> set, T element) {
     Set<T> result = new HashSet<>();
     result.addAll(set);
-    result.add(element);
+    set.add(element);
     return result;
   }
 
   public static <T extends Object> Set<T> remove(Set<T> set, T element) {
     Set<T> result = new HashSet<>();
     result.addAll(set);
-    result.remove(element);
+    set.remove(element);
     return result;
   }
 

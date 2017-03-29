@@ -7,6 +7,7 @@ import antlr.impl.StateExpressionVisitor;
 import com.squareup.javapoet.ClassName;
 import misc.Dimension;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.apache.commons.lang3.math.NumberUtils;
 import representation.operator.VariableRepresentation;
 
 public final class InputProcessUtils {
@@ -37,12 +38,13 @@ public final class InputProcessUtils {
   public static Dimension getDimensionsFromDimensionContext(
       DimensionContext dimension) {
 
-    String dimensionM =
-        "Double.valueOf(" + getStateExpressionValue(dimension.dimensionM) + ").intValue()";
-    String dimensionN =
-        "Double.valueOf(" + getStateExpressionValue(dimension.dimensionN) + ").intValue()";
+    String dimensionN = getStateExpressionValue(dimension.dimensionN);
+    dimensionN = NumberUtils.isCreatable(dimensionN) ? "Double.valueOf(" + dimensionN + ").intValue()" : dimensionN;
 
-    return new Dimension(dimensionM, dimensionN);
+    String dimensionM = getStateExpressionValue(dimension.dimensionM);
+    dimensionM = NumberUtils.isCreatable(dimensionM) ? "Double.valueOf(" + dimensionM + ").intValue()" : dimensionM;
+
+    return new Dimension(dimensionN, dimensionM);
   }
 
   public static String getStateExpressionValue(ParseTree tree) {

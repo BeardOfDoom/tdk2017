@@ -2,9 +2,6 @@ package generator.classes;
 
 import interfaces.OperatorInterface;
 import interfaces.StateInterface;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 
 @SuppressWarnings("unchecked")
 public class Operator1 implements OperatorInterface {
@@ -83,16 +80,16 @@ public class Operator1 implements OperatorInterface {
   @Override
   public boolean isApplicable(StateInterface stateObject) {
     State original = ((State) stateObject);
-    return !i.equals(j) && GeneratedUtils.card(((Set<Double>) original.getAttributeByNumber(i))) != 0d && GeneratedUtils.min(((Set<Double>) original.getAttributeByNumber(i))) < GeneratedUtils.min(((Set<Double>) original.getAttributeByNumber(j))) && original.getAttr3().equals(new HashSet<>(Arrays.asList(1d, 2d, 3d)));}
+    return !i.equals(j) && original.getAttr1().get(Double.valueOf(0d).intValue()).get(i) != 0d && !original.getAttr1().get(Double.valueOf(0d).intValue()).get(j).equals(original.getAttr2().get(Double.valueOf(0d).intValue()).get(j));}
 
   @Override
   public StateInterface apply(StateInterface stateObject) {
     State original = ((State) stateObject);
     State state = original.copy();
 
-    state.setAttributeByNumber(j, GeneratedUtils.add(((Set<Double>) original.getAttributeByNumber(j)), GeneratedUtils.min(((Set<Double>) original.getAttributeByNumber(i)))));
-    state.setAttributeByNumber(i, GeneratedUtils.remove(((Set<Double>) original.getAttributeByNumber(i)), GeneratedUtils.min(((Set<Double>) original.getAttributeByNumber(i)))));
-    original.setAttr3(new HashSet<>(Arrays.asList(1d, 2d, 3d, 10d)));
+    Double beer = GeneratedUtils.min(original.getAttr1().get(Double.valueOf(0d).intValue()).get(i), original.getAttr2().get(Double.valueOf(0d).intValue()).get(j) - original.getAttr1().get(Double.valueOf(0d).intValue()).get(j));
+    original.getAttr1().get(Double.valueOf(0d).intValue()).set(i, original.getAttr1().get(Double.valueOf(0d).intValue()).get(i) - beer);
+    original.getAttr1().get(Double.valueOf(0d).intValue()).set(j, original.getAttr1().get(Double.valueOf(0d).intValue()).get(j) + beer);
 
     return state;
   }

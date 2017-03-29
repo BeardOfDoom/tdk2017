@@ -27,7 +27,7 @@ public class OperatorExpressionVisitor extends ExpressionVisitor {
 
         return "original.getAttr" + reference.matrix_reference().attr_reference().INT().getText()
             + "().get("
-            + dimension.getDimensionM() + ").get(" + dimension.getDimensionM() + ")";
+            + dimension.getDimensionN() + ").get(" + dimension.getDimensionM() + ")";
       } else {
         return "original.getAttr" + reference.attr_reference().INT()
             .getText() + "()";
@@ -78,7 +78,7 @@ public class OperatorExpressionVisitor extends ExpressionVisitor {
 
         return "(($" + attributeName + ":T) original.getAttributeByNumber(" + attributeName + "))"
             + ".get("
-            + dimension.getDimensionM() + ").set(" + dimension.getDimensionM() + ")";
+            + dimension.getDimensionN() + ").set(" + dimension.getDimensionM() + ")";
       }
     } else {
       Normal_referenceContext reference = ctx.reference().normal_reference();
