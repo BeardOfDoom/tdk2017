@@ -171,7 +171,9 @@ public class OperatorGenerator {
         .addAnnotation(Override.class)
         .returns(boolean.class)
         .addParameter(StateInterface.class, parameterName)
-        .addStatement("$1L $2L = (($1L) $3L)", stateClass.getClassName().toString(), "original", parameterName)
+        .addStatement("System.out.println(" + parameterName + ".getClass())")
+        .addStatement("$1L $2L = ($1L.class.cast($3L))", stateClass.getClassName().toString(), "original",
+            parameterName)
         .addCode(generateIsApplicableStatement(operatorRepresentation));
 
     return builder.build();
