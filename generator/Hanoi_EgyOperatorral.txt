@@ -4,14 +4,14 @@ STATE_ATTRIBUTES:
 Attr0 is set of number
 Attr1 is set of number
 Attr2 is set of number
-Attr3 is set of number
 
 STATE_START:
-$0 = {1, 2, 3}
-$3 = {1, 2, 3}
+$0 = {1, 2, 3, 10}
+$1 = {10}
+$2 = {10}
 
 STATE_GOAL:
-$2 == $3
+$2 == {1, 2, 3}
 
 OPERATORS:
 
@@ -22,7 +22,7 @@ param j from 0 to 2 by 1
 
 OPERATOR_PRECONDITION:
 i!=j and
-card($i) != 0 and
+card($i) != 1 and
 min($i)<min($j)
 
 OPERATOR_EFFECT:
