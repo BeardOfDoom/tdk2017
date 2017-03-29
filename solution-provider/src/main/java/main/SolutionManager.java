@@ -28,13 +28,12 @@ import solutionsearchers.DepthFirst;
 import solutionsearchers.Optimal;
 
 public class SolutionManager{
-	List<OperatorInterface> OPERATORS;
-	StateInterface state;
+	private List<OperatorInterface> OPERATORS;
+	private StateInterface state;
 	
 	public SolutionManager(Class<?> stateClass, List<Class<?>> operatorClasses) throws StateInitializationException, OperatorInitializationException{
 		OperatorInstantiator operatorInstantiator = new OperatorInstantiator();
 		OPERATORS = operatorInstantiator.getOperatorInstances(operatorClasses);
-		
 		try {
 			state = (StateInterface) stateClass.getConstructor().newInstance();
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException

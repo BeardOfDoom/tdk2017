@@ -227,7 +227,7 @@ public class A {
 			extend(actual);
 		}
 		if(!openNodes.isEmpty()){
-			return SolutionHelper.writeOutputForGraphic(getClass(), reachedANodes, listForTree, Arrays.asList(actual, treeActual), steps.toString());
+			return SolutionHelper.writeOutputForGraphic(getClass(), reachedANodes, listForTree, Arrays.asList(actual, treeActual), steps.toString(), OPERATORS);
 		} else {
 			System.out.println("No solution.");
 			// TODO

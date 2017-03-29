@@ -215,7 +215,7 @@ public class BackTrackPathLengthLimitation {
 		}
 		
 		if(actual != null){
-			return SolutionHelper.writeOutputForGraphic(getClass(), reachedBackTrackPathLengthLimitationNodes, listForTree, Arrays.asList(actual, treeActual), steps.toString());
+			return SolutionHelper.writeOutputForGraphic(getClass(), reachedBackTrackPathLengthLimitationNodes, listForTree, Arrays.asList(actual, treeActual), steps.toString(), OPERATORS);
 		} else {
 			System.out.println("No solution.");
 			return null;

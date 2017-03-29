@@ -136,7 +136,7 @@ public class DepthFirst {
 		}
 		
 		if(!openNodes.isEmpty()){
-			return SolutionHelper.writeOutputForGraphic(getClass(), reachedDepthFirstNodes, new ArrayList<>(), Arrays.asList(actual), steps.toString());
+			return SolutionHelper.writeOutputForGraphic(getClass(), reachedDepthFirstNodes, new ArrayList<>(), Arrays.asList(actual), steps.toString(), OPERATORS);
 		} else {
 			System.out.println("No solution.");
 			return null;

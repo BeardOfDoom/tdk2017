@@ -224,7 +224,7 @@ public class BackTrackOptimal {
 		}
 		
 		if(didFind){
-			return SolutionHelper.writeOutputForGraphic(getClass(), reachedBackTrackOptimalNodes, listForTree, Arrays.asList(solution, treeSolution), steps.toString());
+			return SolutionHelper.writeOutputForGraphic(getClass(), reachedBackTrackOptimalNodes, listForTree, Arrays.asList(solution, treeSolution), steps.toString(), OPERATORS);
 		} else {
 			System.out.println("Unsuccessfull search.");
 			return null;

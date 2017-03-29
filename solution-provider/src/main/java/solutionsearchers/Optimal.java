@@ -197,7 +197,7 @@ public class Optimal {
 		}
 		
 		if(!openNodes.isEmpty()){
-			return SolutionHelper.writeOutputForGraphic(getClass(), reachedOptimalNodes, listForTree, Arrays.asList(actual, treeActual), steps.toString());
+			return SolutionHelper.writeOutputForGraphic(getClass(), reachedOptimalNodes, listForTree, Arrays.asList(actual, treeActual), steps.toString(), OPERATORS);
 		} else {
 			System.out.println("No solution.");
 			return null;

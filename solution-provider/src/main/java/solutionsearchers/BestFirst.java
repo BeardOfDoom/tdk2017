@@ -169,7 +169,7 @@ public class BestFirst {
 			extend(actual);
 		}
 		if(!openNodes.isEmpty()){
-			return SolutionHelper.writeOutputForGraphic(getClass(), reachedBestFirstNodes, listForTree, Arrays.asList(actual, treeActual), steps.toString());
+			return SolutionHelper.writeOutputForGraphic(getClass(), reachedBestFirstNodes, listForTree, Arrays.asList(actual, treeActual), steps.toString(), OPERATORS);
 		} else {
 			System.out.println("No solution.");
 			return null;

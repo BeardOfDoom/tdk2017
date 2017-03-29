@@ -169,7 +169,7 @@ public class BackTrackSimple{
 		}
 		
 		if(actual != null){
-			return SolutionHelper.writeOutputForGraphic(getClass(), reachedBackTrackSimpleNodes, listForTree, Arrays.asList(actual, treeActual), steps.toString());
+			return SolutionHelper.writeOutputForGraphic(getClass(), reachedBackTrackSimpleNodes, listForTree, Arrays.asList(actual, treeActual), steps.toString(), OPERATORS);
 		} else {
 			System.out.println("No solution.");
 			return null;

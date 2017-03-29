@@ -1,6 +1,5 @@
 package main;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,11 +15,9 @@ public class OperatorInstantiator{
 
 	for(Class<?> operatorClass : operatorClasses){
 		try {
-			operatorClass.getMethod("initOperators").invoke(operatorClass.newInstance());
-			Field operatorField = operatorClass.getField("OPERATORS");
-			result.addAll((List<OperatorInterface>) operatorField.get(operatorClass));
+			result.addAll((List<OperatorInterface>)operatorClass.getMethod("initOperators").invoke(operatorClass.newInstance()));
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
-				| SecurityException | InstantiationException | NoSuchFieldException e) {
+				| SecurityException | InstantiationException e) {
 			throw new OperatorInitializationException(e);
 		}
 	}

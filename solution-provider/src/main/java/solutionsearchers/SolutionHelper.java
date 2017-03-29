@@ -18,7 +18,7 @@ import nodes.Node;
 
 public class SolutionHelper {
 	
-	public static String writeSolutions(List<Node> nodes){
+	public static String writeSolutions(List<Node> nodes, List<OperatorInterface> operators){
 		StringBuilder builder = new StringBuilder();
 		for(Node node : nodes){
 			LinkedList<Node> tmpNodes = new LinkedList<>();
@@ -30,7 +30,7 @@ public class SolutionHelper {
 			
 			for(Node tmpNode : tmpNodes){
 				if(tmpNode.getParent() != null){
-					builder.append(tmpNode.getParent().getId() + "-OP" + OperatorInterface.OPERATORS.indexOf(tmpNode.getOperator()) + "-" + tmpNode.getId() + " ");
+					builder.append(tmpNode.getParent().getId() + "-OP" + operators.indexOf(tmpNode.getOperator()) + "-" + tmpNode.getId() + " ");
 				}
 			}
 			builder.setLength(builder.length() - 1);
@@ -40,7 +40,7 @@ public class SolutionHelper {
 		return builder.toString();
 	}
 	
-	public static String writeOutputForGraphic(Class<?> solutionSearcher, List<Node> nodes, List<Node> treeNodes, List<Node> solutions, String steps){
+	public static String writeOutputForGraphic(Class<?> solutionSearcher, List<Node> nodes, List<Node> treeNodes, List<Node> solutions, String steps, List<OperatorInterface> operators){
 		File outputFolder = new File("solutionOutputs");
 		File output = new File("solutionOutputs/" + solutionSearcher.getSimpleName() + LocalDateTime.now().format(DateTimeFormatter.ofPattern("YYYY-MM-dd-hh-mm-ss")) + UUID.randomUUID().toString() + ".txt");
 		if(!outputFolder.exists())
@@ -133,19 +133,19 @@ public class SolutionHelper {
 			}
 			
 			writer.write("operators\n");
-			for(int i = 0; i < OperatorInterface.OPERATORS.size(); i++){
-				writer.write("OP" + i + "|" + OperatorInterface.OPERATORS.get(i) + "\n");
+			for(int i = 0; i < operators.size(); i++){
+				writer.write("OP" + i + "|" + operators.get(i) + "\n");
 			}
 
 			writer.write("connections\n");
 			for(Node node : nodes){
 				if(node.getParent() != null){
-					writer.write(node.getParent().getId() + "|" + node.getId() + "|" + "OP" + OperatorInterface.OPERATORS.indexOf(node.getOperator()) + "\n");
+					writer.write(node.getParent().getId() + "|" + node.getId() + "|" + "OP" + operators.indexOf(node.getOperator()) + "\n");
 				}
 			}
 			for(Node node : treeNodes){
 				if(node.getParent() != null){
-					writer.write(node.getParent().getId() + "|" + node.getId() + "|" + "OP" + OperatorInterface.OPERATORS.indexOf(node.getOperator()) + "\n");
+					writer.write(node.getParent().getId() + "|" + node.getId() + "|" + "OP" + operators.indexOf(node.getOperator()) + "\n");
 				}
 			}
 			
@@ -153,7 +153,7 @@ public class SolutionHelper {
 			writer.write(steps + "\n");
 			
 			writer.write("solutions\n");
-			writer.write(writeSolutions(solutions));
+			writer.write(writeSolutions(solutions, operators));
 
 			writer.close();
 		} catch (IOException e) {

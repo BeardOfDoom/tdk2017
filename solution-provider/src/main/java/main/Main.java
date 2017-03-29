@@ -19,8 +19,6 @@ public class Main {
 	
 	// TODO valamilyen segitséget nyujtani hogy az interfaceket könnyen elérje a felhasználó (kiirni a felületre)
 		
-	// TODO érdekes részek kiemelése
-	
 	// TODO statisztika opció (külön szálakon elindul az összes keresés)
 	
 	// TODO fa ugye nem kell szélességi és mélységi keresőkbe, mert azok mindig fák
