@@ -13,6 +13,28 @@
     <maven.compiler.target>1.8</maven.compiler.target>
   </properties>
 
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-remote-resources-plugin</artifactId>
+        <version>1.5</version>
+        <configuration>
+          <resourceBundles>
+            <resourceBundle>tdk2017:shared-resources:1.0-SNAPSHOT</resourceBundle>
+          </resourceBundles>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>process</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
   <dependencies>
     <dependency>
       <groupId>com.squareup</groupId>
@@ -28,6 +50,11 @@
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
       <version>3.5</version>
+    </dependency>
+    <dependency>
+      <groupId>tdk2017</groupId>
+      <artifactId>shared-resources</artifactId>
+      <version>1.0-SNAPSHOT</version>
     </dependency>
   </dependencies>
 
