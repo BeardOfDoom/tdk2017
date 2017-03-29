@@ -230,6 +230,18 @@ public interface SMLListener extends ParseTreeListener {
 	 */
 	void exitParen_expr(SMLParser.Paren_exprContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code param_name_expr}
+	 * labeled alternative in {@link SMLParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterParam_name_expr(SMLParser.Param_name_exprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code param_name_expr}
+	 * labeled alternative in {@link SMLParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitParam_name_expr(SMLParser.Param_name_exprContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code compare_expr}
 	 * labeled alternative in {@link SMLParser#expression}.
 	 * @param ctx the parse tree
@@ -278,6 +290,18 @@ public interface SMLListener extends ParseTreeListener {
 	 */
 	void exitBool_expr(SMLParser.Bool_exprContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code set_init_expr}
+	 * labeled alternative in {@link SMLParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterSet_init_expr(SMLParser.Set_init_exprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code set_init_expr}
+	 * labeled alternative in {@link SMLParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitSet_init_expr(SMLParser.Set_init_exprContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code two_param_unary_expr}
 	 * labeled alternative in {@link SMLParser#expression}.
 	 * @param ctx the parse tree
@@ -302,18 +326,6 @@ public interface SMLListener extends ParseTreeListener {
 	 */
 	void exitWord_expr(SMLParser.Word_exprContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code name_expr}
-	 * labeled alternative in {@link SMLParser#expression}.
-	 * @param ctx the parse tree
-	 */
-	void enterName_expr(SMLParser.Name_exprContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code name_expr}
-	 * labeled alternative in {@link SMLParser#expression}.
-	 * @param ctx the parse tree
-	 */
-	void exitName_expr(SMLParser.Name_exprContext ctx);
-	/**
 	 * Enter a parse tree produced by the {@code one_param_unary_expr}
 	 * labeled alternative in {@link SMLParser#expression}.
 	 * @param ctx the parse tree
@@ -337,16 +349,6 @@ public interface SMLListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitNumber_expr(SMLParser.Number_exprContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link SMLParser#init_statement}.
-	 * @param ctx the parse tree
-	 */
-	void enterInit_statement(SMLParser.Init_statementContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link SMLParser#init_statement}.
-	 * @param ctx the parse tree
-	 */
-	void exitInit_statement(SMLParser.Init_statementContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link SMLParser#parameter_description_line}.
 	 * @param ctx the parse tree
@@ -467,14 +469,4 @@ public interface SMLListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitWord(SMLParser.WordContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link SMLParser#name}.
-	 * @param ctx the parse tree
-	 */
-	void enterName(SMLParser.NameContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link SMLParser#name}.
-	 * @param ctx the parse tree
-	 */
-	void exitName(SMLParser.NameContext ctx);
 }

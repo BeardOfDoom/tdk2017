@@ -2,7 +2,6 @@ package antlr.impl;
 
 import antlr.SMLBaseVisitor;
 import antlr.SMLParser.ExprContext;
-import antlr.SMLParser.ExpressionContext;
 import antlr.SMLParser.Operator_descriptionContext;
 import antlr.SMLParser.Operator_effectContext;
 import antlr.SMLParser.Operator_effect_lineContext;
@@ -45,7 +44,7 @@ public class BaseVisitor extends SMLBaseVisitor {
   @Override
   public Object visitExpr(ExprContext ctx) {
     if (ctx.name_defining_expression() != null) {
-      stateRepresentation.setName(ctx.name_defining_expression().name().getText());
+      stateRepresentation.setName(ctx.name_defining_expression().word().getText());
     } else {
       stateRepresentation.setName("State");
     }
@@ -63,11 +62,12 @@ public class BaseVisitor extends SMLBaseVisitor {
       if (isAvailableVariable(varName)) {
         if (currentLine.attr_struct().KEYWORD_MATRIX() != null) {
 
-          Dimension dimension = InputProcessUtils.getDimensionsFromDimensionContext(
-              currentLine.attr_struct().dimension());
+          Dimension dimension = InputProcessUtils
+              .getDimensionsFromDimensionContext(currentLine.attr_struct().dimension());
 
           AttributeRepresentation attribute = new AttributeRepresentation(varName, VarStruct.MATRIX,
               VarType.valueOf(VarType.class, varType.toUpperCase()), dimension);
+
           stateRepresentation.addAttribute(attribute);
         } else {
           AttributeRepresentation attribute = new AttributeRepresentation(varName, VarStruct.SET,
@@ -113,7 +113,7 @@ public class BaseVisitor extends SMLBaseVisitor {
   @Override
   public Object visitOperator_description(Operator_descriptionContext ctx) {
     if (ctx.name_defining_expression() != null) {
-      operatorRepresentation.setName(ctx.name_defining_expression().name().getText());
+      operatorRepresentation.setName(ctx.name_defining_expression().word().getText());
     } else {
       operatorRepresentation.setName("Operator" + (operatorRepresentations.size() + 1));
     }
@@ -190,25 +190,15 @@ public class BaseVisitor extends SMLBaseVisitor {
     AssignRepresentation assignStatement = new AssignRepresentation();
 
     if (assignExpression.attr_reference() != null && assignExpression.matrix_reference() == null) {
-      AttributeRepresentation attribute = getAttributeFromReference(
-          assignExpression.attr_reference().getText());
+
+      AttributeRepresentation attribute = getAttributeFromReference(assignExpression.attr_reference().getText());
       assignStatement.setAttributeRepresentation(attribute);
 
-      if (assignExpression.init_statement() != null && assignExpression.expression() == null) {
-        assignStatement.setType(AssignType.SET_INIT);
-        for (ExpressionContext currentExpression : assignExpression.init_statement().expression()) {
-          assignStatement.addValue(
-              InputProcessUtils.getStateExpressionValue(currentExpression));
-        }
+      assignStatement.setType(AssignType.SET);
+      assignStatement.setValue(InputProcessUtils.getStateExpressionValue(assignExpression.expression()));
 
-      } else {
-        assignStatement.setType(AssignType.SET_NORMAL);
-        assignStatement
-            .setValue(InputProcessUtils
-                .getStateExpressionValue(assignExpression.expression()));
-      }
     } else {
-      assignStatement.setType(AssignType.MATRIX_NORMAL);
+      assignStatement.setType(AssignType.MATRIX);
       AttributeRepresentation attribute = getAttributeFromReference(
           assignExpression.matrix_reference().attr_reference().getText());
       assignStatement.setAttributeRepresentation(attribute);

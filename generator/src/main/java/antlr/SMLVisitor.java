@@ -144,6 +144,13 @@ public interface SMLVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitParen_expr(SMLParser.Paren_exprContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code param_name_expr}
+	 * labeled alternative in {@link SMLParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitParam_name_expr(SMLParser.Param_name_exprContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code compare_expr}
 	 * labeled alternative in {@link SMLParser#expression}.
 	 * @param ctx the parse tree
@@ -172,6 +179,13 @@ public interface SMLVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitBool_expr(SMLParser.Bool_exprContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code set_init_expr}
+	 * labeled alternative in {@link SMLParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSet_init_expr(SMLParser.Set_init_exprContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code two_param_unary_expr}
 	 * labeled alternative in {@link SMLParser#expression}.
 	 * @param ctx the parse tree
@@ -186,13 +200,6 @@ public interface SMLVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitWord_expr(SMLParser.Word_exprContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code name_expr}
-	 * labeled alternative in {@link SMLParser#expression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitName_expr(SMLParser.Name_exprContext ctx);
-	/**
 	 * Visit a parse tree produced by the {@code one_param_unary_expr}
 	 * labeled alternative in {@link SMLParser#expression}.
 	 * @param ctx the parse tree
@@ -206,12 +213,6 @@ public interface SMLVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitNumber_expr(SMLParser.Number_exprContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link SMLParser#init_statement}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitInit_statement(SMLParser.Init_statementContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link SMLParser#parameter_description_line}.
 	 * @param ctx the parse tree
@@ -284,10 +285,4 @@ public interface SMLVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitWord(SMLParser.WordContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link SMLParser#name}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitName(SMLParser.NameContext ctx);
 }

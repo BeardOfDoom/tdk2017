@@ -56,14 +56,16 @@ public class State implements StateInterface {
   @Override
   public State getStart() {
     State state = new State();
-    state.setAttr0(new HashSet<>(Arrays.asList(1d, 2d, 3d)));
-    state.setAttr3(new HashSet<>(Arrays.asList(1d, 2d, 3d)));
+    state.setAttr0(new HashSet<>(Arrays.asList(1d, 2d, 3d, Double.POSITIVE_INFINITY)));
+    state.setAttr1(new HashSet<>(Arrays.asList(10d)));
+    state.setAttr2(new HashSet<>(Arrays.asList(10d)));
+    state.setAttr3(new HashSet<>(Arrays.asList(1d, 2d, 3d, 10d)));
     return state;
   }
 
   @Override
   public boolean isGoal() {
-    return attr2.equals(attr3);
+    return attr2.equals(new HashSet<>(Arrays.asList(1d, 2d, 3d, 10d)));
   }
 
   @Override

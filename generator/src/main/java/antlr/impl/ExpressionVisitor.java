@@ -8,13 +8,15 @@ import antlr.SMLParser.Boolean_operatorContext;
 import antlr.SMLParser.ComparatorContext;
 import antlr.SMLParser.Compare_exprContext;
 import antlr.SMLParser.ExpressionContext;
-import antlr.SMLParser.Name_exprContext;
 import antlr.SMLParser.Number_exprContext;
 import antlr.SMLParser.One_param_unary_exprContext;
+import antlr.SMLParser.Param_name_exprContext;
 import antlr.SMLParser.Paren_exprContext;
 import antlr.SMLParser.Reference_exprContext;
+import antlr.SMLParser.Set_init_exprContext;
 import antlr.SMLParser.Two_param_unary_exprContext;
 import antlr.SMLParser.Word_exprContext;
+import org.antlr.v4.runtime.misc.Interval;
 
 public class ExpressionVisitor extends SMLBaseVisitor<String> {
 
@@ -26,7 +28,7 @@ public class ExpressionVisitor extends SMLBaseVisitor<String> {
   @Override
   public String visitCompare_expr(Compare_exprContext ctx) {
 
-    if (isReferenceOrName(ctx.left) && isReferenceOrName(ctx.right)) {
+    if (isComparedWithEquals(ctx.left) && isComparedWithEquals(ctx.right)) {
       if (ctx.comparator().SYMBOL_EQUAL() != null) {
         return visit(ctx.left) + ".equals(" + visit(ctx.right) + ")";
       }
@@ -76,18 +78,27 @@ public class ExpressionVisitor extends SMLBaseVisitor<String> {
   }
 
   @Override
-  public String visitName_expr(Name_exprContext ctx) {
-    return ctx.name().getText();
+  public String visitParam_name_expr(Param_name_exprContext ctx) {
+    return ctx.PARAM_NAME().getText();
   }
 
   @Override
   public String visitNumber_expr(Number_exprContext ctx) {
-    return ctx.number().getText() + "d";
+    if (ctx.number().KEYWORD_INF() != null) {
+      if (ctx.number().SIGN() != null) {
+        return ctx.number().SIGN().getText().equals("-") ? "Double.NEGATIVE_INFINITY" : "Double.POSITIVE_INFINITY";
+      } else {
+        return "Double.POSITIVE_INFINITY";
+      }
+    } else {
+      return ctx.number().getText() + "d";
+    }
   }
 
   @Override
   public String visitWord_expr(Word_exprContext ctx) {
-    return ctx.word().getText();
+    return ctx.word().getStart().getInputStream()
+        .getText(Interval.of(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
   }
 
   @Override
@@ -109,8 +120,8 @@ public class ExpressionVisitor extends SMLBaseVisitor<String> {
     return ctx.getText();
   }
 
-  private Boolean isReferenceOrName(ExpressionContext expression) {
+  private Boolean isComparedWithEquals(ExpressionContext expression) {
     return expression.getClass().equals(Reference_exprContext.class) || expression.getClass()
-        .equals(Name_exprContext.class);
+        .equals(Param_name_exprContext.class) || expression.getClass().equals(Set_init_exprContext.class);
   }
 }

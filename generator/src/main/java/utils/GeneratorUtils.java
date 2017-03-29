@@ -9,8 +9,12 @@ import com.squareup.javapoet.TypeName;
 import enums.VarStruct;
 import enums.VarType;
 import java.io.File;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.lang.model.element.Modifier;
@@ -21,6 +25,9 @@ import representation.state.AttributeRepresentation;
 public final class GeneratorUtils {
 
   //TODO: Refactor set assign method
+
+  public static final Map.Entry<String, Object> hashSetEntry = new SimpleEntry<>("hash_set", HashSet.class);
+  public static final Map.Entry<String, Object> arraysEntry = new SimpleEntry<>("arrays", Arrays.class);
 
   public static List<FieldSpec> generateFieldsFromAttributes(
       List<AttributeRepresentation> attributes) {
@@ -229,7 +236,8 @@ public final class GeneratorUtils {
   }
 
   public static String getSetInitValuesAsString(AssignRepresentation stateStart) {
-    return stateStart.getValues().stream().collect(Collectors.joining(", "));
+//    return stateStart.getValues().stream().collect(Collectors.joining(", "));
+    return "";
   }
 
   public static String getParameterNamesAsString(List<ParameterRepresentation> parameters) {
@@ -265,7 +273,7 @@ public final class GeneratorUtils {
   public static ParameterRepresentation getParameterRepresentationFromContext(
       Parameter_description_lineContext parameter) {
 
-    String paramName = parameter.name().getText();
+    String paramName = parameter.PARAM_NAME().getText();
     Integer from = Integer.parseInt(parameter.INT(0).getText());
     Integer to = Integer.parseInt(parameter.INT(1).getText());
     Integer by = parameter.INT(2) == null ? 1 : Integer.parseInt(parameter.INT(2).getText());

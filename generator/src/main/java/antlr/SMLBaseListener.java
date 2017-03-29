@@ -280,6 +280,18 @@ public class SMLBaseListener implements SMLListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterParam_name_expr(SMLParser.Param_name_exprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitParam_name_expr(SMLParser.Param_name_exprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterCompare_expr(SMLParser.Compare_exprContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -328,6 +340,18 @@ public class SMLBaseListener implements SMLListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterSet_init_expr(SMLParser.Set_init_exprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitSet_init_expr(SMLParser.Set_init_exprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterTwo_param_unary_expr(SMLParser.Two_param_unary_exprContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -352,18 +376,6 @@ public class SMLBaseListener implements SMLListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterName_expr(SMLParser.Name_exprContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitName_expr(SMLParser.Name_exprContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterOne_param_unary_expr(SMLParser.One_param_unary_exprContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -383,18 +395,6 @@ public class SMLBaseListener implements SMLListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitNumber_expr(SMLParser.Number_exprContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterInit_statement(SMLParser.Init_statementContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitInit_statement(SMLParser.Init_statementContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -539,18 +539,6 @@ public class SMLBaseListener implements SMLListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitWord(SMLParser.WordContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterName(SMLParser.NameContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitName(SMLParser.NameContext ctx) { }
 
 	/**
 	 * {@inheritDoc}

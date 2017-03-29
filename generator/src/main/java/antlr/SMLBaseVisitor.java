@@ -171,6 +171,13 @@ public class SMLBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements SM
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitParam_name_expr(SMLParser.Param_name_exprContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitCompare_expr(SMLParser.Compare_exprContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
@@ -199,6 +206,13 @@ public class SMLBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements SM
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitSet_init_expr(SMLParser.Set_init_exprContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitTwo_param_unary_expr(SMLParser.Two_param_unary_exprContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
@@ -213,13 +227,6 @@ public class SMLBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements SM
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitName_expr(SMLParser.Name_exprContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
 	@Override public T visitOne_param_unary_expr(SMLParser.One_param_unary_exprContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
@@ -228,13 +235,6 @@ public class SMLBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements SM
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitNumber_expr(SMLParser.Number_exprContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override public T visitInit_statement(SMLParser.Init_statementContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -319,11 +319,4 @@ public class SMLBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements SM
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitWord(SMLParser.WordContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override public T visitName(SMLParser.NameContext ctx) { return visitChildren(ctx); }
 }

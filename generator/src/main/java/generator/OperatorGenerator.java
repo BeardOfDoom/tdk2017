@@ -148,6 +148,9 @@ public class OperatorGenerator implements GeneratorInterface {
   }
 
   private void fillNamedArguments() {
+    namedArguments.put(GeneratorUtils.hashSetEntry.getKey(), GeneratorUtils.hashSetEntry.getValue());
+    namedArguments.put(GeneratorUtils.arraysEntry.getKey(), GeneratorUtils.arraysEntry.getValue());
+
     for (ParameterRepresentation parameter : operator.getParameters()) {
 
       boolean containsError = false;

@@ -20,7 +20,7 @@ public final class InputProcessUtils {
   public static VariableRepresentation getVarRepresentationFromContext(
       Var_defining_expressionContext variable) {
 
-    String varName = variable.name().getText();
+    String varName = variable.PARAM_NAME().getText();
     ClassName className =
         variable.attr_type().KEYWORD_NUMBER() != null ? ClassName.get(Double.class)
             : ClassName.get(String.class);

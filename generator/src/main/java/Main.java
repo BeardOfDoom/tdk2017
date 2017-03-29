@@ -2,6 +2,8 @@ import exceptions.IncorrectInputException;
 import generator.OperatorGenerator;
 import generator.ProjectGenerator;
 import generator.StateGenerator;
+import generator.classes.Operator1;
+import generator.classes.State;
 import java.io.IOException;
 import java.util.List;
 import misc.ClassManager;
@@ -45,5 +47,46 @@ public class Main {
     System.out.println("Files generated!");
 
     /* ---------------------------------------- */
+
+    State state = new State();
+    state = state.getStart();
+
+    Operator1 op = new Operator1();
+    op.initOperators();
+    op = ((Operator1) op.OPERATORS.get(1));
+
+    state = ((State) op.apply(state));
+
+    op = new Operator1(0, 2);
+
+    state = ((State) op.apply(state));
+
+    op = new Operator1(1, 2);
+
+    state = ((State) op.apply(state));
+
+    op = new Operator1(0, 1);
+
+    state = ((State) op.apply(state));
+
+    op = new Operator1(2, 0);
+
+    state = ((State) op.apply(state));
+
+    op = new Operator1(2, 0);
+
+    state = ((State) op.apply(state));
+
+    op = new Operator1(1, 2);
+    state = ((State) op.apply(state));
+
+    op = new Operator1(0, 2);
+    state = ((State) op.apply(state));
+
+    op = new Operator1(0, 2);
+    state = ((State) op.apply(state));
+
+    System.out.println("apply: " + state);
+    System.out.println("isGoal: " + state.isGoal());
   }
 }

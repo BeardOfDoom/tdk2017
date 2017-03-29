@@ -1,9 +1,11 @@
 package antlr.impl;
 
+import antlr.SMLParser.ExpressionContext;
 import antlr.SMLParser.Normal_referenceContext;
 import antlr.SMLParser.Operator_effect_lineContext;
 import antlr.SMLParser.Parameterized_referenceContext;
 import antlr.SMLParser.ReferenceContext;
+import antlr.SMLParser.Set_init_exprContext;
 import misc.Dimension;
 import utils.InputProcessUtils;
 
@@ -36,12 +38,12 @@ public class OperatorExpressionVisitor extends ExpressionVisitor {
       if (reference.parameterized_attr_reference() != null
           && reference.parameterized_matrix_reference() == null) {
 
-        String parameterName = reference.parameterized_attr_reference().name().getText();
+        String parameterName = reference.parameterized_attr_reference().PARAM_NAME().getText();
         return "(($" + parameterName + ":T) original.getAttributeByNumber(" + parameterName + "))";
 
       } else {
 
-        String parameterName = reference.parameterized_attr_reference().name().getText();
+        String parameterName = reference.parameterized_attr_reference().PARAM_NAME().getText();
         Dimension dimension = InputProcessUtils
             .getDimensionsFromDimensionContext(
                 reference.parameterized_matrix_reference().dimension());
@@ -62,13 +64,13 @@ public class OperatorExpressionVisitor extends ExpressionVisitor {
 
       if (reference.parameterized_attr_reference() != null
           && reference.parameterized_matrix_reference() == null) {
-        String attributeName = reference.parameterized_attr_reference().name()
+        String attributeName = reference.parameterized_attr_reference().PARAM_NAME()
             .getText();
 
         return "state.setAttributeByNumber(" + attributeName + ", " + visit(ctx.expression()) + ")";
       } else {
         String attributeName = reference.parameterized_matrix_reference()
-            .parameterized_attr_reference().name().getText();
+            .parameterized_attr_reference().PARAM_NAME().getText();
 
         Dimension dimension = InputProcessUtils
             .getDimensionsFromDimensionContext(
@@ -95,4 +97,21 @@ public class OperatorExpressionVisitor extends ExpressionVisitor {
       }
     }
   }
+
+  @Override
+  public String visitSet_init_expr(Set_init_exprContext ctx) {
+    String result = "new $hash_set:T<>($arrays:T.asList(";
+
+    for (ExpressionContext expression : ctx.expression()) {
+      result += visit(expression);
+
+      if (ctx.expression().indexOf(expression) < ctx.expression().size() - 1) {
+        result += ", ";
+      }
+    }
+
+    result += "))";
+    return result;
+  }
+
 }

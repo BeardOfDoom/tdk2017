@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -280,20 +279,13 @@ public class StateGenerator implements GeneratorInterface {
     Dimension dimension;
 
     switch (assignStatement.getType()) {
-      case SET_INIT:
-        values = GeneratorUtils.getSetInitValuesAsString(assignStatement);
-        builder
-            .addStatement("state.set" + attributeName + "(new $1T<>($2T.asList(" + values + ")))",
-                HashSet.class, Arrays.class);
-        break;
-
-      case SET_NORMAL:
+      case SET:
         value = assignStatement.getValue();
         builder
             .addNamed("state.set" + attributeName + "(" + value + ");\n", namedStateStartArguments);
         break;
 
-      case MATRIX_NORMAL:
+      case MATRIX:
         dimension = assignStatement.getDimension();
         value = assignStatement.getValue();
         builder.addStatement("state.get" + attributeName + "().get($L).set($L, $L)",
@@ -312,13 +304,18 @@ public class StateGenerator implements GeneratorInterface {
   }
 
   private void fillNamedArguments() {
+    namedStateStartArguments.put(GeneratorUtils.hashSetEntry.getKey(), GeneratorUtils.hashSetEntry.getValue());
+    namedStateStartArguments.put(GeneratorUtils.arraysEntry.getKey(), GeneratorUtils.arraysEntry.getValue());
+
+    namedStateGoalArguments.put(GeneratorUtils.hashSetEntry.getKey(), GeneratorUtils.hashSetEntry.getValue());
+    namedStateGoalArguments.put(GeneratorUtils.arraysEntry.getKey(), GeneratorUtils.arraysEntry.getValue());
+
     for (AttributeRepresentation attribute : state.getAttributes()) {
       String attributeName = attribute.getAttributeName();
       String lowerCaseAttributeName = attributeName.toLowerCase();
 
       namedStateStartArguments.put(lowerCaseAttributeName, "state.get" + attributeName + "()");
       namedStateGoalArguments.put(lowerCaseAttributeName, lowerCaseAttributeName);
-
     }
   }
 }

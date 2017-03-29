@@ -9,7 +9,7 @@ state_description: STATE_ATTRIBUTES_DELIMITER state_description_line+;
 state_description_line: attr_name KEYWORD_IS attr_struct KEYWORD_OF attr_type;
 
 state_start: STATE_START_DELIMITER parameter_description_line* state_start_line+;
-state_start_line: ((attr_reference SYMBOL_ASSIGN (init_statement | expression)) | (matrix_reference SYMBOL_ASSIGN expression));
+state_start_line: (attr_reference | matrix_reference) SYMBOL_ASSIGN expression;
 
 state_goal: STATE_GOAL_DELIMITER parameter_description_line* expression;
 
@@ -35,8 +35,8 @@ binary_operator: SYMBOL_ADDITION | SYMBOL_SUBSTRACT | SYMBOL_MULTIPLICATION | SY
 unary_operator: KEYWORD_MAXIMUM | KEYWORD_MINIMUM | KEYWORD_AVERAGE | KEYWORD_CARDINALITY | KEYWORD_UNION | KEYWORD_ADD | KEYWORD_REMOVE;
 boolean_operator: KEYWORD_AND | KEYWORD_OR;
 
-var_defining_expression: KEYWORD_VAR attr_type name SYMBOL_ASSIGN expression;
-name_defining_expression: KEYWORD_NAME name;
+var_defining_expression: KEYWORD_VAR attr_type PARAM_NAME SYMBOL_ASSIGN expression;
+name_defining_expression: KEYWORD_NAME word;
 
 expression
   :  SYMBOL_LPAREN expression SYMBOL_RPAREN #paren_expr
@@ -45,26 +45,38 @@ expression
   | left=expression binary_operator right=expression #binary_expr
   | unary_operator SYMBOL_LPAREN expression SYMBOL_RPAREN #one_param_unary_expr
   | unary_operator SYMBOL_LPAREN left=expression (SYMBOL_COMMA right=expression)? SYMBOL_RPAREN #two_param_unary_expr
+  | SYMBOL_LBRACE (expression (SYMBOL_COMMA  expression)*) SYMBOL_RBRACE #set_init_expr
   | reference #reference_expr
   | word #word_expr
   | number #number_expr
-  | name #name_expr
+  | PARAM_NAME #param_name_expr
   ;
 
-init_statement: SYMBOL_LBRACE (expression (SYMBOL_COMMA  expression)*) SYMBOL_RBRACE;
-parameter_description_line: KEYWORD_PARAM name ((KEYWORD_FROM INT KEYWORD_TO INT (KEYWORD_BY INT)?));
+parameter_description_line: KEYWORD_PARAM PARAM_NAME ((KEYWORD_FROM INT KEYWORD_TO INT (KEYWORD_BY INT)?));
 
 /*-----------------------------------------------------------------------------------------------*/
 
 attr_name: KEYWORD_ATTRIBUTE INT;
 attr_reference: SYMBOL_REFERENCE INT;
-parameterized_attr_reference: SYMBOL_REFERENCE name;
+parameterized_attr_reference: SYMBOL_REFERENCE PARAM_NAME;
 matrix_reference: attr_reference dimension;
 parameterized_matrix_reference: parameterized_attr_reference dimension;
 dimension: SYMBOL_LBRACK dimensionN=expression SYMOBL_RBRACK SYMBOL_LBRACK dimensionM=expression SYMOBL_RBRACK;
 normal_reference: (attr_reference | matrix_reference);
 parameterized_reference: (parameterized_attr_reference | parameterized_matrix_reference);
 reference: (normal_reference | parameterized_reference);
+
+/*-----------------------------------------------------------------------------------------------*/
+
+STATE_DELIMITER: 'STATE:';
+STATE_ATTRIBUTES_DELIMITER: 'STATE_ATTRIBUTES:';
+STATE_START_DELIMITER: 'STATE_START:';
+STATE_GOAL_DELIMITER: 'STATE_GOAL:';
+
+OPERATOR_DELIMITER: 'OPERATORS:' ;
+OPERATOR_DESCRIPTION_DELIMITER: 'OPERATOR_DESCRIPTION:';
+OPERATOR_PRECONDITION_DELIMITER: 'OPERATOR_PRECONDITION:';
+OPERATOR_EFFECT_DELIMITER: 'OPERATOR_EFFECT:';
 
 KEYWORD_PARAM: 'param';
 KEYWORD_FROM: 'from';
@@ -83,6 +95,24 @@ KEYWORD_MATRIX: 'matrix';
 KEYWORD_WORD: 'word';
 KEYWORD_NUMBER: 'number';
 
+KEYWORD_MINIMUM: 'min';
+KEYWORD_MAXIMUM: 'max';
+KEYWORD_SUM: 'sum';
+KEYWORD_AVERAGE: 'avg';
+
+KEYWORD_UNION: 'union';
+KEYWORD_INTERSECT: 'intersect';
+KEYWORD_DIFFERENCE: 'difference';
+KEYWORD_ADD: 'add';
+KEYWORD_REMOVE: 'remove';
+KEYWORD_CARDINALITY: 'card';
+
+KEYWORD_AND: 'and';
+KEYWORD_OR: 'or';
+KEYWORD_NOT: 'not';
+
+KEYWORD_INF: 'inf';
+
 SYMBOL_EQUAL: '==';
 SYMBOL_NOT_EQUAL: '!=';
 SYMBOL_LESSER: '<';
@@ -99,6 +129,7 @@ SYMBOL_ASSIGN: '=';
 SYMBOL_REFERENCE: '$';
 SYMBOL_COMMA : ',' ;
 SYMBOL_QUOTE: '\"';
+SYMBOL_SINGLE_QOUTE: '\'';
 
 SYMBOL_LPAREN: '(' ;
 SYMBOL_RPAREN: ')' ;
@@ -107,35 +138,15 @@ SYMBOL_RBRACE: '}' ;
 SYMBOL_LBRACK: '[' ;
 SYMOBL_RBRACK: ']' ;
 
-KEYWORD_MAXIMUM: 'max';
-KEYWORD_MINIMUM: 'min';
-KEYWORD_AVERAGE: 'avg';
-
-KEYWORD_CARDINALITY: 'card';
-KEYWORD_UNION: 'union';
-KEYWORD_ADD: 'add';
-KEYWORD_REMOVE: 'remove';
-
-KEYWORD_AND: 'and';
-KEYWORD_OR: 'or';
-KEYWORD_NOT: 'not';
-
-STATE_DELIMITER: 'STATE:';
-STATE_ATTRIBUTES_DELIMITER: 'STATE_ATTRIBUTES:';
-STATE_START_DELIMITER: 'STATE_START:';
-STATE_GOAL_DELIMITER: 'STATE_GOAL:';
-
-OPERATOR_DELIMITER: 'OPERATORS:' ;
-OPERATOR_DESCRIPTION_DELIMITER: 'OPERATOR_DESCRIPTION:';
-OPERATOR_PRECONDITION_DELIMITER: 'OPERATOR_PRECONDITION:';
-OPERATOR_EFFECT_DELIMITER: 'OPERATOR_EFFECT:';
+number: SIGN? (INT | FLOAT | KEYWORD_INF);
+word: SYMBOL_QUOTE (~(SYMBOL_REFERENCE | SYMBOL_QUOTE | '\\'))+ SYMBOL_QUOTE;
 
 INT: (('0' | '1'..'9') '0'..'9'*);
 FLOAT: (('0' | '1'..'9') '0'..'9'*)'.'('0'..'9'*);
 SIGN: ('+' | '-');
 
-number: SIGN? (INT | FLOAT);
-word: SYMBOL_QUOTE (~(SYMBOL_REFERENCE | SYMBOL_QUOTE))* SYMBOL_QUOTE;
-name: CHAR+;
+PARAM_NAME: ('a'..'z') (INT |CHAR | '_') *;
+
 CHAR: ('a'..'z' | 'A'..'Z');
+
 WS: [ \t\r\n]+ -> skip ;
