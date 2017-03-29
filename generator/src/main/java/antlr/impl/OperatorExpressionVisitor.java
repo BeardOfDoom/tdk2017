@@ -50,7 +50,7 @@ public class OperatorExpressionVisitor extends ExpressionVisitor {
 
         return "(($" + parameterName + ":T) original.getAttributeByNumber(" + parameterName + "))"
             + ".get("
-            + dimension.getDimensionM() + ").get(" + dimension.getDimensionM() + ")";
+            + dimension.getDimensionN() + ").get(" + dimension.getDimensionM() + ")";
       }
     }
   }
@@ -84,13 +84,13 @@ public class OperatorExpressionVisitor extends ExpressionVisitor {
       Normal_referenceContext reference = ctx.reference().normal_reference();
 
       if (reference.attr_reference() != null && reference.matrix_reference() == null) {
-        return "original.setAttr" + reference.attr_reference().INT() + "(" + InputProcessUtils
+        return "state.setAttr" + reference.attr_reference().INT() + "(" + InputProcessUtils
             .getOperatorExpressionValue(ctx.expression()) + ")";
       } else {
         Dimension dimension = InputProcessUtils
             .getDimensionsFromDimensionContext(reference.matrix_reference().dimension());
 
-        return "original.getAttr" + reference.matrix_reference().attr_reference().INT() + "().get("
+        return "state.getAttr" + reference.matrix_reference().attr_reference().INT() + "().get("
             + dimension.getDimensionN() + ").set(" + dimension.getDimensionM() + ", "
             + InputProcessUtils.getOperatorExpressionValue(ctx.expression()) + ")";
 
