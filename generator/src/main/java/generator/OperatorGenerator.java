@@ -7,6 +7,7 @@ import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import interfaces.OperatorInterface;
@@ -14,6 +15,7 @@ import interfaces.StateInterface;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -121,11 +123,16 @@ public class OperatorGenerator {
       ClassName className) {
     MethodSpec.Builder builder = MethodSpec.methodBuilder("initOperators")
         .addModifiers(Modifier.PUBLIC)
-        .addAnnotation(Override.class)
-        .returns(void.class);
+        .addAnnotation(Override.class);
+
+    ParameterizedTypeName returnType = ParameterizedTypeName.get(List.class, OperatorInterface.class);
+
+    builder.returns(returnType);
 
     String lowerCaseClassName = className.simpleName().toLowerCase();
     String parameterNames = GeneratorUtils.getParameterNamesAsString(parameters);
+
+    builder.addStatement("$1T result = new $2T<>()", returnType, ArrayList.class);
 
     for (ParameterRepresentation parameter : parameters) {
       String parameterName = parameter.getParameterName();
@@ -140,11 +147,13 @@ public class OperatorGenerator {
 
     builder.addStatement("$T $L = new $T($L)", className, lowerCaseClassName,
         className, parameterNames)
-        .addStatement("OPERATORS.add($L)", lowerCaseClassName);
+        .addStatement("result.add($L)", lowerCaseClassName);
 
     for (ParameterRepresentation parameter : parameters) {
       builder.endControlFlow();
     }
+
+    builder.addStatement("return result");
 
     return builder.build();
 
