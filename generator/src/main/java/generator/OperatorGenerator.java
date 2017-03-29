@@ -198,8 +198,8 @@ public class OperatorGenerator {
         .addParameter(StateInterface.class, parameterName);
 
     builder
-        .addStatement("$1T $2L = (($1T) $3L)", stateClass.getClassName(), "original", parameterName)
-        .addStatement("$1T $2L = original.copy()", stateClass.getClassName(), "state");
+        .addStatement("$1L $2L = (($1L) $3L)", stateClass.getClassName().toString(), "original", parameterName)
+        .addStatement("$1L $2L = original.copy()", stateClass.getClassName().toString(), "state");
 
     builder.addCode("\n");
 
