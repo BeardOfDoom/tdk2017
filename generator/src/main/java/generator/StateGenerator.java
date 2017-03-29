@@ -274,7 +274,6 @@ public class StateGenerator implements GeneratorInterface {
   private CodeBlock getAssignStatement(AssignRepresentation assignStatement) {
     CodeBlock.Builder builder = CodeBlock.builder();
     String attributeName = assignStatement.getAttributeRepresentation().getAttributeName();
-    String values;
     String value;
     Dimension dimension;
 
