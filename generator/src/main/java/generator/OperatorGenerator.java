@@ -9,7 +9,6 @@ import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
-import interfaces.GeneratorInterface;
 import interfaces.OperatorInterface;
 import interfaces.StateInterface;
 import java.io.IOException;
@@ -25,87 +24,26 @@ import representation.operator.OperatorRepresentation;
 import representation.operator.VariableRepresentation;
 import utils.GeneratorUtils;
 
-public class OperatorGenerator implements GeneratorInterface {
+public class OperatorGenerator {
 
-  private OperatorRepresentation operator;
-  private ClassRepresentation stateClass;
-  private boolean keepTogetherGettersAndSetters = true;
   private Map<String, Object> namedArguments = new HashMap<>();
 
   public OperatorGenerator() {
   }
 
-  public OperatorGenerator(OperatorRepresentation operator,
-      ClassRepresentation stateClass, boolean keepTogetherGettersAndSetters) {
-    this.operator = operator;
-    this.stateClass = stateClass;
-    this.keepTogetherGettersAndSetters = keepTogetherGettersAndSetters;
-  }
-
-  public OperatorRepresentation getOperator() {
-    return operator;
-  }
-
-  public void setOperator(OperatorRepresentation operator) {
-    this.operator = operator;
-  }
-
-  public ClassRepresentation getStateClass() {
-    return stateClass;
-  }
-
-  public void setStateClass(ClassRepresentation stateClass) {
-    this.stateClass = stateClass;
-  }
-
-  public boolean isKeepTogetherGettersAndSetters() {
-    return keepTogetherGettersAndSetters;
-  }
-
-  public void setKeepTogetherGettersAndSetters(boolean keepTogetherGettersAndSetters) {
-    this.keepTogetherGettersAndSetters = keepTogetherGettersAndSetters;
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-
-    OperatorGenerator that = (OperatorGenerator) o;
-
-    if (keepTogetherGettersAndSetters != that.keepTogetherGettersAndSetters) {
-      return false;
-    }
-    if (operator != null ? !operator.equals(that.operator) : that.operator != null) {
-      return false;
-    }
-    return stateClass != null ? stateClass.equals(that.stateClass) : that.stateClass == null;
-  }
-
-  @Override
-  public int hashCode() {
-    int result = operator != null ? operator.hashCode() : 0;
-    result = 31 * result + (stateClass != null ? stateClass.hashCode() : 0);
-    result = 31 * result + (keepTogetherGettersAndSetters ? 1 : 0);
-    return result;
-  }
-
-  @Override
-  public ClassRepresentation generate(String directoryName, String packageName, String fileName)
+  public ClassRepresentation generate(OperatorRepresentation operatorRepresentation, ClassRepresentation stateClass,
+      String directoryName, String packageName, String fileName, boolean keepTogetherGettersAndSetters)
       throws IOException {
 
-    if (operator == null || stateClass == null) {
-      System.out.println("hiba");
+    //TODO: Handle error
+    if (operatorRepresentation == null || stateClass == null) {
+      System.out.println("Error");
     }
 
-    fillNamedArguments();
+    fillNamedArguments(operatorRepresentation, stateClass);
 
     ClassName className = ClassName.get(packageName, fileName);
-    List<ParameterRepresentation> parameters = operator.getParameters();
+    List<ParameterRepresentation> parameters = operatorRepresentation.getParameters();
     List<FieldSpec> fields = GeneratorUtils.generateFieldsFromParameters(parameters);
 
     TypeSpec operator = TypeSpec.classBuilder(fileName)
@@ -113,7 +51,7 @@ public class OperatorGenerator implements GeneratorInterface {
         .addSuperinterface(OperatorInterface.class)
         .addAnnotation(generateSuppressWarningsAnnotation())
         .addFields(fields)
-        .addField(generateCostField())
+        .addField(generateCostField(operatorRepresentation))
         .addMethod(generateInitOperatorsMethod(parameters, className))
         .addMethod(GeneratorUtils.generateEmptyConstructor())
         .addMethod(GeneratorUtils.generateConstructor(fields))
@@ -122,8 +60,8 @@ public class OperatorGenerator implements GeneratorInterface {
         .addMethod(GeneratorUtils.generateEqualsMethod(fields, className, fileName.toLowerCase()))
         .addMethod(GeneratorUtils.generateHashCodeMethod(fields))
         .addMethod(GeneratorUtils.generateToStringMethod(fields, className))
-        .addMethod(generateIsApplicableMethod())
-        .addMethod(generateApplyMethod())
+        .addMethod(generateIsApplicableMethod(operatorRepresentation, stateClass))
+        .addMethod(generateApplyMethod(operatorRepresentation, stateClass))
         .addMethod(generateGetCostMethod())
         .build();
 
@@ -147,11 +85,13 @@ public class OperatorGenerator implements GeneratorInterface {
     return builder.build();
   }
 
-  private void fillNamedArguments() {
+  private void fillNamedArguments(OperatorRepresentation operatorRepresentation, ClassRepresentation stateClass) {
+    namedArguments.clear();
+
     namedArguments.put(GeneratorUtils.hashSetEntry.getKey(), GeneratorUtils.hashSetEntry.getValue());
     namedArguments.put(GeneratorUtils.arraysEntry.getKey(), GeneratorUtils.arraysEntry.getValue());
 
-    for (ParameterRepresentation parameter : operator.getParameters()) {
+    for (ParameterRepresentation parameter : operatorRepresentation.getParameters()) {
 
       boolean containsError = false;
 
@@ -210,34 +150,37 @@ public class OperatorGenerator implements GeneratorInterface {
 
   }
 
-  private CodeBlock generateIsApplicableStatement() {
+  private CodeBlock generateIsApplicableStatement(OperatorRepresentation operatorRepresentation) {
     //TODO: handle illegal argument exception when namedArguments field is error
 
     CodeBlock.Builder builder = CodeBlock.builder()
         .add("return ")
-        .addNamed(operator.getOperatorPrecondition(), namedArguments)
+        .addNamed(operatorRepresentation.getOperatorPrecondition(), namedArguments)
         .add(";");
 
     return builder.build();
   }
 
-  private MethodSpec generateIsApplicableMethod() {
+  private MethodSpec generateIsApplicableMethod(OperatorRepresentation operatorRepresentation,
+      ClassRepresentation stateClass) {
+
+    System.out.println("\n\n" + stateClass + "\n\n");
     String parameterName = "stateObject";
     MethodSpec.Builder builder = MethodSpec.methodBuilder("isApplicable")
         .addModifiers(Modifier.PUBLIC)
         .addAnnotation(Override.class)
         .returns(boolean.class)
         .addParameter(StateInterface.class, parameterName)
-        .addStatement("$1T $2L = (($1T) $3L)", stateClass.getClassName(), "original", parameterName)
-        .addCode(generateIsApplicableStatement());
+        .addStatement("$1L $2L = (($1L) $3L)", stateClass.getClassName().toString(), "original", parameterName)
+        .addCode(generateIsApplicableStatement(operatorRepresentation));
 
     return builder.build();
   }
 
-  private CodeBlock generateApplyStatement() {
+  private CodeBlock generateApplyStatement(OperatorRepresentation operatorRepresentation) {
     CodeBlock.Builder builder = CodeBlock.builder();
 
-    for (String currentStatement : operator.getOperatorEffects()) {
+    for (String currentStatement : operatorRepresentation.getOperatorEffects()) {
       builder.addNamed(currentStatement, namedArguments)
           .add(";\n");
     }
@@ -245,7 +188,8 @@ public class OperatorGenerator implements GeneratorInterface {
     return builder.build();
   }
 
-  private MethodSpec generateApplyMethod() {
+  private MethodSpec generateApplyMethod(OperatorRepresentation operatorRepresentation,
+      ClassRepresentation stateClass) {
     String parameterName = "stateObject";
     MethodSpec.Builder builder = MethodSpec.methodBuilder("apply")
         .addModifiers(Modifier.PUBLIC)
@@ -259,12 +203,12 @@ public class OperatorGenerator implements GeneratorInterface {
 
     builder.addCode("\n");
 
-    for (VariableRepresentation variable : operator.getVariables()) {
+    for (VariableRepresentation variable : operatorRepresentation.getVariables()) {
       builder.addStatement("$1T $2L = $3L", variable.getClassName(), variable.getName(),
           variable.getValue());
     }
 
-    builder.addCode(generateApplyStatement());
+    builder.addCode(generateApplyStatement(operatorRepresentation));
 
     builder.addCode("\n");
 
@@ -273,10 +217,10 @@ public class OperatorGenerator implements GeneratorInterface {
     return builder.build();
   }
 
-  private FieldSpec generateCostField() {
+  private FieldSpec generateCostField(OperatorRepresentation operatorRepresentation) {
     FieldSpec.Builder builder = FieldSpec.builder(Double.class, "cost")
         .addModifiers(Modifier.PRIVATE)
-        .initializer("$L", operator.getCost());
+        .initializer("$L", operatorRepresentation.getCost());
 
     return builder.build();
   }

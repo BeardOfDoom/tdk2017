@@ -5,7 +5,6 @@ import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeSpec;
-import interfaces.GeneratorInterface;
 import interfaces.OperatorInstantiatorInterface;
 import interfaces.OperatorInterface;
 import java.io.IOException;
@@ -17,7 +16,7 @@ import javax.lang.model.element.Modifier;
 import representation.ClassRepresentation;
 import utils.GeneratorUtils;
 
-public class OperatorInstantiatorGenerator implements GeneratorInterface {
+public class OperatorInstantiatorGenerator {
 
   private List<ClassRepresentation> operatorRepresentations = new ArrayList<>();
 
@@ -30,7 +29,6 @@ public class OperatorInstantiatorGenerator implements GeneratorInterface {
     this.operatorRepresentations = operatorRepresentations;
   }
 
-  @Override
   public ClassRepresentation generate(String directoryName, String packageName,
       String fileName) throws IOException {
 

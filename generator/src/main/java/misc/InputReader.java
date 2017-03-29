@@ -45,6 +45,8 @@ public class InputReader {
     List<OperatorRepresentation> operatorRepresentations = baseVisitor
         .getOperatorRepresentations();
 
+    baseVisitor.clear();
+
     return new ProjectRepresentation(stateRepresentation, operatorRepresentations);
   }
 }

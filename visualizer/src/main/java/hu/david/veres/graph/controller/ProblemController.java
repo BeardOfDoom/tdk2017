@@ -108,11 +108,11 @@ public class ProblemController {
     }
 
     // Generate .java files to a folder with generated package name
-    ProjectGenerator projectGenerator = new ProjectGenerator(stateGenerator, operatorGenerator);
+    ProjectGenerator projectGenerator = new ProjectGenerator(projectRepresentation);
     List<ClassRepresentation> classRepresentations;
     try {
-      classRepresentations = projectGenerator.generate(projectRepresentation, GENERATED_FOLDER_NAME,
-          ProcessUtils.generatePackageName());
+      classRepresentations = projectGenerator.generate(GENERATED_FOLDER_NAME,
+          ProcessUtils.generatePackageName(), true);
     } catch (IOException e) {
       e.printStackTrace();
       return errorModelAndView(ERROR_MESSAGE_IOEXCEPTION);
@@ -131,6 +131,7 @@ public class ProblemController {
     try {
 
       SolutionMaker solutionMaker = new SolutionMaker(classManager.getFilePaths());
+      classManager.clear();
       solutionManager = solutionMaker.start();
 
     } catch (TemporaryFolderCreationException e) {

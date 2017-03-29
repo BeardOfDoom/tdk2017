@@ -34,9 +34,9 @@ public class Main {
     }
 
     ProjectGenerator
-        projectGenerator = new ProjectGenerator(stateGenerator, operatorGenerator);
+        projectGenerator = new ProjectGenerator(projectRepresentation);
     List<ClassRepresentation> generatedClasses = projectGenerator
-        .generate(projectRepresentation, OUTPUT_DIRECTORY_NAME, OUTPUT_PACKAGE_NAME);
+        .generate(OUTPUT_DIRECTORY_NAME, OUTPUT_PACKAGE_NAME, true);
 
     ClassManager classManager = new ClassManager();
 

@@ -2,15 +2,14 @@ package representation;
 
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
-import interfaces.ClassRepresentationInterface;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ClassRepresentation implements ClassRepresentationInterface {
+public class ClassRepresentation {
 
-  ClassName className;
-  List<FieldSpec> fields = new ArrayList<>();
-  String filePath;
+  private ClassName className;
+  private List<FieldSpec> fields = new ArrayList<>();
+  private String filePath;
 
   public ClassRepresentation() {
   }

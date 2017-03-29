@@ -9,7 +9,6 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import enums.VarStruct;
 import enums.VarType;
-import interfaces.GeneratorInterface;
 import interfaces.StateInterface;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -29,64 +28,41 @@ import representation.state.StateRepresentation;
 import utils.GeneratorUtils;
 
 //TODO: Review set functions
-public class StateGenerator implements GeneratorInterface {
+public class StateGenerator {
 
-  private StateRepresentation state;
-  private boolean keepTogetherGettersAndSetters = true;
   private Map<String, Object> namedStateStartArguments = new HashMap<>();
   private Map<String, Object> namedStateGoalArguments = new HashMap<>();
 
   public StateGenerator() {
   }
 
-  public StateGenerator(StateRepresentation state, boolean keepTogetherGettersAndSetters) {
-    this.state = state;
-    this.keepTogetherGettersAndSetters = keepTogetherGettersAndSetters;
-  }
-
-  public StateRepresentation getState() {
-    return state;
-  }
-
-  public void setState(StateRepresentation state) {
-    this.state = state;
-  }
-
-  public Boolean getKeepTogetherGettersAndSetters() {
-    return keepTogetherGettersAndSetters;
-  }
-
-  public void setKeepTogetherGettersAndSetters(Boolean keepTogetherGettersAndSetters) {
-    this.keepTogetherGettersAndSetters = keepTogetherGettersAndSetters;
-  }
-
-  @Override
-  public ClassRepresentation generate(String directoryName, String packageName,
-      String fileName) throws IOException {
+  public ClassRepresentation generate(StateRepresentation stateRepresentation, String directoryName, String packageName,
+      String fileName, boolean keepTogetherGettersAndSetters) throws IOException {
 
     //TODO: Handle error
-    if (state == null) {
-      System.out.println("hiba");
+    if (stateRepresentation == null) {
+      System.out.println("Error");
     }
 
-    fillNamedArguments();
+    fillNamedArguments(stateRepresentation);
+
     ClassName className = ClassName.get(packageName, fileName);
-    List<AttributeRepresentation> attributes = state.getAttributes();
+    List<AttributeRepresentation> attributes = stateRepresentation.getAttributes();
     List<FieldSpec> fields = GeneratorUtils.generateFieldsFromAttributes(attributes);
 
     TypeSpec state = TypeSpec.classBuilder(fileName)
         .addModifiers(Modifier.PUBLIC)
         .addSuperinterface(StateInterface.class)
         .addFields(fields)
-        .addMethod(generateConstructWithInitializer())
+        .addMethod(generateConstructWithInitializer(stateRepresentation))
         .addMethods(
             GeneratorUtils.generateGettersAndSetters(fields, keepTogetherGettersAndSetters))
-        .addMethod(generateGetStartMethod(className))
-        .addMethod(generateIsGoalMethod())
+        .addMethod(generateGetStartMethod(stateRepresentation, className))
+        .addMethod(generateIsGoalMethod(stateRepresentation))
         .addMethod(GeneratorUtils.generateEqualsMethod(fields, className, fileName.toLowerCase()))
         .addMethod(GeneratorUtils.generateHashCodeMethod(fields))
         .addMethod(GeneratorUtils.generateToStringMethod(fields, className))
-        .addMethod(generateCopyMethod(className))
+        .addMethod(generateCopyMethod(stateRepresentation, className))
         .addMethod(generateGetAttributeByNumberMethod())
         .addMethod(generateSetAttributeByNumberMethod())
         .build();
@@ -104,11 +80,11 @@ public class StateGenerator implements GeneratorInterface {
     return new ClassRepresentation(className, fields, filePath);
   }
 
-  private MethodSpec generateConstructWithInitializer() {
+  private MethodSpec generateConstructWithInitializer(StateRepresentation stateRepresentation) {
     MethodSpec.Builder builder = MethodSpec.constructorBuilder()
         .addModifiers(Modifier.PUBLIC);
 
-    for (AttributeRepresentation currentAttribute : state.getAttributes()) {
+    for (AttributeRepresentation currentAttribute : stateRepresentation.getAttributes()) {
       builder.addCode(generateInitializer(currentAttribute));
       builder.addCode("");
     }
@@ -156,14 +132,14 @@ public class StateGenerator implements GeneratorInterface {
     return builder.build();
   }
 
-  private MethodSpec generateGetStartMethod(ClassName className) {
+  private MethodSpec generateGetStartMethod(StateRepresentation stateRepresentation, ClassName className) {
     MethodSpec.Builder builder = MethodSpec.methodBuilder("getStart")
         .addModifiers(Modifier.PUBLIC)
         .addAnnotation(Override.class)
         .returns(className)
         .addStatement("$1T state = new $1T()", className);
 
-    for (ParameterRepresentation parameter : state.getStateStartParameters()) {
+    for (ParameterRepresentation parameter : stateRepresentation.getStateStartParameters()) {
       builder
           .beginControlFlow("for(int $1L = $2L; $1L <= $3L; $1L += $4L)",
               parameter.getParameterName(),
@@ -171,14 +147,11 @@ public class StateGenerator implements GeneratorInterface {
 
     }
 
-//    CodeBlock assigns = GeneratorUtils.getAssignStatements(state.getAssigns());
-//    builder.addCode(assigns);
-
-    for (AssignRepresentation assignStatement : state.getAssignRepresentations()) {
+    for (AssignRepresentation assignStatement : stateRepresentation.getAssignRepresentations()) {
       builder.addCode(getAssignStatement(assignStatement));
     }
 
-    for (int i = 0; i < state.getStateStartParameters().size(); i++) {
+    for (int i = 0; i < stateRepresentation.getStateStartParameters().size(); i++) {
       builder.endControlFlow();
     }
 
@@ -187,18 +160,18 @@ public class StateGenerator implements GeneratorInterface {
     return builder.build();
   }
 
-  private MethodSpec generateIsGoalMethod() {
+  private MethodSpec generateIsGoalMethod(StateRepresentation stateRepresentation) {
     MethodSpec.Builder builder = MethodSpec.methodBuilder("isGoal")
         .addModifiers(Modifier.PUBLIC)
         .addAnnotation(Override.class)
         .returns(boolean.class);
 
-    builder.addCode(getStateGoalStatement());
+    builder.addCode(getStateGoalStatement(stateRepresentation));
 
     return builder.build();
   }
 
-  private MethodSpec generateCopyMethod(ClassName className) {
+  private MethodSpec generateCopyMethod(StateRepresentation stateRepresentation, ClassName className) {
     String resultName = "result";
 
     MethodSpec.Builder builder = MethodSpec.methodBuilder("copy")
@@ -207,7 +180,7 @@ public class StateGenerator implements GeneratorInterface {
 
     builder.addStatement("$1T $2L = new $1T()", className, resultName);
 
-    for (AttributeRepresentation attribute : state.getAttributes()) {
+    for (AttributeRepresentation attribute : stateRepresentation.getAttributes()) {
       Class typeClass =
           attribute.getVarType().equals(VarType.NUMBER) ? Double.class : String.class;
       String lowerCaseAttributeName = attribute.getAttributeName().toLowerCase();
@@ -295,21 +268,24 @@ public class StateGenerator implements GeneratorInterface {
     return builder.build();
   }
 
-  private CodeBlock getStateGoalStatement() {
+  private CodeBlock getStateGoalStatement(StateRepresentation stateRepresentation) {
     CodeBlock.Builder builder = CodeBlock.builder()
-        .addNamed("return " + state.getStateGoal(), namedStateGoalArguments)
+        .addNamed("return " + stateRepresentation.getStateGoal(), namedStateGoalArguments)
         .add(";\n");
     return builder.build();
   }
 
-  private void fillNamedArguments() {
+  private void fillNamedArguments(StateRepresentation stateRepresentation) {
+    namedStateGoalArguments.clear();
+    namedStateStartArguments.clear();
+
     namedStateStartArguments.put(GeneratorUtils.hashSetEntry.getKey(), GeneratorUtils.hashSetEntry.getValue());
     namedStateStartArguments.put(GeneratorUtils.arraysEntry.getKey(), GeneratorUtils.arraysEntry.getValue());
 
     namedStateGoalArguments.put(GeneratorUtils.hashSetEntry.getKey(), GeneratorUtils.hashSetEntry.getValue());
     namedStateGoalArguments.put(GeneratorUtils.arraysEntry.getKey(), GeneratorUtils.arraysEntry.getValue());
 
-    for (AttributeRepresentation attribute : state.getAttributes()) {
+    for (AttributeRepresentation attribute : stateRepresentation.getAttributes()) {
       String attributeName = attribute.getAttributeName();
       String lowerCaseAttributeName = attributeName.toLowerCase();
 

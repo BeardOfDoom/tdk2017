@@ -12,6 +12,7 @@ import java.util.List;
 import representation.ClassRepresentation;
 import representation.ProjectRepresentation;
 import representation.operator.OperatorRepresentation;
+import representation.state.StateRepresentation;
 import utils.GeneratorUtils;
 
 public class ProjectGenerator {
@@ -19,33 +20,33 @@ public class ProjectGenerator {
   private static final String GENERATED_UTILS_CONTENT_FILENAME = "GeneratedUtilsContent.txt";
   private static final String GENERATED_UTILS_FILENAME = "GeneratedUtils";
 
-  StateGenerator stateGenerator = new StateGenerator();
-  OperatorGenerator operatorGenerator = new OperatorGenerator();
+  private ProjectRepresentation projectRepresentation;
 
-  public ProjectGenerator(StateGenerator stateGenerator,
-      OperatorGenerator operatorGenerator) {
-    this.stateGenerator = stateGenerator;
-    this.operatorGenerator = operatorGenerator;
+  public ProjectGenerator(ProjectRepresentation projectRepresentation) {
+    this.projectRepresentation = projectRepresentation;
   }
 
-  public List<ClassRepresentation> generate(ProjectRepresentation project, String directoryName,
-      String packageName)
+  public List<ClassRepresentation> generate(String directoryName,
+      String packageName, boolean keepTogetherGettersAndSetters)
       throws IOException {
 
     List<ClassRepresentation> result = new ArrayList<>();
 
-    stateGenerator.setState(project.getStateRepresentation());
-    stateGenerator.setKeepTogetherGettersAndSetters(true);
+    OperatorGenerator operatorGenerator = new OperatorGenerator();
+    StateGenerator stateGenerator = new StateGenerator();
+
+    StateRepresentation stateRepresentation = projectRepresentation.getStateRepresentation();
+    String stateFileName = projectRepresentation.getStateRepresentation().getName();
+
     ClassRepresentation stateClass = stateGenerator
-        .generate(directoryName, packageName, project.getStateRepresentation().getName());
+        .generate(stateRepresentation, directoryName, packageName, stateFileName, keepTogetherGettersAndSetters);
+
     result.add(stateClass);
 
-    operatorGenerator.setStateClass(stateClass);
-
-    for (OperatorRepresentation operator : project.getOperatorRepresentation()) {
-      operatorGenerator.setOperator(operator);
+    for (OperatorRepresentation operator : projectRepresentation.getOperatorRepresentation()) {
       ClassRepresentation operatorClass = operatorGenerator
-          .generate(directoryName, packageName, operator.getName());
+          .generate(operator, stateClass, directoryName, packageName, operator.getName(),
+              keepTogetherGettersAndSetters);
 
       result.add(operatorClass);
     }

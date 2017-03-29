@@ -216,4 +216,10 @@ public class BaseVisitor extends SMLBaseVisitor {
 
     return assignStatement;
   }
+
+  public void clear() {
+    stateRepresentation = new StateRepresentation();
+    operatorRepresentation = new OperatorRepresentation();
+    operatorRepresentations = new ArrayList<>();
+  }
 }
