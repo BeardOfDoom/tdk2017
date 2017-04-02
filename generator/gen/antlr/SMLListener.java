@@ -1,4 +1,4 @@
-// Generated from D:/Laci/egyetem/szakdolgozat/SML/src/main/java/antlr\SML.g4 by ANTLR 4.6
+// Generated from D:/Laci/egyetem/szakdolgozat/tdk2017/generator/src/main/java/antlr\SML.g4 by ANTLR 4.6
 package antlr;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 

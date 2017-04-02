@@ -2,12 +2,15 @@ package utils;
 
 import antlr.SMLParser.Parameter_description_lineContext;
 import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
+import enums.ExpressionType;
 import enums.VarStruct;
 import enums.VarType;
+import interfaces.Expression;
 import java.io.File;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
@@ -18,11 +21,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.lang.model.element.Modifier;
-import representation.AssignRepresentation;
+import representation.ExpressionRepresentation;
+import representation.ForExpressionRepresentation;
 import representation.ParameterRepresentation;
+import representation.VarDefiningExpression;
 import representation.state.AttributeRepresentation;
 
-public final class GeneratorUtils {
+public final class GeneratorUtil {
 
   //TODO: Refactor set assign method
 
@@ -218,6 +223,62 @@ public final class GeneratorUtils {
     return builder.build();
   }
 
+  public static CodeBlock generateForBlock(ForExpressionRepresentation forExpression,
+      Map<String, Object> namedArguments) {
+    CodeBlock.Builder builder = CodeBlock.builder();
+
+    String variableName = forExpression.getVariable();
+    String from = forExpression.getFrom();
+    String to = forExpression.getTo();
+    String by = forExpression.getBy();
+
+    builder.beginControlFlow(GeneratorUtil
+        .generateForStatement(variableName, from, to, by), Double.class)
+        .add(generateStatements(forExpression.getExpressions(), namedArguments))
+        .endControlFlow();
+
+    return builder.build();
+  }
+
+  //TODO: Throws missing argument exception
+  public static CodeBlock generateStatements(List<Expression> expressions, Map<String, Object> namedArguments) {
+    CodeBlock.Builder builder = CodeBlock.builder();
+
+    for (Expression expression : expressions) {
+      ExpressionType expressionType = expression.getExpressionType();
+
+      switch (expressionType) {
+        case FOR_EXPR:
+          builder.add(generateForBlock(((ForExpressionRepresentation) expression), namedArguments));
+          break;
+
+        case VAR_DEFINING_EXPR:
+          VarDefiningExpression varDefiningExpression = ((VarDefiningExpression) expression);
+          ClassName className = varDefiningExpression.getClassName();
+          String varName = varDefiningExpression.getVarName();
+          String value = varDefiningExpression.getValue();
+
+          builder.add("$1T $2L = ", className, varName);
+
+          builder.addNamed(value, namedArguments)
+              .add(";\n");
+          break;
+
+        case COMPARE_EXPR:
+        case BOOL_EXPR:
+          builder.add("result = result && ");
+          //Continue on default
+
+        default:
+          ExpressionRepresentation expressionRepresentation = ((ExpressionRepresentation) expression);
+          builder.addNamed(expressionRepresentation.getValue(), namedArguments)
+              .add(";\n");
+          break;
+      }
+    }
+    return builder.build();
+  }
+
   public static ParameterizedTypeName getAttributeType(AttributeRepresentation attribute) {
     TypeName innerType = getInnerAttributeType(attribute);
     return attribute.getVarStruct().equals(VarStruct.SET) ? ParameterizedTypeName
@@ -235,41 +296,6 @@ public final class GeneratorUtils {
     }
   }
 
-  public static String getSetInitValuesAsString(AssignRepresentation stateStart) {
-//    return stateStart.getValues().stream().collect(Collectors.joining(", "));
-    return "";
-  }
-
-  public static String getParameterNamesAsString(List<ParameterRepresentation> parameters) {
-    return parameters.stream().map(ParameterRepresentation::getParameterName)
-        .collect(Collectors.joining(", "));
-  }
-
-  //TODO: implement getAssignStatements
-//  public static CodeBlock getAssignStatements(
-//      AssignExpressionsRepresentation assignsRepresentation) {
-//    CodeBlock.Builder builder = CodeBlock.builder();
-//
-//    for (SetAssignRepresentation setStart : assignsRepresentation.getSetAssigns()) {
-//      String attributeName = setStart.getAttribute().getAttributeName();
-//      builder
-//          .addStatement("state.set" + attributeName + "(new $1T<>($2T.asList($3L)))",
-//              HashSet.class, Arrays.class, GeneratorUtils.getSetStartValuesAsString(setStart));
-//    }
-//
-//    for (MatrixAssignRepresentation matrixStart : assignsRepresentation.getMatrixAssigns()) {
-//      String attributeName = matrixStart.getAttribute().getAttributeName();
-//      String dimensionN = matrixStart.getDimensionN();
-//      String dimensionM = matrixStart.getDimensionM();
-//      String value = matrixStart.getValue();
-//      builder.addStatement("state.get" + attributeName + "().get($L).set($L, $L)",
-//          dimensionN,
-//          dimensionM, value);
-//    }
-//
-//    return builder.build();
-//  }
-
   public static ParameterRepresentation getParameterRepresentationFromContext(
       Parameter_description_lineContext parameter) {
 
@@ -285,6 +311,16 @@ public final class GeneratorUtils {
     parameterRepresentation.setBy(by);
 
     return parameterRepresentation;
+  }
+
+  public static String generateForStatement(String variable, String from, String to, String by) {
+    return "for($1T " + variable + " = " + from + "; " + variable + "<=" + to + "; " + variable + " += " + by + ")";
+  }
+
+
+  public static String getParameterNamesAsString(List<ParameterRepresentation> parameters) {
+    return parameters.stream().map(ParameterRepresentation::getParameterName)
+        .collect(Collectors.joining(", "));
   }
 
   public static String getFilePath(String directoryName, String packageName, String fileName) {

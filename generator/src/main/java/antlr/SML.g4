@@ -5,13 +5,11 @@ expr: STATE_DELIMITER name_defining_expression? state_expr OPERATOR_DELIMITER op
 state_expr: state_description state_start state_goal;
 
 state_description: STATE_ATTRIBUTES_DELIMITER state_description_line+;
-
 state_description_line: attr_name KEYWORD_IS attr_struct KEYWORD_OF attr_type;
 
-state_start: STATE_START_DELIMITER parameter_description_line* state_start_line+;
-state_start_line: (attr_reference | matrix_reference) SYMBOL_ASSIGN expression;
+state_start: STATE_START_DELIMITER expression*;
 
-state_goal: STATE_GOAL_DELIMITER parameter_description_line* expression;
+state_goal: STATE_GOAL_DELIMITER  expression+;
 
 /*-----------------------------------------------------------------------------------------------*/
 
@@ -20,10 +18,9 @@ operator_expr: operator_description operator_precondition operator_effect;
 operator_description: OPERATOR_DESCRIPTION_DELIMITER name_defining_expression? operator_cost? parameter_description_line*;
 operator_cost: KEYWORD_COST number;
 
-operator_precondition: OPERATOR_PRECONDITION_DELIMITER expression?;
+operator_precondition: OPERATOR_PRECONDITION_DELIMITER expression*;
 
-operator_effect: OPERATOR_EFFECT_DELIMITER var_defining_expression* operator_effect_line+;
-operator_effect_line: reference SYMBOL_ASSIGN expression;
+operator_effect: OPERATOR_EFFECT_DELIMITER expression+;
 
 /*-----------------------------------------------------------------------------------------------*/
 
@@ -32,11 +29,8 @@ attr_type: KEYWORD_WORD | KEYWORD_NUMBER;
 
 comparator: SYMBOL_EQUAL | SYMBOL_NOT_EQUAL | SYMBOL_GREATER | SYMBOL_LESSER | SYMBOL_GREATER_OR_EQUAL | SYMBOL_LESSER_OR_EQUAL;
 binary_operator: SYMBOL_ADDITION | SYMBOL_SUBSTRACT | SYMBOL_MULTIPLICATION | SYMBOL_DIVISION;
-unary_operator: KEYWORD_MAXIMUM | KEYWORD_MINIMUM | KEYWORD_AVERAGE | KEYWORD_CARDINALITY | KEYWORD_UNION | KEYWORD_ADD | KEYWORD_REMOVE;
+unary_operator: KEYWORD_MAXIMUM | KEYWORD_MINIMUM | KEYWORD_AVERAGE | KEYWORD_CARDINALITY | KEYWORD_UNION | KEYWORD_ADD | KEYWORD_REMOVE | KEYWORD_SUM;
 boolean_operator: KEYWORD_AND | KEYWORD_OR;
-
-var_defining_expression: KEYWORD_VAR attr_type PARAM_NAME SYMBOL_ASSIGN expression;
-name_defining_expression: KEYWORD_NAME word;
 
 expression
   :  SYMBOL_LPAREN expression SYMBOL_RPAREN #paren_expr
@@ -46,13 +40,19 @@ expression
   | unary_operator SYMBOL_LPAREN expression SYMBOL_RPAREN #one_param_unary_expr
   | unary_operator SYMBOL_LPAREN left=expression (SYMBOL_COMMA right=expression)? SYMBOL_RPAREN #two_param_unary_expr
   | SYMBOL_LBRACE (expression (SYMBOL_COMMA  expression)*) SYMBOL_RBRACE #set_init_expr
+  | reference SYMBOL_ASSIGN expression #assign_expr
+  | for_statement SYMBOL_LBRACE expression+ SYMBOL_RBRACE #for_expr
+  | KEYWORD_VAR attr_type PARAM_NAME SYMBOL_ASSIGN expression #var_defining_expression
   | reference #reference_expr
   | word #word_expr
   | number #number_expr
   | PARAM_NAME #param_name_expr
   ;
 
-parameter_description_line: KEYWORD_PARAM PARAM_NAME ((KEYWORD_FROM INT KEYWORD_TO INT (KEYWORD_BY INT)?));
+name_defining_expression: KEYWORD_NAME PARAM_NAME;
+parameter_description_line: KEYWORD_PARAM PARAM_NAME KEYWORD_FROM INT KEYWORD_TO INT (KEYWORD_BY INT)?;
+for_statement: KEYWORD_FOR variable=PARAM_NAME KEYWORD_FROM from=expression KEYWORD_TO to=expression (KEYWORD_BY by=expression)?;
+
 
 /*-----------------------------------------------------------------------------------------------*/
 
@@ -78,6 +78,7 @@ OPERATOR_DESCRIPTION_DELIMITER: 'OPERATOR_DESCRIPTION:';
 OPERATOR_PRECONDITION_DELIMITER: 'OPERATOR_PRECONDITION:';
 OPERATOR_EFFECT_DELIMITER: 'OPERATOR_EFFECT:';
 
+KEYWORD_FOR: 'for';
 KEYWORD_PARAM: 'param';
 KEYWORD_FROM: 'from';
 KEYWORD_TO: 'to';

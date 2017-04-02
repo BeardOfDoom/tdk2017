@@ -103,6 +103,7 @@ public class ProblemController {
       e.printStackTrace();
       return errorModelAndView(ERROR_MESSAGE_IOEXCEPTION);
     } catch (IncorrectInputException e) {
+      System.out.println(e.getMsg());
       e.printStackTrace();
       return errorModelAndView(ERROR_MESSAGE_TMP);
     }

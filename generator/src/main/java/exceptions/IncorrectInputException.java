@@ -8,12 +8,6 @@ public class IncorrectInputException extends RuntimeException {
 
   private final String msg;
 
-  public IncorrectInputException(IncorrectInputException e) {
-    this.line = e.line;
-    this.charPositionInLine = e.charPositionInLine;
-    this.msg = e.msg;
-  }
-
   public IncorrectInputException(int line, int charPositionInLine, String msg) {
     this.line = line;
     this.charPositionInLine = charPositionInLine;
@@ -29,6 +23,6 @@ public class IncorrectInputException extends RuntimeException {
   }
 
   public String getMsg() {
-    return msg;
+    return line + " : " + charPositionInLine + " " + msg;
   }
 }

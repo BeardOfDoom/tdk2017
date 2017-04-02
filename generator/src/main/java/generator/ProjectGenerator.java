@@ -13,7 +13,7 @@ import representation.ClassRepresentation;
 import representation.ProjectRepresentation;
 import representation.operator.OperatorRepresentation;
 import representation.state.StateRepresentation;
-import utils.GeneratorUtils;
+import utils.GeneratorUtil;
 
 public class ProjectGenerator {
 
@@ -63,10 +63,10 @@ public class ProjectGenerator {
     ClassRepresentation generatedUtilsClassRepresentation = new ClassRepresentation();
     generatedUtilsClassRepresentation
         .setFilePath(
-            GeneratorUtils.getFilePath(directoryName, packageName, GENERATED_UTILS_FILENAME));
+            GeneratorUtil.getFilePath(directoryName, packageName, GENERATED_UTILS_FILENAME));
 
     File resultFile = new File(
-        GeneratorUtils.getFilePath(directoryName, packageName, "GeneratedUtils"));
+        GeneratorUtil.getFilePath(directoryName, packageName, "GeneratedUtils"));
 
     InputStream generatedUtilsContent = Thread.currentThread().getContextClassLoader()
         .getResourceAsStream(GENERATED_UTILS_CONTENT_FILENAME);

@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.lang.model.element.Modifier;
 import representation.ClassRepresentation;
-import utils.GeneratorUtils;
+import utils.GeneratorUtil;
 
 public class OperatorInstantiatorGenerator {
 
@@ -52,7 +52,7 @@ public class OperatorInstantiatorGenerator {
 
     javaFile.writeTo(path);
 
-    String filePath = GeneratorUtils.getFilePath(directoryName, packageName, fileName);
+    String filePath = GeneratorUtil.getFilePath(directoryName, packageName, fileName);
 
     return new ClassRepresentation(className, null, filePath);
   }

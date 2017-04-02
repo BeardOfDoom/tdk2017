@@ -19,19 +19,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import javax.lang.model.element.Modifier;
-import misc.Dimension;
-import representation.AssignRepresentation;
 import representation.ClassRepresentation;
-import representation.ParameterRepresentation;
 import representation.state.AttributeRepresentation;
 import representation.state.StateRepresentation;
-import utils.GeneratorUtils;
+import utils.GeneratorUtil;
 
 //TODO: Review set functions
 public class StateGenerator {
 
-  private Map<String, Object> namedStateStartArguments = new HashMap<>();
-  private Map<String, Object> namedStateGoalArguments = new HashMap<>();
+  private Map<String, Object> namedArguments = new HashMap<>();
 
   public StateGenerator() {
   }
@@ -48,7 +44,7 @@ public class StateGenerator {
 
     ClassName className = ClassName.get(packageName, fileName);
     List<AttributeRepresentation> attributes = stateRepresentation.getAttributes();
-    List<FieldSpec> fields = GeneratorUtils.generateFieldsFromAttributes(attributes);
+    List<FieldSpec> fields = GeneratorUtil.generateFieldsFromAttributes(attributes);
 
     TypeSpec state = TypeSpec.classBuilder(fileName)
         .addModifiers(Modifier.PUBLIC)
@@ -56,12 +52,12 @@ public class StateGenerator {
         .addFields(fields)
         .addMethod(generateConstructWithInitializer(stateRepresentation))
         .addMethods(
-            GeneratorUtils.generateGettersAndSetters(fields, keepTogetherGettersAndSetters))
+            GeneratorUtil.generateGettersAndSetters(fields, keepTogetherGettersAndSetters))
         .addMethod(generateGetStartMethod(stateRepresentation, className))
         .addMethod(generateIsGoalMethod(stateRepresentation))
-        .addMethod(GeneratorUtils.generateEqualsMethod(fields, className, fileName.toLowerCase()))
-        .addMethod(GeneratorUtils.generateHashCodeMethod(fields))
-        .addMethod(GeneratorUtils.generateToStringMethod(fields, className))
+        .addMethod(GeneratorUtil.generateEqualsMethod(fields, className, fileName.toLowerCase()))
+        .addMethod(GeneratorUtil.generateHashCodeMethod(fields))
+        .addMethod(GeneratorUtil.generateToStringMethod(fields, className))
         .addMethod(generateCopyMethod(stateRepresentation, className))
         .addMethod(generateGetAttributeByNumberMethod())
         .addMethod(generateSetAttributeByNumberMethod())
@@ -75,7 +71,7 @@ public class StateGenerator {
 
     javaFile.writeTo(path);
 
-    String filePath = GeneratorUtils.getFilePath(directoryName, packageName, fileName);
+    String filePath = GeneratorUtil.getFilePath(directoryName, packageName, fileName);
 
     return new ClassRepresentation(className, fields, filePath);
   }
@@ -86,7 +82,7 @@ public class StateGenerator {
 
     for (AttributeRepresentation currentAttribute : stateRepresentation.getAttributes()) {
       builder.addCode(generateInitializer(currentAttribute));
-      builder.addCode("");
+      builder.addCode("\n");
     }
 
     return builder.build();
@@ -102,8 +98,8 @@ public class StateGenerator {
     } else {
       String dimensionN = attribute.getDimension().getDimensionN();
       String dimensionM = attribute.getDimension().getDimensionM();
-      TypeName attributeType = GeneratorUtils.getAttributeType(attribute);
-      TypeName innerAttributeType = GeneratorUtils.getInnerAttributeType(attribute);
+      TypeName attributeType = GeneratorUtil.getAttributeType(attribute);
+      TypeName innerAttributeType = GeneratorUtil.getInnerAttributeType(attribute);
 
       builder
           .addStatement("$T init" + attributeName + "= new $T<>()", attributeType, ArrayList.class)
@@ -139,21 +135,7 @@ public class StateGenerator {
         .returns(className)
         .addStatement("$1T state = new $1T()", className);
 
-    for (ParameterRepresentation parameter : stateRepresentation.getStateStartParameters()) {
-      builder
-          .beginControlFlow("for(int $1L = $2L; $1L <= $3L; $1L += $4L)",
-              parameter.getParameterName(),
-              parameter.getFrom(), parameter.getTo(), parameter.getBy());
-
-    }
-
-    for (AssignRepresentation assignStatement : stateRepresentation.getAssignRepresentations()) {
-      builder.addCode(getAssignStatement(assignStatement));
-    }
-
-    for (int i = 0; i < stateRepresentation.getStateStartParameters().size(); i++) {
-      builder.endControlFlow();
-    }
+    builder.addCode(GeneratorUtil.generateStatements(stateRepresentation.getStartExpressions(), namedArguments));
 
     builder.addStatement("return state");
 
@@ -164,9 +146,12 @@ public class StateGenerator {
     MethodSpec.Builder builder = MethodSpec.methodBuilder("isGoal")
         .addModifiers(Modifier.PUBLIC)
         .addAnnotation(Override.class)
-        .returns(boolean.class);
+        .returns(boolean.class)
+        .addStatement("$1T $2L = true", boolean.class, "result");
 
-    builder.addCode(getStateGoalStatement(stateRepresentation));
+    builder.addCode(GeneratorUtil.generateStatements(stateRepresentation.getGoalExpressions(), namedArguments));
+
+    builder.addStatement("return result");
 
     return builder.build();
   }
@@ -244,53 +229,12 @@ public class StateGenerator {
     return builder.build();
   }
 
-  private CodeBlock getAssignStatement(AssignRepresentation assignStatement) {
-    CodeBlock.Builder builder = CodeBlock.builder();
-    String attributeName = assignStatement.getAttributeRepresentation().getAttributeName();
-    String value;
-    Dimension dimension;
-
-    switch (assignStatement.getType()) {
-      case SET:
-        value = assignStatement.getValue();
-        builder
-            .addNamed("state.set" + attributeName + "(" + value + ");\n", namedStateStartArguments);
-        break;
-
-      case MATRIX:
-        dimension = assignStatement.getDimension();
-        value = assignStatement.getValue();
-        builder.addStatement("state.get" + attributeName + "().get($L).set($L, $L)",
-            dimension.getDimensionN(),
-            dimension.getDimensionM(), value);
-        break;
-    }
-    return builder.build();
-  }
-
-  private CodeBlock getStateGoalStatement(StateRepresentation stateRepresentation) {
-    CodeBlock.Builder builder = CodeBlock.builder()
-        .addNamed("return " + stateRepresentation.getStateGoal(), namedStateGoalArguments)
-        .add(";\n");
-    return builder.build();
-  }
-
   private void fillNamedArguments(StateRepresentation stateRepresentation) {
-    namedStateGoalArguments.clear();
-    namedStateStartArguments.clear();
+    namedArguments.clear();
 
-    namedStateStartArguments.put(GeneratorUtils.hashSetEntry.getKey(), GeneratorUtils.hashSetEntry.getValue());
-    namedStateStartArguments.put(GeneratorUtils.arraysEntry.getKey(), GeneratorUtils.arraysEntry.getValue());
-
-    namedStateGoalArguments.put(GeneratorUtils.hashSetEntry.getKey(), GeneratorUtils.hashSetEntry.getValue());
-    namedStateGoalArguments.put(GeneratorUtils.arraysEntry.getKey(), GeneratorUtils.arraysEntry.getValue());
-
-    for (AttributeRepresentation attribute : stateRepresentation.getAttributes()) {
-      String attributeName = attribute.getAttributeName();
-      String lowerCaseAttributeName = attributeName.toLowerCase();
-
-      namedStateStartArguments.put(lowerCaseAttributeName, "state.get" + attributeName + "()");
-      namedStateGoalArguments.put(lowerCaseAttributeName, lowerCaseAttributeName);
-    }
+    namedArguments.put(GeneratorUtil.hashSetEntry.getKey(), GeneratorUtil.hashSetEntry.getValue());
+    namedArguments.put(GeneratorUtil.arraysEntry.getKey(), GeneratorUtil.arraysEntry.getValue());
+    namedArguments.put("result", "state");
+    namedArguments.put("original", "this");
   }
 }

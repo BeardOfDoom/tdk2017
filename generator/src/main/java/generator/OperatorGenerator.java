@@ -3,7 +3,6 @@ package generator;
 
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
@@ -23,8 +22,7 @@ import javax.lang.model.element.Modifier;
 import representation.ClassRepresentation;
 import representation.ParameterRepresentation;
 import representation.operator.OperatorRepresentation;
-import representation.operator.VariableRepresentation;
-import utils.GeneratorUtils;
+import utils.GeneratorUtil;
 
 public class OperatorGenerator {
 
@@ -46,7 +44,7 @@ public class OperatorGenerator {
 
     ClassName className = ClassName.get(packageName, fileName);
     List<ParameterRepresentation> parameters = operatorRepresentation.getParameters();
-    List<FieldSpec> fields = GeneratorUtils.generateFieldsFromParameters(parameters);
+    List<FieldSpec> fields = GeneratorUtil.generateFieldsFromParameters(parameters);
 
     TypeSpec operator = TypeSpec.classBuilder(fileName)
         .addModifiers(Modifier.PUBLIC)
@@ -55,13 +53,13 @@ public class OperatorGenerator {
         .addFields(fields)
         .addField(generateCostField(operatorRepresentation))
         .addMethod(generateInitOperatorsMethod(parameters, className))
-        .addMethod(GeneratorUtils.generateEmptyConstructor())
-        .addMethod(GeneratorUtils.generateConstructor(fields))
+        .addMethod(GeneratorUtil.generateEmptyConstructor())
+        .addMethod(GeneratorUtil.generateConstructor(fields))
         .addMethods(
-            GeneratorUtils.generateGettersAndSetters(fields, keepTogetherGettersAndSetters))
-        .addMethod(GeneratorUtils.generateEqualsMethod(fields, className, fileName.toLowerCase()))
-        .addMethod(GeneratorUtils.generateHashCodeMethod(fields))
-        .addMethod(GeneratorUtils.generateToStringMethod(fields, className))
+            GeneratorUtil.generateGettersAndSetters(fields, keepTogetherGettersAndSetters))
+        .addMethod(GeneratorUtil.generateEqualsMethod(fields, className, fileName.toLowerCase()))
+        .addMethod(GeneratorUtil.generateHashCodeMethod(fields))
+        .addMethod(GeneratorUtil.generateToStringMethod(fields, className))
         .addMethod(generateIsApplicableMethod(operatorRepresentation, stateClass))
         .addMethod(generateApplyMethod(operatorRepresentation, stateClass))
         .addMethod(generateGetCostMethod())
@@ -72,10 +70,8 @@ public class OperatorGenerator {
         .build();
 
     Path path = Paths.get(directoryName);
-
     javaFile.writeTo(path);
-
-    String filePath = GeneratorUtils.getFilePath(directoryName, packageName, fileName);
+    String filePath = GeneratorUtil.getFilePath(directoryName, packageName, fileName);
 
     return new ClassRepresentation(className, fields, filePath);
   }
@@ -85,38 +81,6 @@ public class OperatorGenerator {
         .addMember("value", "$S", "unchecked");
 
     return builder.build();
-  }
-
-  private void fillNamedArguments(OperatorRepresentation operatorRepresentation, ClassRepresentation stateClass) {
-    namedArguments.clear();
-
-    namedArguments.put(GeneratorUtils.hashSetEntry.getKey(), GeneratorUtils.hashSetEntry.getValue());
-    namedArguments.put(GeneratorUtils.arraysEntry.getKey(), GeneratorUtils.arraysEntry.getValue());
-
-    for (ParameterRepresentation parameter : operatorRepresentation.getParameters()) {
-
-      boolean containsError = false;
-
-      Integer from = parameter.getFrom();
-      Integer to = parameter.getTo();
-      Integer by = parameter.getBy();
-
-      TypeName typeName = stateClass.getFields().get(from).type;
-
-      for (int i = from + by; i <= to; i += by) {
-        if (i >= stateClass.getFields().size() || !stateClass.getFields().get(i).type
-            .equals(typeName)) {
-          containsError = true;
-          break;
-        }
-      }
-
-      if (containsError) {
-        namedArguments.put(parameter.getParameterName(), "error");
-      } else {
-        namedArguments.put(parameter.getParameterName(), typeName);
-      }
-    }
   }
 
   private MethodSpec generateInitOperatorsMethod(List<ParameterRepresentation> parameters,
@@ -130,19 +94,18 @@ public class OperatorGenerator {
     builder.returns(returnType);
 
     String lowerCaseClassName = className.simpleName().toLowerCase();
-    String parameterNames = GeneratorUtils.getParameterNamesAsString(parameters);
+    String parameterNames = GeneratorUtil.getParameterNamesAsString(parameters);
 
     builder.addStatement("$1T result = new $2T<>()", returnType, ArrayList.class);
 
     for (ParameterRepresentation parameter : parameters) {
       String parameterName = parameter.getParameterName();
-      Integer from = parameter.getFrom();
-      Integer to = parameter.getTo();
-      Integer by = parameter.getBy();
+      String from = parameter.getFrom().toString();
+      String to = parameter.getTo().toString();
+      String by = parameter.getBy().toString();
 
       builder
-          .beginControlFlow("for($1T $2L = $3L; $2L <= $4L; $2L += $5L)", int.class, parameterName,
-              from, to, by);
+          .beginControlFlow(GeneratorUtil.generateForStatement(parameterName, from, to, by), int.class);
     }
 
     builder.addStatement("$T $L = new $T($L)", className, lowerCaseClassName,
@@ -159,44 +122,23 @@ public class OperatorGenerator {
 
   }
 
-  private CodeBlock generateIsApplicableStatement(OperatorRepresentation operatorRepresentation) {
-    //TODO: handle illegal argument exception when namedArguments field is error
-
-    CodeBlock.Builder builder = CodeBlock.builder()
-        .add("return ")
-        .addNamed(operatorRepresentation.getOperatorPrecondition(), namedArguments)
-        .add(";");
-
-    return builder.build();
-  }
-
   private MethodSpec generateIsApplicableMethod(OperatorRepresentation operatorRepresentation,
       ClassRepresentation stateClass) {
-
-    System.out.println("\n\n" + stateClass + "\n\n");
     String parameterName = "stateObject";
     MethodSpec.Builder builder = MethodSpec.methodBuilder("isApplicable")
         .addModifiers(Modifier.PUBLIC)
         .addAnnotation(Override.class)
         .returns(boolean.class)
         .addParameter(StateInterface.class, parameterName)
-        .addStatement("$1T $2L = (($1T) $3L)", stateClass.getClassName(), "original",
-            parameterName)
-        .addCode(generateIsApplicableStatement(operatorRepresentation));
+        .addStatement("$1T $2L = true", boolean.class, "result")
+        .addStatement("$1T $2L = (($1T) $3L)", stateClass.getClassName(), "original", parameterName)
+        .addCode(GeneratorUtil.generateStatements(operatorRepresentation.getPreconditionExpressions(), namedArguments))
+        .addCode("\n")
+        .addStatement("return result");
 
     return builder.build();
   }
 
-  private CodeBlock generateApplyStatement(OperatorRepresentation operatorRepresentation) {
-    CodeBlock.Builder builder = CodeBlock.builder();
-
-    for (String currentStatement : operatorRepresentation.getOperatorEffects()) {
-      builder.addNamed(currentStatement, namedArguments)
-          .add(";\n");
-    }
-
-    return builder.build();
-  }
 
   private MethodSpec generateApplyMethod(OperatorRepresentation operatorRepresentation,
       ClassRepresentation stateClass) {
@@ -209,16 +151,11 @@ public class OperatorGenerator {
 
     builder
         .addStatement("$1T $2L = (($1T) $3L)", stateClass.getClassName(), "original", parameterName)
-        .addStatement("$1L $2L = original.copy()", stateClass.getClassName(), "state");
+        .addStatement("$1T $2L = original.copy()", stateClass.getClassName(), "state");
 
     builder.addCode("\n");
 
-    for (VariableRepresentation variable : operatorRepresentation.getVariables()) {
-      builder.addStatement("$1T $2L = $3L", variable.getClassName(), variable.getName(),
-          variable.getValue());
-    }
-
-    builder.addCode(generateApplyStatement(operatorRepresentation));
+    builder.addCode(GeneratorUtil.generateStatements(operatorRepresentation.getEffectExpressions(), namedArguments));
 
     builder.addCode("\n");
 
@@ -244,5 +181,38 @@ public class OperatorGenerator {
     builder.addStatement("return cost");
 
     return builder.build();
+  }
+
+  private void fillNamedArguments(OperatorRepresentation operatorRepresentation, ClassRepresentation stateClass) {
+    namedArguments.clear();
+
+    namedArguments.put(GeneratorUtil.hashSetEntry.getKey(), GeneratorUtil.hashSetEntry.getValue());
+    namedArguments.put(GeneratorUtil.arraysEntry.getKey(), GeneratorUtil.arraysEntry.getValue());
+    namedArguments.put("result", "state");
+    namedArguments.put("original", "original");
+
+    for (ParameterRepresentation parameter : operatorRepresentation.getParameters()) {
+
+      boolean containsError = false;
+
+      Integer from = parameter.getFrom();
+      Integer to = parameter.getTo();
+      Integer by = parameter.getBy();
+
+      TypeName typeName = stateClass.getFields().get(from).type;
+
+      for (int i = from + by; i <= to; i += by) {
+        if (i >= stateClass.getFields().size() || !stateClass.getFields().get(i).type.equals(typeName)) {
+          containsError = true;
+          break;
+        }
+      }
+
+      if (containsError) {
+        namedArguments.put(parameter.getParameterName(), "error");
+      } else {
+        namedArguments.put(parameter.getParameterName(), typeName);
+      }
+    }
   }
 }
