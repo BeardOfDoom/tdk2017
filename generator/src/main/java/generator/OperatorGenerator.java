@@ -153,11 +153,15 @@ public class OperatorGenerator {
         .addStatement("$1T $2L = (($1T) $3L)", stateClass.getClassName(), "original", parameterName)
         .addStatement("$1T $2L = original.copy()", stateClass.getClassName(), "state");
 
+//    builder.addStatement("System.out.println(\"before: \" + state)");
+
     builder.addCode("\n");
 
     builder.addCode(GeneratorUtil.generateStatements(operatorRepresentation.getEffectExpressions(), namedArguments));
 
     builder.addCode("\n");
+
+    builder.addStatement("System.out.println(GeneratedUtils.sum(state))");
 
     builder.addStatement("return state");
 

@@ -171,19 +171,17 @@ public class StateGenerator {
       String lowerCaseAttributeName = attribute.getAttributeName().toLowerCase();
 
       if (attribute.getVarStruct().equals(VarStruct.SET)) {
-        builder.beginControlFlow("for ($1T element : $2L)", typeClass, lowerCaseAttributeName)
+        builder.beginControlFlow("for ($1T i  element : $2L)", typeClass, lowerCaseAttributeName)
             .addStatement("$1L.get$2L().add(element)", resultName, attribute.getAttributeName())
             .endControlFlow();
 
       } else {
-        builder.beginControlFlow("for ($1T<$2T> list : $3L)", List.class, typeClass,
-            lowerCaseAttributeName)
+        builder.beginControlFlow("for ($1T i=0; i < $2L.size(); i++)", Integer.class, lowerCaseAttributeName)
             .addStatement("$1T<$2T> tmpList = new $3T<>()", List.class, typeClass, ArrayList.class)
-            .beginControlFlow("for ($T element : list)", typeClass)
+            .beginControlFlow("for ($1T element : $2L.get(i))", typeClass, lowerCaseAttributeName)
             .addStatement("tmpList.add(element)")
             .endControlFlow()
-            .addStatement("$1T index = $2L.indexOf(list)", Integer.class, lowerCaseAttributeName)
-            .addStatement("$1L.get$2L().set(index, tmpList)", resultName,
+            .addStatement("$1L.get$2L().set(i, tmpList)", resultName,
                 attribute.getAttributeName())
             .endControlFlow();
       }

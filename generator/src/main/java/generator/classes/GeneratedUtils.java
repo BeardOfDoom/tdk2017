@@ -89,14 +89,14 @@ public class GeneratedUtils {
   public static <T extends Object> Set<T> add(Set<T> set, T element) {
     Set<T> result = new HashSet<>();
     result.addAll(set);
-    set.add(element);
+    result.add(element);
     return result;
   }
 
   public static <T extends Object> Set<T> remove(Set<T> set, T element) {
     Set<T> result = new HashSet<>();
     result.addAll(set);
-    set.remove(element);
+    result.remove(element);
     return result;
   }
 
