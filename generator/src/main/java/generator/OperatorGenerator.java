@@ -161,7 +161,7 @@ public class OperatorGenerator {
 
     builder.addCode("\n");
 
-    builder.addStatement("System.out.println(GeneratedUtils.sum(state))");
+//    builder.addStatement("System.out.println(GeneratedUtils.sum(state))");
 
     builder.addStatement("return state");
 

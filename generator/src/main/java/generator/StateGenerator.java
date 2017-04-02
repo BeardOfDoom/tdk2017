@@ -171,7 +171,7 @@ public class StateGenerator {
       String lowerCaseAttributeName = attribute.getAttributeName().toLowerCase();
 
       if (attribute.getVarStruct().equals(VarStruct.SET)) {
-        builder.beginControlFlow("for ($1T i  element : $2L)", typeClass, lowerCaseAttributeName)
+        builder.beginControlFlow("for ($1T element : $2L)", typeClass, lowerCaseAttributeName)
             .addStatement("$1L.get$2L().add(element)", resultName, attribute.getAttributeName())
             .endControlFlow();
 
