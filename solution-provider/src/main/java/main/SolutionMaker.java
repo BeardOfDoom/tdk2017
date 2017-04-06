@@ -1,10 +1,11 @@
 package main;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import exceptions.*;
+import interfaces.OperatorInterface;
+import interfaces.StateInterface;
+import org.apache.commons.io.FilenameUtils;
+
+import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
@@ -15,19 +16,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-
-import org.apache.commons.io.FilenameUtils;
-
-import exceptions.CompilationException;
-import exceptions.OperatorInitializationException;
-import exceptions.OperatorNotFoundException;
-import exceptions.StateInitializationException;
-import exceptions.StateNotFoundException;
-import exceptions.TemporaryFolderCreationException;
-import exceptions.TemporaryFolderDeletionException;
-import exceptions.WrongFileExtensionException;
-import interfaces.OperatorInterface;
-import interfaces.StateInterface;
 
 public class SolutionMaker {
 	
@@ -43,7 +31,7 @@ public class SolutionMaker {
 	
 	public SolutionMaker(List<String> filePaths) throws TemporaryFolderCreationException, MalformedURLException{
 		this.filePaths = filePaths;
-		classDestinationFile = new File("externalClasses/" + UUID.randomUUID().toString() + "/");
+		classDestinationFile = new File("/srv/tomcat-persistent/graph/externalClasses/" + UUID.randomUUID().toString() + "/");
 		System.out.println(classDestinationFile);
 		makeTemporaryFolderForClasses();
 		classDestinationURL = classDestinationFile.toURI().toURL();
@@ -85,7 +73,7 @@ public class SolutionMaker {
 	}
 	
 	private void compileFiles() throws CompilationException, IOException, URISyntaxException{
-		List<String> processBuilderArgList = new ArrayList<>(Arrays.asList("javac", "-d", classDestinationURL.getPath(), "-nowarn", "-cp", getClass().getProtectionDomain().getCodeSource().getLocation().toURI().getPath()));
+		List<String> processBuilderArgList = new ArrayList<>(Arrays.asList("/opt/jdk/bin/javac", "-d", classDestinationURL.getPath(), "-nowarn", "-cp", "/srv/tomcat-persistent/graph/generated/"));
 		processBuilderArgList.addAll(filePaths);
 		
 		ProcessBuilder processBuilder = new ProcessBuilder(processBuilderArgList);
@@ -126,7 +114,10 @@ public class SolutionMaker {
 		for (File classFile : loadableClasses) {
 			System.out.println(classFile);
 			String classNameAndPackage = classFile.getAbsolutePath()
-					.replace(classDestinationFile.getAbsolutePath() + "\\", "").replace("\\", ".");
+					.replace(classDestinationFile.getPath() + File.separator, "").replace(File.separator, ".");
+
+			if(false)
+			throw new RuntimeException(classDestinationFile.getPath() + " " + classDestinationFile.getAbsolutePath() + " " + classFile.getAbsolutePath());
 
 			classNameAndPackage = classNameAndPackage.substring(0, classNameAndPackage.length() - 6);
 			try {

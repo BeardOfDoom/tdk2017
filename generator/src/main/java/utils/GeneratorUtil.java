@@ -1,31 +1,22 @@
 package utils;
 
 import antlr.SMLParser.Parameter_description_lineContext;
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.CodeBlock;
-import com.squareup.javapoet.FieldSpec;
-import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.ParameterizedTypeName;
-import com.squareup.javapoet.TypeName;
+import com.squareup.javapoet.*;
 import enums.ExpressionType;
 import enums.VarStruct;
 import enums.VarType;
 import interfaces.Expression;
-import java.io.File;
-import java.util.AbstractMap.SimpleEntry;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-import javax.lang.model.element.Modifier;
 import representation.ExpressionRepresentation;
 import representation.ForExpressionRepresentation;
 import representation.ParameterRepresentation;
 import representation.VarDefiningExpression;
 import representation.state.AttributeRepresentation;
+
+import javax.lang.model.element.Modifier;
+import java.io.File;
+import java.util.AbstractMap.SimpleEntry;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public final class GeneratorUtil {
 
@@ -325,7 +316,7 @@ public final class GeneratorUtil {
 
   public static String getFilePath(String directoryName, String packageName, String fileName) {
     return new File(
-        directoryName + "\\" + packageName.replace(".", "\\") + "\\" + fileName + ".java")
+        directoryName + "/" + packageName.replace(".", "/") + "/" + fileName + ".java")
         .getAbsolutePath();
   }
 }

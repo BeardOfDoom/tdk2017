@@ -1,20 +1,16 @@
 package solutionsearchers;
 
+import interfaces.OperatorInterface;
+import interfaces.StateInterface;
+import nodes.Node;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
-
-import interfaces.OperatorInterface;
-import interfaces.StateInterface;
-import nodes.Node;
+import java.util.*;
 
 public class SolutionHelper {
 	
@@ -41,8 +37,8 @@ public class SolutionHelper {
 	}
 	
 	public static String writeOutputForGraphic(Class<?> solutionSearcher, List<Node> nodes, List<Node> treeNodes, List<Node> solutions, String steps, List<OperatorInterface> operators){
-		File outputFolder = new File("solutionOutputs");
-		File output = new File("solutionOutputs/" + solutionSearcher.getSimpleName() + LocalDateTime.now().format(DateTimeFormatter.ofPattern("YYYY-MM-dd-hh-mm-ss")) + UUID.randomUUID().toString() + ".txt");
+		File outputFolder = new File("/srv/tomcat-persistent/graph/solutionOutputs");
+		File output = new File("/srv/tomcat-persistent/graph/solutionOutputs/" + solutionSearcher.getSimpleName() + LocalDateTime.now().format(DateTimeFormatter.ofPattern("YYYY-MM-dd-hh-mm-ss")) + UUID.randomUUID().toString() + ".txt");
 		if(!outputFolder.exists())
 			outputFolder.mkdirs();
 			
