@@ -1,4 +1,4 @@
-package solutionsearchers;
+package solutionsearchers.helpers;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -36,11 +36,12 @@ public class SolutionHelper {
 			builder.setLength(builder.length() - 1);
 			builder.append("\n");
 		}
-		builder.setLength(builder.length() - 1);
+		if(builder.length() != 0)
+			builder.setLength(builder.length() - 1);
 		return builder.toString();
 	}
 	
-	public static String writeOutputForGraphic(Class<?> solutionSearcher, List<Node> nodes, List<Node> treeNodes, List<Node> solutions, String steps, List<OperatorInterface> operators){
+	public static String writeOutput(Class<?> solutionSearcher, List<Node> nodes, List<Node> treeNodes, List<Node> solutions, String steps, List<OperatorInterface> operators){
 		File outputFolder = new File("solutionOutputs");
 		File output = new File("solutionOutputs/" + solutionSearcher.getSimpleName() + LocalDateTime.now().format(DateTimeFormatter.ofPattern("YYYY-MM-dd-hh-mm-ss")) + UUID.randomUUID().toString() + ".txt");
 		if(!outputFolder.exists())
@@ -150,10 +151,12 @@ public class SolutionHelper {
 			}
 			
 			writer.write("steps\n");
-			writer.write(steps + "\n");
+			writer.write(steps);
 			
-			writer.write("solutions\n");
-			writer.write(writeSolutions(solutions, operators));
+			writer.write("solutions");
+			String solution = writeSolutions(solutions, operators);
+			if(!solution.isEmpty())
+				writer.write("\n" + solution);
 
 			writer.close();
 		} catch (IOException e) {

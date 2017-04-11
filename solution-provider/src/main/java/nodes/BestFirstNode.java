@@ -11,10 +11,10 @@ public class BestFirstNode extends Node{
 	private double heuristic;
 
 	public BestFirstNode(StateInterface state, BestFirstNode parent, OperatorInterface operator, int id, String heuristicFunction, Set<String> variablesInHeuristicFunction) {
-		setState(state);
-		setParent(parent);
-		setOperator(operator);
-		setId(id);
+		this.state = state;
+		this.parent = parent;
+		this.operator = operator;
+		this.id = id;
 		if(heuristicFunction.isEmpty()){
 			this.heuristic = 1;
 		} else {
