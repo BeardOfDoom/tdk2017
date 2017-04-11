@@ -3,7 +3,7 @@
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <!DOCTYPE html>
 
-<html lang="hu">
+<html>
 
 <head>
 
@@ -20,7 +20,7 @@
 	<script src="${d3js}"></script>
 
 	<meta charset="UTF-8">
-	<title><spring:message code="title.graphs" /></title>
+	<title>Graph</title>
 
 </head>
 
@@ -31,15 +31,20 @@
 <div class="container pageContainer">
 	<div class="row">
 		
-		<h1>Gráf megtekintő</h1>
+		<h1>Graph visualizer</h1>
 		
 		<c:choose>
+		
+		<c:when test="${processDTO.done == false}">
+			<h3>In progress...</h3>
+		</c:when>
+		
 		<c:when test="${processDTO.done == true && processDTO.error == false}">
 
 		<p>
-		<button id="stepButton">STEP</button>
-		<button id="backButton">BACK</button>
-		<button id="solutionButton">SOLUTION</button>
+		<button class="btn btn-primary" id="stepButton">Step</button>
+		<button class="btn btn-primary" id="backButton">Back</button>
+		<button class="btn btn-primary" id="solutionButton">Solution</button>
 		</p>
 
 		<svg width="960" height="600"></svg>
@@ -53,9 +58,10 @@
 			initGraph("${pageContext.request.contextPath}/file/json/${processDTO.processIdentifier}");
 		</script>
 		</c:when>
+		
 		<c:when test="${processDTO.done == true && processDTO.error == true}">
 			<div class="panel panel-danger response">
-				<div class="panel-heading">Hiba!</div>
+				<div class="panel-heading">Error!</div>
 				<div class="panel-body">${processDTO.errorMessage}</div>
 			</div>
 		</c:when>

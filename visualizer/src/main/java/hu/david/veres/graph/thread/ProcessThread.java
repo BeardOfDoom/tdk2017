@@ -1,6 +1,7 @@
 package hu.david.veres.graph.thread;
 
 import hu.david.veres.graph.dto.ProcessDTO;
+import hu.david.veres.graph.form.ProblemForm;
 import hu.david.veres.graph.generator.ResultGenerator;
 import hu.david.veres.graph.model.Result;
 import hu.david.veres.graph.service.ProcessService;
@@ -15,6 +16,9 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 @Scope("prototype")
@@ -28,8 +32,10 @@ public class ProcessThread implements Runnable {
 
     private String processIdentifier;
     private SolutionManager solutionManager;
-    private String algorithmName;
-    private String heuristicFunction;
+    private ProblemForm problemForm;
+    private int algorithmIndex;
+    /*private String algorithmName;
+    private String heuristicFunction;*/
 
     @Autowired
     private ProcessService processService;
@@ -44,33 +50,33 @@ public class ProcessThread implements Runnable {
 
         // Generate and get solution output file name
         String absoluteFileName = "";
-        switch (algorithmName) {
+        switch (problemForm.getAlgorithms().get(algorithmIndex)) {
             case "BackTrackSimple":
-                absoluteFileName = solutionManager.doBackTrackSimple(heuristicFunction);
+                absoluteFileName = solutionManager.doBackTrackSimple(problemForm.isDoTree());
                 break;
             case "BackTrackCircle":
-                absoluteFileName = solutionManager.doBackTrackCircle(heuristicFunction);
+                absoluteFileName = solutionManager.doBackTrackCircle(problemForm.isDoTree());
                 break;
             case "BackTrackPathLengthLimitation":
-                absoluteFileName = solutionManager.doBackTrackPathLengthLimitation(heuristicFunction);
+                absoluteFileName = solutionManager.doBackTrackPathLengthLimitation(problemForm.isDoTree(), problemForm.getBackTrackPathLengthLimitationLimit());
                 break;
             case "BackTrackOptimal":
-                absoluteFileName = solutionManager.doBackTrackOptimal(heuristicFunction);
+                absoluteFileName = solutionManager.doBackTrackOptimal(problemForm.isDoTree(), problemForm.getBackTrackOptimalLimit());
                 break;
             case "BreadthFirst":
-                absoluteFileName = solutionManager.doBreadthFirst(heuristicFunction);
+                absoluteFileName = solutionManager.doBreadthFirst(problemForm.isDoTree());
                 break;
             case "DepthFirst":
-                absoluteFileName = solutionManager.doDepthFirst(heuristicFunction);
+                absoluteFileName = solutionManager.doDepthFirst(problemForm.isDoTree());
                 break;
             case "Optimal":
-                absoluteFileName = solutionManager.doOptimal(heuristicFunction);
+                absoluteFileName = solutionManager.doOptimal(problemForm.isDoTree());
                 break;
             case "BestFirst":
-                absoluteFileName = solutionManager.doBestFirst(heuristicFunction);
+                absoluteFileName = solutionManager.doBestFirst(problemForm.getHeuristic(), convertInputToSet(problemForm.getVariablesInHeuristicFunction()), problemForm.isDoTree());
                 break;
             case "A":
-                absoluteFileName = solutionManager.doA(heuristicFunction);
+                absoluteFileName = solutionManager.doA(problemForm.getHeuristic(), convertInputToSet(problemForm.getVariablesInHeuristicFunction()), problemForm.isDoTree());
                 break;
         }
 
@@ -115,6 +121,14 @@ public class ProcessThread implements Runnable {
         processDTO.setError(error);
         processDTO.setErrorMessage(errorMessage);
         processService.save(processDTO);
+
+    }
+
+    private Set<String> convertInputToSet(String input) {
+
+        String[] parts = input.split(", ");
+
+        return Arrays.stream(parts).collect(Collectors.toSet());
 
     }
 

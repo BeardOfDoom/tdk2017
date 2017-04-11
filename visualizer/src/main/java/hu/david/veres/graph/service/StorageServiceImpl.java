@@ -17,10 +17,6 @@ public class StorageServiceImpl implements StorageService {
 
     private static final String EXTENSION_TXT = ".txt";
     private static final String EXTENSION_JSON = ".json";
-    private static final String SLASH = "/";
-
-    @Value("${file.upload.folder}")
-    private String fileUploadFolderName;
 
     @Value("${file.json.folder}")
     private String jsonFolderName;
@@ -32,46 +28,9 @@ public class StorageServiceImpl implements StorageService {
     private ObjectMapper objectMapper;
 
     @Override
-    public File storeUploadedFile(MultipartFile file, String newFileName) throws IOException {
-
-        File newFile = new File(fileUploadFolderName + SLASH + newFileName + EXTENSION_TXT);
-
-        file.transferTo(newFile);
-
-        return newFile;
-
-    }
-
-    @Override
-    public File getUploadedFile(String fileName) throws FileNotFoundException {
-
-        File file = new File(fileUploadFolderName + SLASH + fileName + EXTENSION_TXT);
-
-        if(!file.exists()){
-            throw new FileNotFoundException();
-        }
-
-        return file;
-
-    }
-
-    @Override
-    public void deleteUploadedFile(String fileName) {
-
-        File file = new File(fileUploadFolderName + SLASH + fileName + EXTENSION_TXT);
-
-        if (file.exists()) {
-
-            file.delete();
-
-        }
-
-    }
-
-    @Override
     public void storeResultInJsonFile(Result result, String newFileName) throws IOException {
 
-        File file = new File(jsonFolderName + SLASH + newFileName + EXTENSION_JSON);
+        File file = new File(jsonFolderName + File.separator + newFileName + EXTENSION_JSON);
 
         objectMapper.writerWithDefaultPrettyPrinter().writeValue(file, result);
 
@@ -80,7 +39,7 @@ public class StorageServiceImpl implements StorageService {
     @Override
     public File getJsonFile(String fileName) throws FileNotFoundException {
 
-        File file = new File(jsonFolderName + SLASH + fileName + EXTENSION_JSON);
+        File file = new File(jsonFolderName + File.separator + fileName + EXTENSION_JSON);
 
         if(!file.exists()){
             throw new FileNotFoundException();
@@ -93,7 +52,7 @@ public class StorageServiceImpl implements StorageService {
     @Override
     public File storeStateSpace(String stateSpace, String fileName) throws IOException {
 
-        File file = new File(stateSpaceFolderName + SLASH + fileName + EXTENSION_TXT);
+        File file = new File(stateSpaceFolderName + File.separator + fileName + EXTENSION_TXT);
 
         FileWriter fileWriter = new FileWriter(file);
 

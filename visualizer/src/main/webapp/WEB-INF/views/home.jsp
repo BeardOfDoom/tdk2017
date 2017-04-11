@@ -3,7 +3,7 @@
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <!DOCTYPE html>
 
-<html lang="hu">
+<html>
 
 <head>
 
@@ -18,7 +18,7 @@
 	<script src="${bootstrapJs}"></script>
 
 	<meta charset="UTF-8">
-	<title><spring:message code="title.home" /></title>
+	<title>Home</title>
 
 </head>
 

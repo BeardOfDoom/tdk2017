@@ -9,12 +9,6 @@ import java.io.IOException;
 
 public interface StorageService {
 
-    File storeUploadedFile(MultipartFile file, String newFileName) throws IOException;
-
-    File getUploadedFile(String fileName) throws FileNotFoundException;
-
-    void deleteUploadedFile(String fileName);
-
     void storeResultInJsonFile(Result result, String newFileName) throws IOException;
 
     File getJsonFile(String fileName) throws FileNotFoundException;
