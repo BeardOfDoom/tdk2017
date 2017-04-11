@@ -176,8 +176,8 @@ public class BackTrackOptimal {
 				informationCollector.addTreeNodeToActivateNodes(treeActual);
 				informationCollector.addGraphNodeToStepOnNodes(actual);
 				informationCollector.addTreeNodeToStepOnNodes(treeActual);
-				informationCollector.addGraphNodeToCloseNodes(actual);
-				informationCollector.addTreeNodeToCloseNodes(treeActual);
+				informationCollector.addGraphNodeToCloseNodes(actual.getParent());
+				informationCollector.addTreeNodeToCloseNodes(treeActual.getParent());
 				//steps.append("OP" + OPERATORS.indexOf(actual.getOperator()) + " " + actual.getId() + "\n");
 			}
 			informationCollector.appendSteps();

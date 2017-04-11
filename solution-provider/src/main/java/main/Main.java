@@ -22,8 +22,6 @@ public class Main {
 	// TODO sima backtrack mikor álljon meg??? (while helyett for?)
 	
 	// TODO info-ba mik kerülhetnek még bele?
-
-	// TODO solutionnál ne jelenjen meg a fás solution ha nem kell. (sztem a kiiratás hivást be kellesz vinni a collectorba)
 	public static void main(String[] args){
 		String laciState = "C:\\Users\\Vécsi Ádám\\Downloads\\State.java";
 		String laciOperator = "C:\\Users\\Vécsi Ádám\\Downloads\\Operator1.java";
