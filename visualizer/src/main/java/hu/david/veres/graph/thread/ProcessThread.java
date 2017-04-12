@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -125,6 +126,10 @@ public class ProcessThread implements Runnable {
     }
 
     private Set<String> convertInputToSet(String input) {
+
+        if(input.isEmpty()){
+            return new HashSet<>();
+        }
 
         String[] parts = input.split(", ");
 
