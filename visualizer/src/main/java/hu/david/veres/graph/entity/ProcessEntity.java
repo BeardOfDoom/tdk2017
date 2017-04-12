@@ -28,4 +28,10 @@ public class ProcessEntity {
     @Column(name = "error_message")
     private String errorMessage;
 
+    @Column(name = "solution_file_name")
+    private String solutionFileName;
+
+    @Column(name = "java_package_name")
+    private String javaPackageName;
+
 }

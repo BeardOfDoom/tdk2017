@@ -15,4 +15,8 @@ public interface StorageService {
 
     File storeStateSpace(String stateSpace, String fileName) throws IOException;
 
+    File getSolutionFile(String fileName) throws FileNotFoundException;
+
+    File getJavaFile(String packageName, String fileName) throws FileNotFoundException;
+
 }

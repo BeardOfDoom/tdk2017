@@ -7,8 +7,8 @@
 
 target/
 
-upload/
 json/
 solutionOutputs/
 generated/
 statespace/
+externalClasses/

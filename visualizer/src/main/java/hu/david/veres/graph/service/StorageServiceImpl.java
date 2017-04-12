@@ -17,12 +17,19 @@ public class StorageServiceImpl implements StorageService {
 
     private static final String EXTENSION_TXT = ".txt";
     private static final String EXTENSION_JSON = ".json";
+    private static final String EXTENSION_JAVA = ".java";
 
     @Value("${file.json.folder}")
     private String jsonFolderName;
 
     @Value("${file.state.space.folder}")
     private String stateSpaceFolderName;
+
+    @Value("${file.generated.folder}")
+    private String generatedFolderName;
+
+    @Value("${file.solution.outputs.folder}")
+    private String solutionOutputsFolderName;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -59,6 +66,34 @@ public class StorageServiceImpl implements StorageService {
         fileWriter.write(stateSpace);
 
         fileWriter.close();
+
+        return file;
+
+    }
+
+    @Override
+    public File getSolutionFile(String fileName) throws FileNotFoundException {
+
+        File file = new File(solutionOutputsFolderName + File.separator + fileName + EXTENSION_TXT);
+
+        if(!file.exists()){
+            throw new FileNotFoundException();
+        }
+
+        return file;
+
+    }
+
+    @Override
+    public File getJavaFile(String packageName, String fileName) throws FileNotFoundException {
+
+        String packageLocation = packageName.replace('.', File.separatorChar);
+
+        File file = new File(generatedFolderName + File.separator + packageLocation + File.separator + fileName + EXTENSION_JAVA);
+
+        if(!file.exists()){
+            throw new FileNotFoundException();
+        }
 
         return file;
 

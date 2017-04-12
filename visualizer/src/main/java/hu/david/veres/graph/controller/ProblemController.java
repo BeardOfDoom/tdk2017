@@ -115,9 +115,9 @@ public class ProblemController {
         // Generate .java files to a folder with generated package name
         ProjectGenerator projectGenerator = new ProjectGenerator(projectRepresentation);
         List<ClassRepresentation> classRepresentations;
+        String packageName = ProcessUtils.generatePackageName();
         try {
-            classRepresentations = projectGenerator.generate(generatedFolderName,
-                    ProcessUtils.generatePackageName(), true);
+            classRepresentations = projectGenerator.generate(generatedFolderName, packageName, true);
         } catch (IOException e) {
             e.printStackTrace();
             return errorModelAndView(ERROR_MESSAGE_IOEXCEPTION);
@@ -126,8 +126,6 @@ public class ProblemController {
         // Object wrapping the created .java files information
         ClassManager classManager = new ClassManager();
         classManager.addClasses(classRepresentations);
-
-        System.out.println(classManager.getFilePaths());
 
         // SOLUTION
 
@@ -192,6 +190,7 @@ public class ProblemController {
             ProcessDTO processDTO = new ProcessDTO();
             processDTO.setProcessIdentifier(processIdentifier);
             processDTO.setDone(false);
+            processDTO.setJavaPackageName(packageName);
             processService.save(processDTO);
 
             // Start the process
@@ -200,8 +199,6 @@ public class ProblemController {
             processThread.setSolutionManager(solutionManager);
             processThread.setProblemForm(problemForm);
             processThread.setAlgorithmIndex(i);
-            /*processThread.setAlgorithmName(problemForm.getAlgorithms().get(i));
-            processThread.setHeuristicFunction(problemForm.getHeuristic());*/
             threadPoolTaskExecutor.execute(processThread);
 
         }

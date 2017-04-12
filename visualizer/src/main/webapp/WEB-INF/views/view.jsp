@@ -57,6 +57,24 @@
 		<script>
 			initGraph("${pageContext.request.contextPath}/file/json/${processDTO.processIdentifier}");
 		</script>
+		
+		<div>
+			<p>
+				Java files:<br/>
+				<ul>
+					<c:forEach var="javaFileName" items="${javaFileNames}">
+						<li><a href="${pageContext.request.contextPath}/file/java/${processDTO.javaPackageName}/${javaFileName}">${javaFileName}.java</a></li>
+					</c:forEach>
+				</ul>
+			</p>
+			<p>
+				Solution output: <a href="${pageContext.request.contextPath}/file/solution/${processDTO.solutionFileName}">TXT</a>
+			</p>
+			<p>
+				JSON output: <a href="${pageContext.request.contextPath}/file/json/${processDTO.processIdentifier}">JSON</a>
+			</p>
+		</div>
+		
 		</c:when>
 		
 		<c:when test="${processDTO.done == true && processDTO.error == true}">

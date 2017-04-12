@@ -34,8 +34,6 @@ public class ProcessThread implements Runnable {
     private SolutionManager solutionManager;
     private ProblemForm problemForm;
     private int algorithmIndex;
-    /*private String algorithmName;
-    private String heuristicFunction;*/
 
     @Autowired
     private ProcessService processService;
@@ -85,7 +83,7 @@ public class ProcessThread implements Runnable {
         // Check if file exists
         File file = new File(absoluteFileName);
         if (!file.exists()) {
-            finishAndUpdateProcess(processIdentifier, true, ERROR_MESSAGE_FILE_NOT_EXISTS);
+            finishAndUpdateProcess(processIdentifier, true, ERROR_MESSAGE_FILE_NOT_EXISTS, null);
             return;
         }
 
@@ -95,7 +93,7 @@ public class ProcessThread implements Runnable {
             ResultGenerator resultGenerator = new ResultGenerator();
             result = resultGenerator.generate(file);
         } catch (IOException e) {
-            finishAndUpdateProcess(processIdentifier, true, ERROR_MESSAGE_IOEXCEPTION);
+            finishAndUpdateProcess(processIdentifier, true, ERROR_MESSAGE_IOEXCEPTION, null);
             e.printStackTrace();
             return;
         }
@@ -104,22 +102,24 @@ public class ProcessThread implements Runnable {
         try {
             storageService.storeResultInJsonFile(result, processIdentifier);
         } catch (IOException e) {
-            finishAndUpdateProcess(processIdentifier, true, ERROR_MESSAGE_IOEXCEPTION);
+            finishAndUpdateProcess(processIdentifier, true, ERROR_MESSAGE_IOEXCEPTION, null);
             e.printStackTrace();
             return;
         }
 
         // Update database
-        finishAndUpdateProcess(processIdentifier, false, null);
+        String solutionFileName = file.getName().substring(0, file.getName().indexOf('.'));
+        finishAndUpdateProcess(processIdentifier, false, null, solutionFileName);
 
     }
 
-    private void finishAndUpdateProcess(String processIdentifier, boolean error, String errorMessage) {
+    private void finishAndUpdateProcess(String processIdentifier, boolean error, String errorMessage, String solutionFileName) {
 
         ProcessDTO processDTO = processService.getProcessByIdentifier(processIdentifier);
         processDTO.setDone(true);
         processDTO.setError(error);
         processDTO.setErrorMessage(errorMessage);
+        processDTO.setSolutionFileName(solutionFileName);
         processService.save(processDTO);
 
     }
