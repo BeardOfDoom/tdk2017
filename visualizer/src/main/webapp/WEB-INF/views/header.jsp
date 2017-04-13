@@ -27,7 +27,7 @@
 					<a href="${pageContext.request.contextPath}/graph">Graphs</a>
 				</li>
 				<li>
-					<a href="#">Other</a>
+					<a href="https://github.com/veresdavid/deik-tdk-2017" target="_blank">Code on GitHub</a>
 				</li>
 			</ul>
 		</div>
