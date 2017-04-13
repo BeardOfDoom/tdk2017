@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import exceptions.InvalidVariableException;
+import exceptions.TypeMismatchException;
 import interfaces.OperatorInterface;
 import interfaces.StateInterface;
 import nodes.BestFirstNode;
@@ -23,7 +25,7 @@ public class BestFirst {
 	private int treeId;
 	private InformationCollector informationCollector;
 	
-	public BestFirst(BestFirstNode start, String heuristicFunction, Set<String> variablesInHeuristicFunction, List<OperatorInterface> OPERATORS, InformationCollector informationCollector){
+	public BestFirst(BestFirstNode start, String heuristicFunction, Set<String> variablesInHeuristicFunction, List<OperatorInterface> OPERATORS, InformationCollector informationCollector) throws ClassNotFoundException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException, InstantiationException, InvalidVariableException, TypeMismatchException{
 		treeId = -1;
 		this.heuristicFunction = heuristicFunction;
 		this.variablesInHeuristicFunction = variablesInHeuristicFunction;
@@ -45,7 +47,7 @@ public class BestFirst {
 		return null;
 	}
 	
-	private void expand(BestFirstNode node){
+	private void expand(BestFirstNode node) throws ClassNotFoundException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException, InstantiationException, InvalidVariableException, TypeMismatchException{
 		//List<Integer> newOpenNodeIdList = new ArrayList<>();
 		//List<String> operatorIdList = new ArrayList<>();
 		
@@ -90,7 +92,7 @@ public class BestFirst {
 		//steps.append(operatorIdList + "|" + newOpenNodeIdList + "|");
 	}
 	
-	public String search(){
+	public String search() throws ClassNotFoundException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException, InstantiationException, InvalidVariableException, TypeMismatchException{
 		while(true){
 			if(openNodes.isEmpty()){
 				break;

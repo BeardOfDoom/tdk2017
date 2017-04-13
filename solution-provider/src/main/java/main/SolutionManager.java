@@ -5,8 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import exceptions.InvalidVariableException;
 import exceptions.OperatorInitializationException;
 import exceptions.StateInitializationException;
+import exceptions.TypeMismatchException;
 import interfaces.OperatorInterface;
 import interfaces.StateInterface;
 import nodes.ANode;
@@ -130,7 +132,7 @@ public class SolutionManager{
 	}
 	
 	
-	public String doBestFirst(String heuristicFunction, Set<String> variablesInHeuristicFunction, boolean doTree){
+	public String doBestFirst(String heuristicFunction, Set<String> variablesInHeuristicFunction, boolean doTree) throws ClassNotFoundException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException, InstantiationException, InvalidVariableException, TypeMismatchException{
 		InformationCollector informationCollector;
 		if(doTree){
 			informationCollector = new ExtendedInformationCollector();
@@ -142,7 +144,7 @@ public class SolutionManager{
 		return bestFirst.search();
 	}
 	
-	public String doA(String heuristicFunction, Set<String> variablesInHeuristicFunction, boolean doTree) {
+	public String doA(String heuristicFunction, Set<String> variablesInHeuristicFunction, boolean doTree) throws ClassNotFoundException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException, InstantiationException, InvalidVariableException, TypeMismatchException {
 		InformationCollector informationCollector;
 		if(doTree){
 			informationCollector = new ExtendedInformationCollector();

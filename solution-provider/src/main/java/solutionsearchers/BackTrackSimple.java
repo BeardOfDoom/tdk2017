@@ -36,7 +36,9 @@ public class BackTrackSimple{
 	}
 	
 	public String search(){
-		while(true){
+		int i = 0;
+		while(i < 2500){
+			i++;
 			if(actual == null){
 				break;
 			}

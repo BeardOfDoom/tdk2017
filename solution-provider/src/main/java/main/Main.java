@@ -6,20 +6,20 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import exceptions.CompilationException;
+import exceptions.InvalidVariableException;
 import exceptions.OperatorInitializationException;
 import exceptions.OperatorNotFoundException;
 import exceptions.StateInitializationException;
 import exceptions.StateNotFoundException;
 import exceptions.TemporaryFolderCreationException;
 import exceptions.TemporaryFolderDeletionException;
+import exceptions.TypeMismatchException;
 import exceptions.WrongFileExtensionException;
 import model.UserInput;
 
 public class Main {
 	
 	// TODO valamilyen segitséget nyujtani hogy az interfaceket könnyen elérje a felhasználó (kiirni a felületre)
-
-	// TODO sima backtrack mikor álljon meg??? (while helyett for?)
 	
 	// TODO info-ba mik kerülhetnek még bele?
 	public static void main(String[] args){
@@ -61,11 +61,23 @@ public class Main {
 			}
 			
 			if(userInput.isDoBestFirst()){
-				solutionManager.doBestFirst(userInput.getHeuristicFunction(), userInput.getVariablesInHeuristicFunction(), userInput.isDoTree());
+				try {
+					solutionManager.doBestFirst(userInput.getHeuristicFunction(), userInput.getVariablesInHeuristicFunction(), userInput.isDoTree());
+				} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException
+						| InstantiationException | InvalidVariableException | TypeMismatchException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 			
 			if(userInput.isDoA()){
-				solutionManager.doA(userInput.getHeuristicFunction(), userInput.getVariablesInHeuristicFunction(), userInput.isDoTree());
+				try {
+					solutionManager.doA(userInput.getHeuristicFunction(), userInput.getVariablesInHeuristicFunction(), userInput.isDoTree());
+				} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException
+						| InstantiationException | InvalidVariableException | TypeMismatchException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		} catch (WrongFileExtensionException | TemporaryFolderCreationException | CompilationException | IOException | ClassNotFoundException | StateNotFoundException | OperatorNotFoundException | StateInitializationException | OperatorInitializationException | TemporaryFolderDeletionException | URISyntaxException e) {
 			// TODO Auto-generated catch block
