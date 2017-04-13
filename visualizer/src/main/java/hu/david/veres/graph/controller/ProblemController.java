@@ -41,8 +41,7 @@ import java.util.List;
 @Controller
 public class ProblemController {
 
-    private static final String ERROR_MESSAGE_IOEXCEPTION = "IOException";
-    private static final String ERROR_MESSAGE_TMP = "Temporary error message!";
+    private static final String ERROR_MESSAGE_SERVER_SIDE = "Server-side error! Please try again or come back later!";
 
     @Value("${file.generated.folder}")
     private String generatedFolderName;
@@ -97,7 +96,7 @@ public class ProblemController {
             file = storageService.storeStateSpace(problemForm.getStateSpace(), fileName);
         } catch (IOException e) {
             e.printStackTrace();
-            return errorModelAndView(ERROR_MESSAGE_IOEXCEPTION);
+            return errorModelAndView(ERROR_MESSAGE_SERVER_SIDE);
         }
 
         // Process the file
@@ -105,11 +104,11 @@ public class ProblemController {
             projectRepresentation = inputReader.processInputFile(file.getAbsolutePath());
         } catch (IOException e) {
             e.printStackTrace();
-            return errorModelAndView(ERROR_MESSAGE_IOEXCEPTION);
+            return errorModelAndView(ERROR_MESSAGE_SERVER_SIDE);
         } catch (IncorrectInputException e) {
             System.out.println(e.getMsg());
             e.printStackTrace();
-            return errorModelAndView(ERROR_MESSAGE_TMP);
+            return errorModelAndView(e.getMsg());
         }
 
         // Generate .java files to a folder with generated package name
@@ -120,7 +119,7 @@ public class ProblemController {
             classRepresentations = projectGenerator.generate(generatedFolderName, packageName, true);
         } catch (IOException e) {
             e.printStackTrace();
-            return errorModelAndView(ERROR_MESSAGE_IOEXCEPTION);
+            return errorModelAndView(ERROR_MESSAGE_SERVER_SIDE);
         }
 
         // Object wrapping the created .java files information
@@ -139,40 +138,40 @@ public class ProblemController {
 
         } catch (TemporaryFolderCreationException e) {
             e.printStackTrace();
-            return errorModelAndView(ERROR_MESSAGE_TMP);
+            return errorModelAndView(ERROR_MESSAGE_SERVER_SIDE);
         } catch (MalformedURLException e) {
             e.printStackTrace();
-            return errorModelAndView(ERROR_MESSAGE_TMP);
+            return errorModelAndView(ERROR_MESSAGE_SERVER_SIDE);
         } catch (URISyntaxException e) {
             e.printStackTrace();
-            return errorModelAndView(ERROR_MESSAGE_TMP);
+            return errorModelAndView(ERROR_MESSAGE_SERVER_SIDE);
         } catch (WrongFileExtensionException e) {
             e.printStackTrace();
-            return errorModelAndView(ERROR_MESSAGE_TMP);
+            return errorModelAndView(ERROR_MESSAGE_SERVER_SIDE);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
-            return errorModelAndView(ERROR_MESSAGE_TMP);
+            return errorModelAndView(ERROR_MESSAGE_SERVER_SIDE);
         } catch (TemporaryFolderDeletionException e) {
             e.printStackTrace();
-            return errorModelAndView(ERROR_MESSAGE_TMP);
+            return errorModelAndView(ERROR_MESSAGE_SERVER_SIDE);
         } catch (CompilationException e) {
             e.printStackTrace();
-            return errorModelAndView(ERROR_MESSAGE_TMP);
+            return errorModelAndView(ERROR_MESSAGE_SERVER_SIDE);
         } catch (OperatorNotFoundException e) {
             e.printStackTrace();
-            return errorModelAndView(ERROR_MESSAGE_TMP);
+            return errorModelAndView(ERROR_MESSAGE_SERVER_SIDE);
         } catch (OperatorInitializationException e) {
             e.printStackTrace();
-            return errorModelAndView(ERROR_MESSAGE_TMP);
+            return errorModelAndView(ERROR_MESSAGE_SERVER_SIDE);
         } catch (StateInitializationException e) {
             e.printStackTrace();
-            return errorModelAndView(ERROR_MESSAGE_TMP);
+            return errorModelAndView(ERROR_MESSAGE_SERVER_SIDE);
         } catch (StateNotFoundException e) {
             e.printStackTrace();
-            return errorModelAndView(ERROR_MESSAGE_TMP);
+            return errorModelAndView(ERROR_MESSAGE_SERVER_SIDE);
         } catch (IOException e) {
             e.printStackTrace();
-            return errorModelAndView(ERROR_MESSAGE_IOEXCEPTION);
+            return errorModelAndView(ERROR_MESSAGE_SERVER_SIDE);
         }
 
         // START PROCESSES

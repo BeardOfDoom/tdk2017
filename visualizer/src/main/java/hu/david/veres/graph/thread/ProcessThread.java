@@ -28,8 +28,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 public class ProcessThread implements Runnable {
 
-    private static final String ERROR_MESSAGE_IOEXCEPTION = "IOException";
-    private static final String ERROR_MESSAGE_FILE_NOT_EXISTS = "File not exists";
+    private static final String ERROR_MESSAGE_SERVER_SIDE = "Server-side error! Please try again!";
 
     private String processIdentifier;
     private SolutionManager solutionManager;
@@ -84,7 +83,7 @@ public class ProcessThread implements Runnable {
         // Check if file exists
         File file = new File(absoluteFileName);
         if (!file.exists()) {
-            finishAndUpdateProcess(processIdentifier, true, ERROR_MESSAGE_FILE_NOT_EXISTS, null);
+            finishAndUpdateProcess(processIdentifier, true, ERROR_MESSAGE_SERVER_SIDE, null);
             return;
         }
 
@@ -94,7 +93,7 @@ public class ProcessThread implements Runnable {
             ResultGenerator resultGenerator = new ResultGenerator();
             result = resultGenerator.generate(file);
         } catch (IOException e) {
-            finishAndUpdateProcess(processIdentifier, true, ERROR_MESSAGE_IOEXCEPTION, null);
+            finishAndUpdateProcess(processIdentifier, true, ERROR_MESSAGE_SERVER_SIDE, null);
             e.printStackTrace();
             return;
         }
@@ -103,7 +102,7 @@ public class ProcessThread implements Runnable {
         try {
             storageService.storeResultInJsonFile(result, processIdentifier);
         } catch (IOException e) {
-            finishAndUpdateProcess(processIdentifier, true, ERROR_MESSAGE_IOEXCEPTION, null);
+            finishAndUpdateProcess(processIdentifier, true, ERROR_MESSAGE_SERVER_SIDE, null);
             e.printStackTrace();
             return;
         }
