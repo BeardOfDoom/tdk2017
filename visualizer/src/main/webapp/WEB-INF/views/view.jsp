@@ -41,11 +41,12 @@
 		
 		<c:when test="${processDTO.done == true && processDTO.error == false}">
 
-		<p>
-		<button class="btn btn-primary" id="stepButton">Step</button>
-		<button class="btn btn-primary" id="backButton">Back</button>
-		<button class="btn btn-primary" id="solutionButton">Solution</button>
-		</p>
+		<div class="graphControl">
+			<button class="btn btn-primary graphControlButton" id="stepButton">Step</button>
+			<button class="btn btn-primary graphControlButton" id="backButton">Back</button>
+			<button class="btn btn-primary graphControlButton" id="solutionButton">Solution</button>
+		</div>
+		<div class="graphControl"><h4>Step: <span id="actualStepNumber">0</span> / <span id="allStepsNumber"></span></h4><div>
 
 		<svg width="960" height="600"></svg>
 
@@ -58,22 +59,51 @@
 			initGraph("${pageContext.request.contextPath}/file/json/${processDTO.processIdentifier}");
 		</script>
 		
-		<div>
-			<p>
-				Java files:<br/>
-				<ul>
+		<table class="table table-responsive informationTable">
+			<tr>
+				<td colspan="2"><h3>Informations</h3></td>
+			</tr>
+			<tr>
+				<td>Graph identifier:</td>
+				<td>${processDTO.processIdentifier}</td>
+			</tr>
+			<tr>
+				<td>Search algorithm:</td>
+				<td><span id="searchAlgorithm"></span></td>
+			</tr>
+			<tr>
+				<td>Solution found:</td>
+				<td><span id="solutionInformation"></span></td>
+			</tr>
+			<tr>
+				<td>Number of nodes:</td>
+				<td><span id="numberOfNodes"></span></td>
+			</tr>
+			<tr>
+				<td>Number of edges:</td>
+				<td><span id="numberOfEdges"></span></td>
+			</tr>
+			<tr>
+				<td>Number of steps:</td>
+				<td><span id="numberOfSteps"></span></td>
+			</tr>
+			<tr>
+				<td>Java files:</td>
+				<td>
 					<c:forEach var="javaFileName" items="${javaFileNames}">
-						<li><a href="${pageContext.request.contextPath}/file/java/${processDTO.javaPackageName}/${javaFileName}">${javaFileName}.java</a></li>
+						<a href="${pageContext.request.contextPath}/file/java/${processDTO.javaPackageName}/${javaFileName}" target="_blank">${javaFileName}.java</a><br/>
 					</c:forEach>
-				</ul>
-			</p>
-			<p>
-				Solution output: <a href="${pageContext.request.contextPath}/file/solution/${processDTO.solutionFileName}">TXT</a>
-			</p>
-			<p>
-				JSON output: <a href="${pageContext.request.contextPath}/file/json/${processDTO.processIdentifier}">JSON</a>
-			</p>
-		</div>
+				</td>
+			</tr>
+			<tr>
+				<td>Solution output:</td>
+				<td><a href="${pageContext.request.contextPath}/file/solution/${processDTO.solutionFileName}" target="_blank">${processDTO.solutionFileName}.txt</a></td>
+			</tr>
+			<tr>
+				<td>JSON output:</td>
+				<td><a href="${pageContext.request.contextPath}/file/json/${processDTO.processIdentifier}" target="_blank">${processDTO.processIdentifier}.json</a></td>
+			</tr>
+		</table>
 		
 		</c:when>
 		

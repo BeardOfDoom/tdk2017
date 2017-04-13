@@ -37,7 +37,7 @@
 		
 		<ul>
 			<c:forEach var="processIdentifier" items="${processIdentifiers}" varStatus="status">
-				<li>${algorithms[status.index]} : <a href="${pageContext.request.contextPath}/graph/view/${processIdentifier}">${processIdentifier}</a></li>
+				<li>${algorithms[status.index]} : <a href="${pageContext.request.contextPath}/graph/view/${processIdentifier}" target="_blank">${processIdentifier}</a></li>
 			</c:forEach>
 		</ul>
 

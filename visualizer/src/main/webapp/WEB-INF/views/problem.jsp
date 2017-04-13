@@ -33,8 +33,6 @@
 
 <div class="container pageContainer">
 	<div class="row">
-	
-		<h1>New problem</h1>
 		
 		<c:choose>
 			<c:when test="${errorMessages != null}">
@@ -52,6 +50,9 @@
 		<form:form method="POST" modelAttribute="problemForm" action="">
 		<table class="table table-responsive problemTable">
 			<tr>
+				<td colspan="2"><h1>New problem</h1></td>
+			</tr>
+			<tr>
 				<td>Demos:</td>
 				<td>
 					<span class="btn btn-primary" id="demoHanoi">Hanoi towers</span>
@@ -61,11 +62,11 @@
 				</td>
 			</tr>
 			<tr>
-				<td>State-space:</td>
-				<td><form:textarea path="stateSpace" rows="10" cols="60" class="form-control problemTextarea" resizeable="false" id="stateSpace" /></td>
+				<td>State-space: *</td>
+				<td><form:textarea path="stateSpace" rows="20" cols="60" class="form-control problemTextarea" resizeable="false" id="stateSpace" /></td>
 			</tr>
 			<tr>
-				<td>Search algorithms:</td>
+				<td>Search algorithms: *</td>
 				<td>
 					<form:checkbox path="algorithms" value="BackTrackSimple" />Backtrack<br/>
 					<form:checkbox path="algorithms" value="BackTrackCircle" />Backtrack with cycle detection<br/>
@@ -79,16 +80,19 @@
 				</td>
 			</tr>
 			<tr>
-				<td>Do tree:</td>
+				<td>Visualize the traversed state-space tree for backtrack algorithms:</td>
 				<td><form:checkbox path="doTree" value="true" /></td>
 			</tr>
 			<tr>
 				<td>Heuristic:</td>
-				<td><form:textarea path="heuristic" rows="10" cols="60" class="form-control problemTextarea" /></td>
+				<td><form:textarea path="heuristic" rows="2" cols="60" class="form-control problemTextarea" /></td>
 			</tr>
 			<tr>
 				<td>Variables in heuristic function:</td>
 				<td><form:textarea path="variablesInHeuristicFunction" rows="2" cols="60" class="form-control problemTextarea" /></td>
+			</tr>
+			<tr>
+				<td colspan="2" class="formInformation">* Denotes required field</td>
 			</tr>
 			<tr>
 				<td colspan="2"><button type="submit" class="btn btn-primary problemSubmitButton">Submit</button></td>
