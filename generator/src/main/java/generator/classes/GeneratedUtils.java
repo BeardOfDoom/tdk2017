@@ -22,10 +22,6 @@ public class GeneratedUtils {
     return Math.min(numberA, numberB);
   }
 
-  public static Double min(Integer numberA, Integer numberB) {
-    return Double.valueOf(Math.min(numberA, numberB));
-  }
-
   public static Double max(List<List<Double>> matrix) {
     return matrix.stream().map(Collections::max).max(Double::compareTo).get();
   }
@@ -36,10 +32,6 @@ public class GeneratedUtils {
 
   public static Double max(Double numberA, Double numberB) {
     return Math.max(numberA, numberB);
-  }
-
-  public static Double max(Integer numberA, Integer numberB) {
-    return Double.valueOf(Math.max(numberA, numberB));
   }
 
   public static Double sum(List<List<Double>> matrix) {
@@ -107,5 +99,13 @@ public class GeneratedUtils {
 
   public static <T extends Object> Double card(List<List<T>> list) {
     return list.stream().mapToDouble(List::size).sum();
+  }
+
+  public static String charAt(String word, Double position) {
+    return String.valueOf(word.charAt(position.intValue()));
+  }
+
+  public static Double length(String word) {
+    return Double.valueOf(word.length());
   }
 }

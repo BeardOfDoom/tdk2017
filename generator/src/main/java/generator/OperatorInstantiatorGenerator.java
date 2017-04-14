@@ -32,10 +32,6 @@ public class OperatorInstantiatorGenerator {
   public ClassRepresentation generate(String directoryName, String packageName,
       String fileName) throws IOException {
 
-    if (operatorRepresentations.isEmpty()) {
-      System.out.println("Hiba!");
-    }
-
     ClassName className = ClassName.get(packageName, fileName);
 
     TypeSpec state = TypeSpec.classBuilder(fileName)
