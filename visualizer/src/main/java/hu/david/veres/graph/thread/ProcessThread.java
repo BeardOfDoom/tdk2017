@@ -1,5 +1,7 @@
 package hu.david.veres.graph.thread;
 
+import exceptions.InvalidVariableException;
+import exceptions.TypeMismatchException;
 import hu.david.veres.graph.dto.ProcessDTO;
 import hu.david.veres.graph.form.ProblemForm;
 import hu.david.veres.graph.generator.ResultGenerator;
@@ -71,10 +73,62 @@ public class ProcessThread implements Runnable {
                 absoluteFileName = solutionManager.doOptimal(problemForm.isDoTree());
                 break;
             case "BestFirst":
-                absoluteFileName = solutionManager.doBestFirst(problemForm.getHeuristic(), convertInputToSet(problemForm.getVariablesInHeuristicFunction()), problemForm.isDoTree());
+                try {
+                    absoluteFileName = solutionManager.doBestFirst(problemForm.getHeuristic(), convertInputToSet(problemForm.getVariablesInHeuristicFunction()), problemForm.isDoTree());
+                } catch (ClassNotFoundException e) {
+                    finishAndUpdateProcess(processIdentifier, true, ERROR_MESSAGE_SERVER_SIDE, null);
+                    e.printStackTrace();
+                    return;
+                } catch (NoSuchFieldException e) {
+                    finishAndUpdateProcess(processIdentifier, true, ERROR_MESSAGE_SERVER_SIDE, null);
+                    e.printStackTrace();
+                    return;
+                } catch (IllegalAccessException e) {
+                    finishAndUpdateProcess(processIdentifier, true, ERROR_MESSAGE_SERVER_SIDE, null);
+                    e.printStackTrace();
+                    return;
+                } catch (InstantiationException e) {
+                    finishAndUpdateProcess(processIdentifier, true, ERROR_MESSAGE_SERVER_SIDE, null);
+                    e.printStackTrace();
+                    return;
+                } catch (InvalidVariableException e) {
+                    finishAndUpdateProcess(processIdentifier, true, e.getMessage(), null);
+                    e.printStackTrace();
+                    return;
+                } catch (TypeMismatchException e) {
+                    finishAndUpdateProcess(processIdentifier, true, e.getMessage(), null);
+                    e.printStackTrace();
+                    return;
+                }
                 break;
             case "A":
-                absoluteFileName = solutionManager.doA(problemForm.getHeuristic(), convertInputToSet(problemForm.getVariablesInHeuristicFunction()), problemForm.isDoTree());
+                try {
+                    absoluteFileName = solutionManager.doA(problemForm.getHeuristic(), convertInputToSet(problemForm.getVariablesInHeuristicFunction()), problemForm.isDoTree());
+                } catch (ClassNotFoundException e) {
+                    finishAndUpdateProcess(processIdentifier, true, ERROR_MESSAGE_SERVER_SIDE, null);
+                    e.printStackTrace();
+                    return;
+                } catch (NoSuchFieldException e) {
+                    finishAndUpdateProcess(processIdentifier, true, ERROR_MESSAGE_SERVER_SIDE, null);
+                    e.printStackTrace();
+                    return;
+                } catch (IllegalAccessException e) {
+                    finishAndUpdateProcess(processIdentifier, true, ERROR_MESSAGE_SERVER_SIDE, null);
+                    e.printStackTrace();
+                    return;
+                } catch (InstantiationException e) {
+                    finishAndUpdateProcess(processIdentifier, true, ERROR_MESSAGE_SERVER_SIDE, null);
+                    e.printStackTrace();
+                    return;
+                } catch (InvalidVariableException e) {
+                    finishAndUpdateProcess(processIdentifier, true, e.getMessage(), null);
+                    e.printStackTrace();
+                    return;
+                } catch (TypeMismatchException e) {
+                    finishAndUpdateProcess(processIdentifier, true, e.getMessage(), null);
+                    e.printStackTrace();
+                    return;
+                }
                 break;
         }
 
@@ -126,7 +180,7 @@ public class ProcessThread implements Runnable {
 
     private Set<String> convertInputToSet(String input) {
 
-        if(input.isEmpty()){
+        if (input.isEmpty()) {
             return new HashSet<>();
         }
 
