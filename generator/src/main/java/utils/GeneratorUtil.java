@@ -355,7 +355,7 @@ public final class GeneratorUtil {
   }
 
   public static String generateForStatement(Class type, String variable, String from, String to, String by) {
-    return "for(" + type.getSimpleName() + " " + variable + " = " + from + "; " + variable + "<=" + to + "; "
+    return "for(" + type.getSimpleName() + " " + variable + " = " + from + "; " + variable + " <= " + to + "; "
         + variable + " += " + by + ")";
   }
 
