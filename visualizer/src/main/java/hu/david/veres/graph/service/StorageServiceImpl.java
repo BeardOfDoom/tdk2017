@@ -57,7 +57,7 @@ public class StorageServiceImpl implements StorageService {
     }
 
     @Override
-    public File storeStateSpace(String stateSpace, String fileName) throws IOException {
+    public File storeStateSpaceFile(String stateSpace, String fileName) throws IOException {
 
         File file = new File(stateSpaceFolderName + File.separator + fileName + EXTENSION_TXT);
 
@@ -66,6 +66,19 @@ public class StorageServiceImpl implements StorageService {
         fileWriter.write(stateSpace);
 
         fileWriter.close();
+
+        return file;
+
+    }
+
+    @Override
+    public File getStateSpaceFile(String fileName) throws FileNotFoundException {
+
+        File file = new File(stateSpaceFolderName + File.separator + fileName + EXTENSION_TXT);
+
+        if(!file.exists()){
+            throw new FileNotFoundException();
+        }
 
         return file;
 

@@ -28,6 +28,9 @@ public class ProcessEntity {
     @Column(name = "error_message")
     private String errorMessage;
 
+    @Column(name = "state_space_file_name")
+    private String stateSpaceFileName;
+
     @Column(name = "solution_file_name")
     private String solutionFileName;
 
