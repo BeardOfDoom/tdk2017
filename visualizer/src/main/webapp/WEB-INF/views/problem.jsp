@@ -49,9 +49,9 @@
 		
 		<form:form method="POST" modelAttribute="problemForm" action="">
 		<table class="table table-responsive problemTable">
-			<tr>
+			<!-- <tr>
 				<td colspan="2"><h1>New problem</h1></td>
-			</tr>
+			</tr> -->
 			<tr>
 				<td>Demos:</td>
 				<td>
@@ -80,7 +80,7 @@
 				</td>
 			</tr>
 			<tr>
-				<td>Visualize the traversed state-space tree for backtrack algorithms:</td>
+				<td>Visualize the traversed state-space tree:</td>
 				<td><form:checkbox path="doTree" value="true" /></td>
 			</tr>
 			<tr>

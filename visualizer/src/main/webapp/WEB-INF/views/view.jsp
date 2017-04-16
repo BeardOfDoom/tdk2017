@@ -88,6 +88,10 @@
 				<td><span id="numberOfSteps"></span></td>
 			</tr>
 			<tr>
+				<td>State-space representation:</td>
+				<td><a href="${pageContext.request.contextPath}/file/statespace/${processDTO.stateSpaceFileName}" target="_blank">${processDTO.stateSpaceFileName}.txt</a></td>
+			</tr>
+			<tr>
 				<td>Java files:</td>
 				<td>
 					<c:forEach var="javaFileName" items="${javaFileNames}">

@@ -11,10 +11,6 @@ $(document).ready(function(){
 		
 	});
 	
-	// Clear limit input fields
-	// $("#backTrackPathLengthLimitationLimit").val("");
-	// $("#backTrackOptimalLimit").val("");
-	
 });
 
 function initDemoButton(buttonId, demoText){

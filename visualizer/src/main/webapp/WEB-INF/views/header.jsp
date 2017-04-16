@@ -21,9 +21,6 @@
 					<a href="${pageContext.request.contextPath}">Home</a>
 				</li>
 				<li>
-					<a href="${pageContext.request.contextPath}/problem">New problem</a>
-				</li>
-				<li>
 					<a href="${pageContext.request.contextPath}/graph">Graphs</a>
 				</li>
 				<li>
@@ -48,21 +45,21 @@
 		<div class="item active">
 			<img src="${headerUniverse}" alt="State-space Modelling Language">
 			<div class="carousel-caption">
-				<h3>State-space Modelling Language</h3>
-				<p>Describe your problems&#39;s state-space representation with and easy-to-use modelling language.</p>
+				<h3>Problem Representation Modelling Component</h3>
+				<p>Describe your problems&#39;s state-space representation with an easy-to-use modelling language.</p>
 			</div>
 		</div>
 		<div class="item">
 			<img src="${headerUniverse}" alt="Solution Provider">
 			<div class="carousel-caption">
-				<h3>Solution Provider</h3>
+				<h3>Solution Searcher Component</h3>
 				<p>Search solutions for your problems with various built-in algorithms.</p>
 			</div>
 		</div>
 		<div class="item">
 			<img src="${headerUniverse}" alt="State Space Graph Visualizer">
 			<div class="carousel-caption">
-				<h3>State Space Graph Visualizer</h3>
+				<h3>Graph Visualizer Component</h3>
 				<p>Visualize and interact with graphs traversed by search algorithms.</p>
 			</div>
 		</div>

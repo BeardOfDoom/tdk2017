@@ -90,10 +90,10 @@ public class ProblemController {
         ProjectRepresentation projectRepresentation;
 
         // Store state-space description to a file
-        File file;
-        String fileName = ProcessUtils.generateStateSpaceFileName();
+        File stateSpaceFile;
+        String stateSpacefileName = ProcessUtils.generateStateSpaceFileName();
         try {
-            file = storageService.storeStateSpace(problemForm.getStateSpace(), fileName);
+            stateSpaceFile = storageService.storeStateSpaceFile(problemForm.getStateSpace(), stateSpacefileName);
         } catch (IOException e) {
             e.printStackTrace();
             return errorModelAndView(ERROR_MESSAGE_SERVER_SIDE);
@@ -101,14 +101,31 @@ public class ProblemController {
 
         // Process the file
         try {
-            projectRepresentation = inputReader.processInputFile(file.getAbsolutePath());
+            projectRepresentation = inputReader.processInputFile(stateSpaceFile.getAbsolutePath());
         } catch (IOException e) {
             e.printStackTrace();
             return errorModelAndView(ERROR_MESSAGE_SERVER_SIDE);
         } catch (IncorrectInputException e) {
-            System.out.println(e.getMsg());
             e.printStackTrace();
-            return errorModelAndView(e.getMsg());
+            return errorModelAndView(e.getMessage());
+        } catch (InvalidAttributeNameException e) {
+            e.printStackTrace();
+            return errorModelAndView(e.getMessage());
+        } catch (UnexpectedContextException e) {
+            e.printStackTrace();
+            return errorModelAndView(e.getMessage());
+        } catch (UnexpectedSwitchClauseException e) {
+            e.printStackTrace();
+            return errorModelAndView(e.getMessage());
+        } catch (VarNameAlreadyInUseException e) {
+            e.printStackTrace();
+            return errorModelAndView(e.getMessage());
+        } catch (WrongExpressionTypeException e) {
+            e.printStackTrace();
+            return errorModelAndView(e.getMessage());
+        } catch (WrongNumberOfArgumentsException e) {
+            e.printStackTrace();
+            return errorModelAndView(e.getMessage());
         }
 
         // Generate .java files to a folder with generated package name
@@ -190,6 +207,7 @@ public class ProblemController {
             processDTO.setProcessIdentifier(processIdentifier);
             processDTO.setDone(false);
             processDTO.setJavaPackageName(packageName);
+            processDTO.setStateSpaceFileName(stateSpacefileName);
             processService.save(processDTO);
 
             // Start the process

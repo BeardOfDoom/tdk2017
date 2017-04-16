@@ -29,9 +29,9 @@
 <div class="container pageContainer">
 	<div class="row">
 		
-		<h1>Search graph</h1>
+		<h1>Load graph</h1>
 		
-		<div>Search graphs by typing their identifier to the input field below. You can generate new graphs by clicking on the <a href="./problem">New problem</a> link in the header.</div>
+		<div>Load a graph by typing it's identifier to the input field below. You can generate new graphs by navigating back to the <a href="./problem">Home</a> page.</div>
 		
 		<c:choose>
 		<c:when test="${error != null}">
@@ -49,7 +49,7 @@
 						<input class="form-control" type="text" name="processIdentifier" id="processIdentifier" placeholder="Graph identifier" />
 					</div>
 					<div class="col-sm-2">
-						<button class="btn btn-primary" type="submit">Search</button>
+						<button class="btn btn-primary" type="submit">Load</button>
 					</div>
 				</div>
 			</form>

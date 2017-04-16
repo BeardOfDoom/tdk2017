@@ -39,9 +39,8 @@ public class GraphController {
 
             if (processDTO == null) {
 
-                // TODO: property
                 ModelAndView modelAndView = new ModelAndView("graph");
-                modelAndView.addObject("error", "GRAPH NOT FOUND");
+                modelAndView.addObject("error", "Graph not found!");
                 return modelAndView;
 
             } else {
